@@ -40,7 +40,7 @@ We hope you find these materials useful and will join our sessions.
 
 1. Leave a comment on the ["Welcome" Issue](https://github.com/imbeimainz/IMBEIbookclub/issues/1) to introduce yourself and to let us know your GitHub username.
 
-2. Install R and RStudio - highly recommended for adopting the framework to create, edit, and further develop the reading/presentation materials.
+2. Install R and RStudio (latest stable versions are very fine for this) - highly recommended for adopting the framework to create, edit, and further develop the reading/presentation materials.
 
 3. Install RMarkdown and knitr, and get familiar with them - no pro knowledge is needed, although the more the merrier; plus, of course, these tools are potentially a huge productivity boost in many of your activities, so they are highly recommended
 
