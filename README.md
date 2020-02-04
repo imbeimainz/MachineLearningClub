@@ -20,7 +20,7 @@ This repository serves the purpose of being a one-stop shop for all the material
 
 ## Current activities
 
-During Feb 2020 - [] 2020, we will read ...
+During Mar 2020 - [] 2020, we will read ...
 
 See the [schedule wiki](https://github.com/imbeimainz/IMBEIbookclub/wiki) for the schedule of presentations.
 
