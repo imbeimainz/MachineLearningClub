@@ -1,0 +1,41 @@
+---
+output: github_document
+---
+
+# Home
+
+Welcome to the IMBEIbookclub wiki!
+
+## Details
+
+- 
+
+```{r, echo = FALSE}
+schedule_df <- data.frame(
+  Sections = "Intro",
+  Date = "2020-03-02",
+  Presenter = "Federico",
+  Exercises = "",
+  stringsAsFactors = FALSE
+)
+```
+
+```{r}
+schedule_df <- rbind(
+  schedule_df,
+  # c("Topic2", "2020-03-09", "Person2", ""),
+  # c("Topic2", "2020-03-09", "Person2", ""),
+  # c("Topic2", "2020-03-09", "Person2", ""),
+  c("Topic2", "2020-03-09", "Person2", "")
+  
+)
+```
+
+
+```{r}
+knitr::kable(schedule_df)
+```
+
+Then, take the content of the generated `wiki_schedule.md` file and replace the content of the Wiki at https://github.com/imbeimainz/IMBEIbookclub/wiki
+
+
