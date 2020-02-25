@@ -62,11 +62,17 @@ Basics:
 
 `git add`
 
+`git diff`
+
 `git commit`
 
 `git pull`
 
 `git push`
+
+--
+
+Actually, these will take you (quite) a long way.
 
 ---
 
@@ -84,5 +90,8 @@ respecting the Rmd formatting (I highly recommend `xaringan` - see `presentation
 
 ---
 
+class: middle, center
 
+# Thanks!
 
+Questions?
