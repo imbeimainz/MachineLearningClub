@@ -1,3 +1,5 @@
+# Presentation template
+
 This folder contains a template R Markdown document to generate a presentation with `xaringan`.
 
 See this link for more information on the basics of it: https://slides.yihui.org/xaringan
@@ -13,6 +15,16 @@ https://cran.r-project.org/web/packages/xaringan/index.html
 ```
 install.packages("xaringan")
 ```
+
+## Getting started
+
+- install `xaringan`
+- copy over the entire content of the `presentation_template` folder to the folder where you are expected to store your presentation later
+- edit the Rmd file
+- compile the presentation with `knitR` 
+- that's it!
+
+## Misc
 
 Alternative formats can be found e.g. here: https://bookdown.org/yihui/rmarkdown/ioslides-presentation.html (yet this format is not anymore actively under development).
 
