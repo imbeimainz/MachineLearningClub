@@ -83,6 +83,14 @@ plot(1:10)
 
 ---
 
+## Adding an image
+
+`![alt_text](link_to_image)`
+
+![grumpycat](images/grumpycat.png)
+
+---
+
 class: middle, center
 
 # Thanks!
