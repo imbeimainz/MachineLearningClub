@@ -19,7 +19,7 @@ install.packages("xaringan")
 ## Getting started
 
 - install `xaringan`
-- copy over the entire content of the `presentation_template` folder to the folder where you are expected to store your presentation later
+- copy over the entire content of the `presentation_template` folder as the folder where you are expected to store your presentation later - ideally rename it with the chapter number/title
 - edit the Rmd file
 - compile the presentation with `knitR` 
 - that's it!
