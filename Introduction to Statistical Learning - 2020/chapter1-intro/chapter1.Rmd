@@ -27,8 +27,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-class: middle
-
 # Agenda
 
 - Introductions
@@ -400,11 +398,79 @@ Aim: determining whether there are groups, or clusters, among the cell lines bas
 
 ---
 
+class: middle, center
+
 # Practicing what I preach
 
-```{r}
+---
 
+```{r}
+library(ggplot2)
+theme_set(theme_bw())
+ggplot(Wage,
+       aes(x = age, y = wage)) + 
+  geom_point() + 
+  geom_smooth()
 ```
+
+---
+
+```{r}
+ggplot(Wage,
+       aes(x = year, y = wage)) + 
+  geom_point() 
+```
+
+---
+
+```{r}
+ggplot(Wage,
+       aes(x = year, y = wage)) + 
+  geom_jitter() 
+```
+
+---
+
+```{r}
+ggplot(Wage,
+       aes(x = year, y = wage, group = year)) + 
+  ggforce::geom_sina() 
+```
+
+---
+
+```{r}
+ggplot(Wage,
+       aes(x = education, y = wage, fill = education)) + 
+  geom_boxplot()
+```
+
+---
+
+```{r}
+ggplot(Wage,
+       aes(x = education, y = wage, fill = education)) + 
+  geom_violin()
+```
+
+---
+
+# Practicing what I preach - part 2
+
+```{r warning=FALSE, message=FALSE, eval=FALSE}
+dim(NCI60$data)
+head(NCI60$labs)
+```
+
+
+```{r warning=FALSE, message=FALSE, fig.height=4}
+library(SummarizedExperiment)
+se <- SummarizedExperiment(assays = List(counts = t(NCI60$data)))
+tse <- DESeq2::DESeqTransform(se)
+tse$label <- NCI60$labs
+pcaExplorer::pcaplot(tse, "label", text_labels = FALSE, ellipse = FALSE)
+```
+
 
 ---
 
