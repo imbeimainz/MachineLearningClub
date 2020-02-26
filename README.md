@@ -75,3 +75,7 @@ Past textbooks have included:
 ## Upcoming reading
 
 Future textbooks will include...
+
+Do you have a book to suggest? Please do so by [posting to the specific issue](https://github.com/imbeimainz/IMBEIbookclub/issues/2) (check before if someone else did suggest this).
+Make sure to post some reference to your suggestion, to make it easy to assess its contents.
+
