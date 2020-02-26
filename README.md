@@ -14,9 +14,9 @@ This repository serves the purpose of being a one-stop shop for all the material
 
 ## Meeting details
 
-* Mondays at 13.15 Central European Time
-* Meetings take place []TODO
-* Schedule: https://github.com/imbeimainz/IMBEIbookclub/wiki TODO
+* Mondays, 13.15 - 14.45 Central European Time
+* Meetings take place in the Sitzungssaal of the IMBEI (Building 902)
+* Schedule: https://github.com/imbeimainz/IMBEIbookclub/wiki
 
 ## Current activities
 
@@ -55,11 +55,11 @@ We hope you find these materials useful and will join our sessions.
 
 ## Presenting
 
-1. Pick the date or topic that best suits you and reserve it on the [presentation schedule wiki](https://github.com/imbeimainz/IMBEIbookclub/wiki), adding your GitHub username to the schedule table.
+1. Pick the date or topic that best suits you and reserve it on the [presentation schedule wiki](https://github.com/imbeimainz/IMBEIbookclub/wiki), adding your name/GitHub username to the schedule table.
 
 2. Read the required section of the book, and do the associated exercises that you will present.
 
-3. Edit the presentation file, using the template provided in the folder corresponding to the textbook name. 
+3. Edit the presentation file, using [the template provided](https://github.com/imbeimainz/IMBEIbookclub/tree/master/presentation_template), and place it in the folder corresponding to the textbook name (and respective chapter). 
   See more information about making [Xaringan presentations](https://slides.yihui.org/xaringan/). 
 
 4. Commit the presentation to GitHub so that it is available to others. 
