@@ -8,7 +8,11 @@ Welcome to the IMBEIbookclub wiki!
 
 ## Details
 
-- please use `wiki_schedule.Rmd` in the repo to generate the content for this page
+Each meeting will be focused on a particular chapter, or a part thereof. 
+
+The first part of each meeting will be dedicated to a short recap on the "Labs" from the previous chapter
+
+Please use `wiki_schedule.Rmd` in the repo to generate the content for this page
 
 ```{r, echo = FALSE}
 schedule_df <- data.frame(
@@ -23,12 +27,23 @@ schedule_df <- data.frame(
 ```{r}
 schedule_df <- rbind(
   schedule_df,
+  c("Chapter 2", "2020-03-09", "Irene + Federico (labs)"),
+  c("Chapter 3", "2020-03-16", "Philipp + Jan"),
+  c("Chapter 4", "2020-03-23", "Jochem + Robert"),
+  c("Chapter 4", "2020-03-30", "Jochem + Robert"),
+  c("Chapter 5", "2020-04-20", "Dan + Jennifer"),
+  c("Chapter 6", "2020-04-27", "Gregor + "),
+  c("Chapter 6", "2020-05-04", "Gregor + "),
+  c("Recap?", "2020-TBD", "TBD"),
+  c("Chapter 7", "2020-05-11", ""),
+  c("Chapter 7", "2020-05-18", ""),
+  c("Chapter 8", "2020-05-25", "Franziska + "),
+  c("Chapter 9", "2020-06-01", "Manuel + Lars"),
+  c("Chapter 9", "2020-06-08", "Manuel + Lars"),
+  c("Chapter 10", "2020-06-15", "Toni + Alicia"),
+  c("Chapter 10", "2020-06-22", "Toni + Alicia"))
   # c("Topic2", "2020-03-09", "Person2", ""),
-  # c("Topic2", "2020-03-09", "Person2", ""),
-  # c("Topic2", "2020-03-09", "Person2", ""),
-  c("Topic2", "2020-03-09", "Person2", "")
   
-)
 ```
 
 
