@@ -1,0 +1,48 @@
+---
+title: "Chapter 3 Linear Regression"
+subtitle: ""
+author: "Jan Linke </br> Philipp Mildenberger</br>"
+date: "2020/03/16</br>
+  IMBEI - University Medical Center Mainz"
+output: slidy_presentation
+  # xaringan::moon_reader:
+  #   css: ["default", "default-fonts","css/FMstyles.css","css/animate.css"]
+  #   lib_dir: libs
+  #   nature:
+  #     highlightStyle: github
+  #     highlightLines: true
+  #     countIncrementalSlides: false
+  #     titleSlideClass: [center, middle]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  eval = TRUE,
+  message = FALSE,
+  echo = TRUE,
+  warnings = FALSE,
+  fig.align = "center"
+)
+```
+
+# Chapter Overview
+
+- Motivating Example
+- Simple Linear Regression
+- Multiple Linear Regression
+- Other Considerations in the Regression Model
+- Example expained
+- Comparison to $K$-Nearest Neighbors
+
+# Motivating Example
+
+
+# Simple Linear Regression
+
+# Multiple Linear Regression
+
+# Other Considerations
+
+# Example Explained
+
