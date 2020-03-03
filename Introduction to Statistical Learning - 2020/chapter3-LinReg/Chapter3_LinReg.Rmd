@@ -22,7 +22,9 @@ knitr::opts_chunk$set(
   message = FALSE,
   echo = TRUE,
   warnings = FALSE,
-  fig.align = "center"
+  fig.align = "center",
+  warning = FALSE,
+  error = FALSE
 )
 ```
 
@@ -36,9 +38,29 @@ knitr::opts_chunk$set(
 - Comparison to $K$-Nearest Neighbors
 
 # Motivating Example
+## Data 
+```{r, echo=FALSE}
+## laden, relativer Pfad, sollte funktionieren wenn als R-project geoeffnet.
+## quick'n'dirty hack: option 1 fuer arbeit in 
+try(Advertising <- read.csv("Introduction to Statistical Learning - 2020/chapter3-LinReg/data/Advertising.csv"),TRUE) 
+try(Advertising <- read.csv("data/Advertising.csv"),TRUE) 
+```
 
+```{r}
+head(Advertising)
+```
+
+## Questions
+* Relationship between advertising budget and `sales`?
+* How strong is relationship between advertising budget and `sales`?
+* Which media contribute to `sales`?
+* How accurately (and precisely) can we estimate the effect of each medium?
+* How accurately can we predict future sales?
+* Is the relationship linear?
+* Is there synergy (i.e. interaction) among the adventising media?
 
 # Simple Linear Regression
+Predict quantitative response $Y$ on the basis of $X$
 
 # Multiple Linear Regression
 
