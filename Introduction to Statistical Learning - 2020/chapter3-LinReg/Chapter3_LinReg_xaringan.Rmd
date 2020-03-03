@@ -1,0 +1,99 @@
+---
+title: "Chapter 3 Linear Regression"
+subtitle: ""
+author: "Jan Linke </br> Philipp Mildenberger</br>"
+date: "2020/03/16</br>
+  IMBEI - University Medical Center Mainz"
+output: 
+  xaringan::moon_reader:
+    css: ["default", "default-fonts","css/FMstyles.css","css/animate.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: [center, middle]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  eval = TRUE,
+  message = FALSE,
+  echo = TRUE,
+  warnings = FALSE,
+  fig.align = "center",
+  warning = FALSE,
+  error = FALSE
+)
+```
+
+# Chapter Overview
+
+- Motivating Example
+- Simple Linear Regression
+- Multiple Linear Regression
+- Other Considerations in the Regression Model
+- Example expained
+- Comparison to $K$-Nearest Neighbors
+
+---
+
+# Motivating Example
+## Data 
+```{r, echo=FALSE}
+## laden, relativer Pfad, sollte funktionieren wenn als R-project geoeffnet.
+## quick'n'dirty hack: option 1 fuer arbeit in 
+try(Advertising <- read.csv("Introduction to Statistical Learning - 2020/chapter3-LinReg/data/Advertising.csv"),TRUE) 
+try(Advertising <- read.csv("data/Advertising.csv"),TRUE) 
+```
+
+```{r}
+head(Advertising)
+```
+
+--
+
+## Questions
+* Relationship between advertising budget and `sales`?
+
+--
+
+* How strong is relationship between advertising budget and `sales`?
+
+--
+
+* Which media contribute to `sales`?
+
+---
+
+## Questions (cont'd)
+
+* How accurately (and precisely) can we estimate the effect of each medium?
+* How accurately can we predict future sales?
+* Is the relationship linear?
+* Is there synergy (i.e. interaction) among the adventising media?
+
+---
+
+# Simple Linear Regression
+Predict quantitative response $Y$ on the basis of $X$
+
+---
+
+# Multiple Linear Regression
+
+---
+
+# Other Considerations
+
+---
+
+# Example Explained
+
+---
+
+class: center, middle
+
+# Done!
+
