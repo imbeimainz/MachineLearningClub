@@ -4,15 +4,15 @@ subtitle: ""
 author: "Jan Linke </br> Philipp Mildenberger</br>"
 date: "2020/03/16</br>
   IMBEI - University Medical Center Mainz"
-output: slidy_presentation
-  # xaringan::moon_reader:
-  #   css: ["default", "default-fonts","css/FMstyles.css","css/animate.css"]
-  #   lib_dir: libs
-  #   nature:
-  #     highlightStyle: github
-  #     highlightLines: true
-  #     countIncrementalSlides: false
-  #     titleSlideClass: [center, middle]
+output: #slidy_presentation
+  xaringan::moon_reader:
+    css: ["default", "default-fonts","css/FMstyles.css","css/animate.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: [center, middle]
 ---
 
 ```{r setup, include=FALSE}
@@ -60,7 +60,11 @@ head(Advertising)
 * Is there synergy (i.e. interaction) among the adventising media?
 
 # Simple Linear Regression
-Predict quantitative response $Y$ on the basis of $X$
+Predict quantitative response $Y$ on the basis of $X$:
+
+$$
+Y\eq 
+$$ 
 
 # Multiple Linear Regression
 
