@@ -1,8 +1,8 @@
 ---
-title: "MyTitle"
-subtitle: "MySubtitle-can be empty"
-author: "Federico Marini (marinif@uni-mainz.de)</br>"
-date: "2020/02/25</br>
+title: "An Introduction to Statistical Learning - with applications in R"
+subtitle: "Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani"
+author: "Irene Schmidtmann (Irene.Schmidtmann@uni-mainz.de)</br>"
+date: "2020/03/09</br>
   IMBEI - University Medical Center Mainz"
 output:
   xaringan::moon_reader:
@@ -21,10 +21,121 @@ knitr::opts_chunk$set(
   eval = TRUE,
   message = FALSE,
   echo = TRUE,
-  warnings = FALSE,
+  warnings = TRUE,
   fig.align = "center"
 )
 ```
+
+
+```{r setup2, include=FALSE}
+library(ISLR)
+library(readr)
+# import advertising data
+Advertising <- read_csv("http://faculty.marshall.usc.edu/gareth-james/ISL/Advertising.csv")
+
+# Alternative: use local file
+# Advertising <- read_csv("Introduction to Statistical Learning - 2020/chapter2-statistical_learning/chapter2_files/Advertising.csv")
+
+```
+
+class: inverse, center, middle
+
+# Chapter 2:  Statistical Learning
+
+---
+# Structure of chapter 2
+2.1  What Is Statistical Learning?
+
+2.2 Assessing Model Accuracy
+
+2.3  Lab: Introduction to R
+
+---
+#2.1  What Is Statistical Learning?
+
+Motivating example: company wants to increase sales of a product.
+* not possible directly
+* but advertising expenditure can be controlled
+* three advertising channels
+  + TV
+  + Radio
+  + Newspapers
+  
+So there we have
+* *output variable* we want to predict
+  + $Y$ Sales
+  + other terms: *response*, *dependent variable*
+* *input variables* we can control 
+  + $X_1$ TV budget
+  + $X_2$ Radio budget
+  + $X_3$ Newspapers budget
+  + other terms: *predictors*,*independent variables*, *features*
+
+---
+#2.1  What Is Statistical Learning?
+General aim: find a function $f$ that allows to predict $Y$ given $X_1, \ldots, X_p$
+$$Y = f(X) + \epsilon$$
+with
+
+$f$ fixed but unknown function of $X_1, \ldots, X_p$
+
+$\epsilon$ *random error* term, independent of $X$ with mean zero
+
+$f$ represents *systematic information* on $Y$ provided by $X$
+
+---
+#Example Advertising data
+
+```{r advertise_1, include=TRUE}
+attach(Advertising)
+head(Advertising)
+```
+
+---
+# How are sales related to advertising?
+
+```{r advertise_2a, echo=TRUE, eval=FALSE, fig.height = 6, fig.width = 12}
+par(mfcol=c(1,3))
+
+plot(x = TV, y = sales, col="red", 
+     cex=1.5, cex.lab=1.5, cex.axis = 1.5)
+TV.reg <-lm(sales ~ TV, data = Advertising)
+abline(coef = TV.reg$coefficients, col="blue",lwd=2)
+
+plot(x = radio, y = sales, col="red", 
+     cex=1.5, cex.lab=1.5, cex.axis = 1.5)
+radio.reg <-lm(sales ~ radio, data = Advertising)
+abline(coef = radio.reg$coefficients, col="blue",lwd=2)
+
+plot(x = newspaper, y = sales, col="red", 
+     cex=1.5, cex.lab=1.5, cex.axis = 1.5)
+newspaper.reg <-lm(sales ~ newspaper, data = Advertising)
+abline(coef = newspaper.reg$coefficients, col="blue",lwd=2)
+```
+
+---
+# How are sales related to advertising?
+
+```{r advertise_2b, echo=FALSE, eval=TRUE, fig.height = 6, fig.width = 12}
+par(mfcol=c(1,3))
+
+plot(x = TV, y = sales, col="red", 
+     cex=1.5, cex.lab=1.5, cex.axis = 1.5)
+TV.reg <-lm(sales ~ TV, data = Advertising)
+abline(coef = TV.reg$coefficients, col="blue",lwd=2)
+
+plot(x = radio, y = sales, col="red", 
+     cex=1.5, cex.lab=1.5, cex.axis = 1.5)
+radio.reg <-lm(sales ~ radio, data = Advertising)
+abline(coef = radio.reg$coefficients, col="blue",lwd=2)
+
+plot(x = newspaper, y = sales, col="red", 
+     cex=1.5, cex.lab=1.5, cex.axis = 1.5)
+newspaper.reg <-lm(sales ~ newspaper, data = Advertising)
+abline(coef = newspaper.reg$coefficients, col="blue",lwd=2)
+```
+
+---
 
 # My first slide
 
