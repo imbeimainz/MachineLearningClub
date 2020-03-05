@@ -6,7 +6,7 @@ date: "2020/03/16</br>
   IMBEI - University Medical Center Mainz"
 output: 
   xaringan::moon_reader:
-    css: ["default", "default-fonts","css/FMstyles.css","css/animate.css"]
+    css: ["default", "default-fonts","css/animate.css"]
     lib_dir: libs
     nature:
       highlightStyle: github
@@ -26,6 +26,8 @@ knitr::opts_chunk$set(
   warning = FALSE,
   error = FALSE
 )
+library(rgl)
+knitr::knit_hooks$set(webgl=hook_webgl)
 ```
 
 # Chapter Overview
@@ -53,8 +55,10 @@ head(Advertising)
 ```
 
 ---
+class: center, middle
 
 ## Questions
+
 
 * Relationship between advertising budget and `sales`?
 * How strong is relationship between advertising budget and `sales`?
@@ -99,6 +103,16 @@ with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
 
 
 # Multiple Linear Regression
+
+```{r, webgl=TRUE}
+x <- sort(rnorm(1000))
+y <- rnorm(1000)
+z <- rnorm(1000) + atan2(x,y)
+
+plot3d(x, y, z, col=rainbow(1000))
+
+```
+
 
 ---
 
