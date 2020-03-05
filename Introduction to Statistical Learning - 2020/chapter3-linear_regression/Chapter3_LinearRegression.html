@@ -6,8 +6,8 @@
     <meta name="author" content="Jan Linke  Philipp Mildenberger" />
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
-    <link rel="stylesheet" href="css/FMstyles.css" type="text/css" />
-    <link rel="stylesheet" href="css/animate.css" type="text/css" />
+    <link rel="stylesheet" href="css\FMstyles.css" type="text/css" />
+    <link rel="stylesheet" href="css\animate.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -38,10 +38,6 @@ class: center, middle, title-slide
 
 
 
-```r
-head(Advertising)
-```
-
 ```
 ##   X    TV radio newspaper sales
 ## 1 1 230.1  37.8      69.2  22.1
@@ -52,23 +48,13 @@ head(Advertising)
 ## 6 6   8.7  48.9      75.0   7.2
 ```
 
---
-
-## Questions
-* Relationship between advertising budget and `sales`?
-
---
-
-* How strong is relationship between advertising budget and `sales`?
-
---
-
-* Which media contribute to `sales`?
-
 ---
 
-## Questions (cont'd)
+## Questions
 
+* Relationship between advertising budget and `sales`?
+* How strong is relationship between advertising budget and `sales`?
+* Which media contribute to `sales`?
 * How accurately (and precisely) can we estimate the effect of each medium?
 * How accurately can we predict future sales?
 * Is the relationship linear?
@@ -79,7 +65,22 @@ head(Advertising)
 # Simple Linear Regression
 Predict quantitative response `\(Y\)` on the basis of `\(X\)`
 
+$$ Y \approx \beta_0 + \beta_1 X $$ 
+
+`\(\beta_0\)` and `\(\beta_1\)` are unknown constants
+
 ---
+## Advertising Example 
+&lt;img src="Chapter3_LinearRegression_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+## Advertising Example
+&lt;img src="Chapter3_LinearRegression_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+## Advertising Example
+&lt;img src="Chapter3_LinearRegression_files/figure-html/unnamed-chunk-5-1.png" style="display: block; margin: auto;" /&gt;
+
 
 # Multiple Linear Regression
 

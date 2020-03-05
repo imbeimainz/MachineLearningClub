@@ -20,7 +20,7 @@ options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(
   eval = TRUE,
   message = FALSE,
-  echo = TRUE,
+  echo = FALSE,
   warnings = FALSE,
   fig.align = "center",
   warning = FALSE,
@@ -44,7 +44,7 @@ knitr::opts_chunk$set(
 ```{r, echo=FALSE}
 ## laden, relativer Pfad, sollte funktionieren wenn als R-project geoeffnet.
 ## quick'n'dirty hack: option 1 fuer arbeit in 
-try(Advertising <- read.csv("Introduction to Statistical Learning - 2020/chapter3-LinReg/data/Advertising.csv"),TRUE) 
+try(Advertising <- read.csv("Introduction to Statistical Learning - 2020/chapter3-linear_regression/data/Advertising.csv"),TRUE)
 try(Advertising <- read.csv("data/Advertising.csv"),TRUE) 
 ```
 
@@ -52,23 +52,13 @@ try(Advertising <- read.csv("data/Advertising.csv"),TRUE)
 head(Advertising)
 ```
 
---
-
-## Questions
-* Relationship between advertising budget and `sales`?
-
---
-
-* How strong is relationship between advertising budget and `sales`?
-
---
-
-* Which media contribute to `sales`?
-
 ---
 
-## Questions (cont'd)
+## Questions
 
+* Relationship between advertising budget and `sales`?
+* How strong is relationship between advertising budget and `sales`?
+* Which media contribute to `sales`?
 * How accurately (and precisely) can we estimate the effect of each medium?
 * How accurately can we predict future sales?
 * Is the relationship linear?
@@ -79,7 +69,34 @@ head(Advertising)
 # Simple Linear Regression
 Predict quantitative response $Y$ on the basis of $X$
 
+$$ Y \approx \beta_0 + \beta_1 X $$ 
+
+$\beta_0$ and $\beta_1$ are unknown constants
+
 ---
+## Advertising Example 
+```{r}
+plot(sales ~ TV, data=Advertising, pch=16, col=2)
+```
+
+---
+## Advertising Example
+```{r}
+lm1 <- lm(sales~TV, data=Advertising)
+coefs <- lm1$coefficients
+plot(sales ~ TV, data=Advertising, pch=16, col=2)
+abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
+```
+
+---
+## Advertising Example
+```{r}
+pred  <- predict(lm1)
+plot(sales ~ TV, data=Advertising, pch=16, col=2)
+abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
+with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
+```
+
 
 # Multiple Linear Regression
 
