@@ -22,6 +22,9 @@ output: slidy_presentation
 <!-- --- -->
 
 ```{r setup, include=FALSE}
+library(rgl)
+library(knitr)
+
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(
   eval = TRUE,
@@ -30,9 +33,11 @@ knitr::opts_chunk$set(
   warnings = FALSE,
   fig.align = "center",
   warning = FALSE,
-  error = FALSE)
-library(rgl)
-library(pander)
+  error = FALSE
+)
+opts_knit$set(root.dir = "../..") ## knit in grand-parent folder for the sake of easy (and consistent!) data access
+
+## fuer 3d graphik
 knitr::knit_hooks$set(webgl=hook_webgl)
 ```
 
@@ -47,12 +52,9 @@ knitr::knit_hooks$set(webgl=hook_webgl)
 
 
 # Motivating Example
-## Data 
+## Data
 ```{r, echo=FALSE}
-## laden, relativer Pfad, sollte funktionieren wenn als R-project geoeffnet.
-## quick'n'dirty hack: option 1 fuer arbeit in 
-try(Advertising <- read.csv("Introduction to Statistical Learning - 2020/chapter3-linear_regression/data/Advertising.csv"),TRUE)
-try(Advertising <- read.csv("data/Advertising.csv"),TRUE) 
+Advertising <- read.csv("Introduction to Statistical Learning - 2020/chapter3-linear_regression/data/Advertising.csv")
 ```
 
 ```{r}
@@ -76,19 +78,19 @@ DT::datatable(Advertising)
 # Simple Linear Regression
 Predict quantitative response $Y$ on the basis of $X$
 
-$$ Y \approx \beta_0 + \beta_1 X $$ 
+$$ Y \approx \beta_0 + \beta_1 X $$
 
 - $\beta_0$:= "Intercept"  and $\beta_1$:= "slope"
 - Often called "coefficients" "parameters"
-- Both are unknown, will be estimated  
+- Both are unknown, will be estimated
 
 With estimates $\hat\beta_0$ and $\hat\beta_1$, one can predict future sales:
 
-$$ \hat y = \beta_0 + \beta_1 x $$ 
+$$ \hat y = \beta_0 + \beta_1 x $$
 
 
 # .
-## Advertising Example 
+## Advertising Example
 ```{r}
 plot(sales ~ TV, data=Advertising, pch=16, col=2)
 ```

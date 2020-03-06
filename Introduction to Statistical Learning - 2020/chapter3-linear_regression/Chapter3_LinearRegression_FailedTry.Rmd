@@ -16,6 +16,9 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+library(rgl)
+library(knitr)
+
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(
   eval = TRUE,
@@ -26,7 +29,9 @@ knitr::opts_chunk$set(
   warning = FALSE,
   error = FALSE
 )
-library(rgl)
+opts_knit$set(root.dir = "..") ## knit in parent folder for the sake of easy data access
+
+## fuer 3d graphik
 knitr::knit_hooks$set(webgl=hook_webgl)
 ```
 
