@@ -26,6 +26,11 @@ Got R?
 
 - R can be downloaded from http://cran.r-project.org/
 
+Start...
+
+- an R script (tired!)
+- an R Markdown document (wired!)
+
 ## Basic commands
 
 Functions are noted as `funcname(input1, input2)` - `input`s are called _arguments_
@@ -242,4 +247,99 @@ A[-c(1,3),]
 ```{r}
 dim(A)
 ```
+
+
+## Loading data
+
+```{r}
+library(ISLR)
+Auto
+write.table(Auto, file = "Auto.txt")
+read.table(file = "Auto.txt")
+
+?read.csv
+
+# fix(Auto)
+View(Auto)
+knitr::kable(Auto)
+class(Auto)
+dim(Auto)
+names(Auto)
+str(Auto)
+na.omit(Auto)
+dim(na.omit(Auto))
+```
+
+
+## Additional summaries
+
+Scatterplot of quantitative variables
+
+```{r, error=TRUE}
+plot(cylinders , mpg)
+```
+
+
+To refer to a variable, we must type the data set and the variable name joined with a `$` symbol.
+
+DO NOT USE `attach()`
+
+```{r}
+plot(Auto$cylinders, Auto$mpg)
+plot(Auto$cylinders)
+
+# but this is actually a factor...
+
+Auto$cylinders <- as.factor(Auto$cylinders)
+plot(Auto$cylinders, Auto$mpg)
+plot(Auto$cylinders)
+
+# customizing the aspect
+plot(Auto$cylinders, Auto$mpg, col="red", varwidth=T, xlab="cylinders", ylab = "MPG")
+plot(Auto$cylinders, Auto$mpg, col="red", horizontal=T, xlab="cylinders", ylab = "MPG")
+
+```
+
+Histogram
+
+```{r}
+hist(Auto$mpg)
+hist(Auto$mpg, col = 2)
+hist(Auto$mpg, breaks=15)
+```
+
+Scatterplot matrix
+
+```{r, fig.width=10, fig.height=10}
+pairs(Auto)
+
+# for just a subset
+pairs(~mpg + displacement + horsepower + weight, Auto)
+```
+
+
+`identify()`: a useful interactive method for identifying the value for a particular variable for points on a plot. 
+
+```{r}
+plot(Auto$horsepower, Auto$mpg)
+identify(Auto$horsepower,Auto$mpg,Auto$name)
+# click, click, click, and then ESC
+```
+
+One of your best friends: `summary()`, to produce a numerical summary of each variable in a particular data set
+
+```{r}
+summary(Auto)
+summary(Auto$mpg)
+summary(Auto$cylinders)
+```
+
+Done for today
+
+```{r eval=FALSE}
+q()
+quit()
+```
+
+but first, you can `savehistory("history_filename.R")` - still, I would recommend to always use a script anyway!
 
