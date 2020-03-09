@@ -1,0 +1,1 @@
+This folder contains presentation, labs and exercises for chapter 2.
