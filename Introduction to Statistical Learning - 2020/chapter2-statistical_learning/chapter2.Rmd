@@ -33,10 +33,8 @@ library(readr)
 library(lattice)
 library(knitr)
 
-# import Income data (downloaded from http://faculty.marshall.usc.edu/gareth-james/ISL/data.html)
+# import Advertisting data (downloaded from http://faculty.marshall.usc.edu/gareth-james/ISL/data.html)
 Advertising <- read_csv("~/GitHub/IMBEIbookclub/Introduction to Statistical Learning - 2020/chapter2-statistical_learning/chapter2_files/Advertising.csv")
-Income1 <- read_csv("~/GitHub/IMBEIbookclub/Introduction to Statistical Learning - 2020/chapter2-statistical_learning/chapter2_files/Income1.csv")
-Income2 <- read_csv("~/GitHub/IMBEIbookclub/Introduction to Statistical Learning - 2020/chapter2-statistical_learning/chapter2_files/Income2.csv")
 ```
 
 class: inverse, center, middle
@@ -376,7 +374,7 @@ $$\frac{1}{n} \sum_{i=1}^{n} I\left(y_{i} \neq \hat{y}_{i}\right)$$
 * That is, choose j such that
 $$\operatorname{Pr}\left(Y=j | X=x_{0}\right)$$
 is largest.
-* However, if distribution of $Y$ given $X$ ist not know, Bayes classifier cannot be calculated.
+* However, if distribution of $Y$ given $X$ is not known, Bayes classifier cannot be calculated.
 
 ---
 ### Example 7: Classification 
