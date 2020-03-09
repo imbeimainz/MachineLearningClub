@@ -158,6 +158,7 @@ Fig 2.3 Income, education and seniority (true underlying function and simulated 
 * *irreducible error*
   + cannot be overcome because of unknown `\(\epsilon\)`
   + "random error"
+  + Assume for the moment that both `\(\hat{f}(X)\)` and `\(X\)` are fixed, then
   
 `$$\begin{aligned}
 E(Y-\hat{Y})^{2} &amp;=E[f(X)+\epsilon-\hat{f}(X)]^{2} \\
@@ -214,11 +215,11 @@ Fig 2.4 Income, education and seniority. Linear model fit by least squares:
 ## Non-parametric methods
 * No explicit assumption about form of function
 * Seek estimate 
-  + close to the data point
+  + close to the data points
   + not too wiggly
   + not too rough
 * Advantage
-  + wider rang of shapes is possible
+  + wider range of shapes is possible
 * Disadvantage
   + large sample size needed for accurate estimate of `\(f\)`
 
@@ -290,7 +291,7 @@ Here: hidden group structure assumed.
 ## 2.2.1 Measuring quality of fit
 Most commonly used measure: mean square error
 `$$M S E=\frac{1}{n} \sum_{i=1}^{n}\left(y_{i}-\hat{f}\left(x_{i}\right)\right)^{2}$$`
-with `\(\hat{f}\left(x_{i}\right)\)` prediction that `\(\hat{f}\)` fives for `\(i\)`-th observation
+with `\(\hat{f}\left(x_{i}\right)\)` prediction that `\(\hat{f}\)` gives for `\(i\)`-th observation
 
 * Cave: this refers to the *training data*.
 * However, interest is in the `\(MSE\)` for *test data*, i. e. future data not involved in obtaining the model
@@ -303,27 +304,24 @@ with `\(\hat{f}\left(x_{i}\right)\)` prediction that `\(\hat{f}\)` fives for `\(
 ### Example 4:
 &lt;img src="images/fig 2.9.png" width="493" style="display: block; margin: auto;" /&gt;
 Fig 2.9 Left: Data simulated from f, shown in black. Three estimates of
-f are shown: the linear regression line (orange curve), and two smoothing spline
-fits (blue and green curves). Right: Training MSE (grey curve), test MSE (red
-curve), and minimum possible test MSE over all methods (dashed line). Squares
-represent the training and test MSEs for the three fits shown in the left-hand
+`\(f\)` are shown: the linear regression line (orange curve), and two smoothing spline fits (blue and green curves). Right: Training MSE (grey curve), test MSE (red curve), and minimum possible test MSE over all methods (dashed line). Squares represent the training and test MSEs for the three fits shown in the left-hand
 panel.
 ---
 ### Example 5:
 &lt;img src="images/fig 2.10.png" width="493" style="display: block; margin: auto;" /&gt;
-Fig 2.10 Details as in Figure 2.9, different true f that is much closer to linear. Here: linear regression provides a very good fit to the data.
+Fig 2.10 Details as in Figure 2.9, different true `\(f\)` that is much closer to linear. Here: linear regression provides a very good fit to the data.
 
 ---
 ### Example 6:
 &lt;img src="images/fig 2.11.png" width="493" style="display: block; margin: auto;" /&gt;
-Fig 2.11 Details as in Figure 2.9, different true f that is far from linear. Here: linear regression provides a very poor fit to the data.
+Fig 2.11 Details as in Figure 2.9, different true `\(f\)` that is far from linear. Here: linear regression provides a very poor fit to the data.
 
 ---
 ### Summary of bias and variance from examples
 &lt;img src="images/fig 2.12.png" width="493" style="display: block; margin: auto;" /&gt;
 Fig 2.12 Squared bias (blue), variance (orange), `\(Var(\epsilon)\)` (dashed line), and test `\(MSE\)` (red) for the three data sets in Figures 2.9–2.11. Vertical dotted line indicates the flexibility level corresponding to the smallest test MSE.
 
-* Decomposition of MSE for given `\(x_0\)`
+* Decomposition of MSE for given `\(x_0\)` (expection taken then taken over all `\(x_0\)`)
 `$$E\left(y_{0}-\hat{f}\left(x_{0}\right)\right)^{2}=\operatorname{Var}\left(\hat{f}\left(x_{0}\right)\right)+\left[\operatorname{Bias}\left(\hat{f}\left(x_{0}\right)\right)\right]^{2}+\operatorname{Var}(\epsilon)$$`
 * To minimize `\(MSE\)` *variance* and *bias* must be minized simultaneously.
 * More flexible methods tend to have higher variance.
@@ -349,33 +347,33 @@ is largest.
 ### Example 7: Classification 
 &lt;img src="images/fig 2.13.png" width="347" style="display: block; margin: auto;" /&gt;
 Fig 2.13 Simulated data set consisting of 100 observations in each of two groups, indicated in blue and in orange. Purple dashed line represents the Bayes decision boundary, i. e. where 
-`\(\operatorname{Pr}(Y=1|(X_1, X_2) = \operatorname{Pr}(Y=1|(X_1, X_2)\)` . Orange background grid indicates region in which a test observation will be assigned to the orange class, blue background grid indicates the region in which a test observation will be assigned to blue class.
+`\(\operatorname{Pr}(Y=1|(X_1, X_2) = \operatorname{Pr}(Y=0|(X_1, X_2)\)` . Orange background grid indicates region in which a test observation will be assigned to the orange class, blue background grid indicates the region in which a test observation will be assigned to blue class.
 
 Bayes error rate is given by `\(1-E\left(\max _{j} \operatorname{Pr}(Y=j | X)\right)\)`.
 
 ---
 ## K-Nearest neighbours
 * Let K positive integer
-* Choose the K point in training data set that are closest to point of interest `\(x_0\)`, denote these points by `\(\mathcal{N}_{0}\)`.
+* Choose the K points in training data set that are closest to point of interest `\(x_0\)`, denote these points by `\(\mathcal{N}_{0}\)`.
 * Estimate `\(\operatorname{Pr}\left(Y=j | X=x_{0}\right)\)` by
 `$$\operatorname{Pr}\left(Y=j | X=x_{0}\right)=\frac{1}{K} \sum_{i \in \mathcal{N}_{0}} I\left(y_{i}=j\right)$$`
 * Finally apply Bayes rule
-* Choice of K affects KKN classifier drastically - see following graphs
+* Choice of K affects KNN classifier drastically - see following graphs
 
 ---
-### KKN classifier illustrated
+### KNN classifier illustrated
 &lt;img src="images/fig 2.14.png" width="493" style="display: block; margin: auto;" /&gt;
 Fig 2.14 The KNN approach, using K = 3
 
 ---
-### KKN with K=10
+### KNN with K=10
 &lt;img src="images/fig 2.15.png" width="370" style="display: block; margin: auto;" /&gt;
 Fig 2.14 The black curve indicates the KNN decision boundary on the
 data from Figure 2.13, using K = 10. The Bayes decision boundary is shown as
 a purple dashed line. The KNN and Bayes decision boundaries are very similar.
 
 ---
-### KKN with K=1 and K=100
+### KNN with K=1 and K=100
 &lt;img src="images/fig 2.16.png" width="554" style="display: block; margin: auto;" /&gt;
 Fig 2.16 comparison of the KNN decision boundaries (solid black
 curves) obtained using K = 1 and K = 100 on the data from Figure 2.13. With
