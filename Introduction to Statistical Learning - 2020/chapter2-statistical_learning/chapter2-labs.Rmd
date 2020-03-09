@@ -215,8 +215,7 @@ image(x,y,fa)
 ```
 
 
-- `persp()` to produce a three-dimensional plot
-known as a heatmap, and is sometimes used to plot temperature in weather forecasts. Alternatively, persp() can be used to . The arguments theta and phi control the angles at which the plot is persp() viewed.
+- `persp()` to produce a three-dimensional plot - The arguments theta and phi control the angles at which the plot is viewed.
 
 ```{r}
 persp(x,y,fa)
