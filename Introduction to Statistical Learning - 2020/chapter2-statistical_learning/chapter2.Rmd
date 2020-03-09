@@ -397,17 +397,17 @@ Bayes error rate is given by $1-E\left(\max _{j} \operatorname{Pr}(Y=j | X)\righ
 * Estimate $\operatorname{Pr}\left(Y=j | X=x_{0}\right)$ by
 $$\operatorname{Pr}\left(Y=j | X=x_{0}\right)=\frac{1}{K} \sum_{i \in \mathcal{N}_{0}} I\left(y_{i}=j\right)$$
 * Finally apply Bayes rule
-* Choice of K affects KKN classifier drastically - see following graphs
+* Choice of K affects KNN classifier drastically - see following graphs
 
 ---
-### KKN classifier illustrated
+### KNN classifier illustrated
 ```{r, echo = FALSE, eval = TRUE, include = TRUE, dpi = 150}
 include_graphics(path = "images/fig 2.14.png")
 ```
 Fig 2.14 The KNN approach, using K = 3
 
 ---
-### KKN with K=10
+### KNN with K=10
 ```{r, echo = FALSE, eval = TRUE, include = TRUE, dpi = 150}
 include_graphics(path = "images/fig 2.15.png")
 ```
@@ -416,7 +416,7 @@ data from Figure 2.13, using K = 10. The Bayes decision boundary is shown as
 a purple dashed line. The KNN and Bayes decision boundaries are very similar.
 
 ---
-### KKN with K=1 and K=100
+### KNN with K=1 and K=100
 ```{r, echo = FALSE, eval = TRUE, include = TRUE, dpi = 150}
 include_graphics(path = "images/fig 2.16.png")
 ```
