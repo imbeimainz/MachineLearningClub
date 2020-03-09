@@ -51,6 +51,7 @@ Chapter gives an overview, presents concepts and definitions.
 
 2.3  Lab: Introduction to R (will be covered next week)
 
+Note: The figures in this presentation are taken from "An Introduction to Statistical Learning, with applications in R"  (Springer, 2013) with permission from the authors: G. James, D. Witten,  T. Hastie and R. Tibshirani
 ---
 #2.1  What Is Statistical Learning?
 
