@@ -22,7 +22,7 @@ output: slidy_presentation
 <!-- --- -->
 
 ```{r setup, include=FALSE}
-library(rgl)
+# library(rgl)
 library(knitr)
 
 options(htmltools.dir.version = FALSE)
@@ -38,8 +38,19 @@ knitr::opts_chunk$set(
 opts_knit$set(root.dir = "../..") ## knit in grand-parent folder for the sake of easy (and consistent!) data access
 
 ## fuer 3d graphik
-knitr::knit_hooks$set(webgl=hook_webgl)
+# knitr::knit_hooks$set(webgl=hook_webgl)
 ```
+
+
+$$
+% define makros
+\def\xbar{\overline{x}}
+\def\Xbar{\overline{X}}
+\def\ybar{\overline{y}}
+\def\Xbar{\overline{X}}
+
+\def\eps{\epsilon}
+$$
 
 # Chapter Overview
 
@@ -84,10 +95,25 @@ $$ Y \approx \beta_0 + \beta_1 X $$
 - Often called "coefficients" "parameters"
 - Both are unknown, will be estimated
 
-With estimates $\hat\beta_0$ and $\hat\beta_1$, one can predict future sales:
+With estimates $\hat\beta_0$ and $\hat\beta_1$, one can make make predictions 
+for $Y$ based on observed values of $X$:
 
 $$ \hat y = \beta_0 + \beta_1 x $$
 
+# Estimating the Coefficients $\beta_0$ an $\beta_1$ 
+- Least squares method minimises the residual sum of squares (RSS) 
+
+$$\text{RSS}:= (y_1 - \hat y_1) + \ldots + (y_n - \hat y_n)$$ 
+
+- $\frac{d\text{RSS}}{d\beta} \stackrel{!}= 0$ yields
+
+$$
+\begin{aligned}
+\hat \beta_1 =& \frac{\sum_{i=1}^n(x_i-\xbar)(y_i - \ybar)}
+{\sum_{i=1}^n(x_i-\xbar)^2} \\
+\hat \beta_0 =& \ybar - \hat \beta_1 \cdot \xbar
+\end{aligned}
+$$ 
 
 # .
 ## Advertising Example
@@ -113,27 +139,60 @@ abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
 with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
 ```
 
+# Assessing Accuracy
+
+- true model: $Y = f(X) + \tilde\eps$ 
+- best linear approximation: $Y = \beta_0 + \beta_1 + \eps$
+- $\beta_0$, $\beta_1$ define the *popular regression line*
+
+Beispiel zu Figure 3.3
+```{r}
+par(mfrow=c(1,2))
+x <- rnorm(100)
+y <- 2+3*x + rnorm(100,0,4)
+plot(x,y)
+abline(2,3,col="red",lwd=2)
+abline(lm(y~x),col="blue")
+
+plot(x,y,type="n")
+B1 <- numeric(100)
+for(k in 1:100){
+  x <- rnorm(100)
+  y <- 2+3*x + rnorm(100,0,4)
+  lm1 <- lm(y~x)
+  abline(lm1,col=rgb(0,0,1,0.2))
+  B1[k] <- lm1$coefficients["x"]
+}
+abline(2,3,col="red",lwd=2)
+```
+
+```{r}
+mean(B1)
+sd(B1)/10
+qqnorm(B1)
+```
+
 
 # Multiple Linear Regression
 
 ```{r, webgl=TRUE}
-lm2 <- update(lm1, .~ . + radio) ## add second predictor
+# lm2 <- update(lm1, .~ . + radio) ## add second predictor
+# 
+# coefs <- coef(lm2)
+# a <- coefs["TV"]
+# b <- coefs["radio"]
+# c <- -1
+# d <- coefs["(Intercept)"]
+# 
+# AA <- BB <- Advertising[,c("TV","radio","sales")]
+# BB$sales <- lm2$fitted.values
+# CC <- rbind.data.frame(AA,BB)
+# CC <- CC[order(CC$TV,CC$radio),]
+# 
+# plot3d(sales ~ TV + radio, data=Advertising, col=2)
+# rglplanes <- planes3d(a, b, c, d, alpha = 0.5, col = 4)
 
-coefs <- coef(lm2)
-a <- coefs["TV"]
-b <- coefs["radio"]
-c <- -1
-d <- coefs["(Intercept)"]
-
-AA <- BB <- Advertising[,c("TV","radio","sales")]
-BB$sales <- lm2$fitted.values
-CC <- rbind.data.frame(AA,BB)
-CC <- CC[order(CC$TV,CC$radio),]
-
-plot3d(sales ~ TV + radio, data=Advertising, col=2)
-rglplanes <- planes3d(a, b, c, d, alpha = 0.5, col = 4)
-
-rglsegments <- segments3d(CC,col=1, lwd=1.5, alpha=0.8)
+# rglsegments <- segments3d(CC,col=1, lwd=1.5, alpha=0.8)
 ```
 
 
