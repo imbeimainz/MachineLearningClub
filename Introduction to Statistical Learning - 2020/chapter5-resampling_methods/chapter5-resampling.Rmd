@@ -1,0 +1,98 @@
+---
+title: "MyTitle"
+subtitle: "MySubtitle-can be empty"
+author: "Federico Marini (marinif@uni-mainz.de)</br>"
+date: "2020/02/25</br>
+  IMBEI - University Medical Center Mainz"
+output:
+  xaringan::moon_reader:
+    css: ["default", "default-fonts","css/FMstyles.css","css/animate.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: [center, middle]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  eval = TRUE,
+  message = FALSE,
+  echo = TRUE,
+  warnings = FALSE,
+  fig.align = "center"
+)
+```
+
+# My first slide
+
+- an elencation item
+- another item
+
+Normal text
+
+Some Latex stuff because we could need it $x_2$
+
+---
+
+# All R Markdown works in here!
+
+content
+
+## Subheader
+
+### h3-levels
+
+`code formatting`
+
+---
+
+# A new slide
+
+Where content shows up incrementally
+
+--
+
+like that
+
+--
+
+and that
+
+---
+
+# You can put some R code
+
+like this
+
+```{r}
+set.seed(42)
+fortunes::fortune()
+```
+
+---
+
+# More R code
+
+```{r}
+plot(1:10)
+```
+
+
+---
+
+## Adding an image
+
+`![alt_text](link_to_image)`
+
+![grumpycat](images/grumpycat.png)
+
+---
+
+class: middle, center
+
+# Thanks!
+
+Your final slide, if you want to center the content
