@@ -93,16 +93,14 @@ $$ Y \approx \beta_0 + \beta_1 X $$
 With estimates $\hat\beta_0$  ,  $\hat\beta_1$, one can make make predictions 
 for $Y$ based on observed values of $X$:
 
-$$ \hat y = \beta_0 + \beta_1 x $$
+$$ \hat y = \hat \beta_0 + \hat\beta_1 x $$
 
 # Estimating the Coefficients $\beta_0$ an $\beta_1$ 
 - Least squares method minimises the residual sum of squares (RSS) 
 
-$$\text{RSS}:= (y_1 - \hat y_1) + \ldots + (y_n - \hat y_n)$$ 
+$$\text{RSS}:= (y_1 - \hat y_1)^2 + \ldots + (y_n - \hat y_n)^2$$ 
 
-- $\frac{d\text{RSS}}{d\beta} \stackrel{!}= 0$ yields
-
-
+- Root of the derivative $\frac{d\text{RSS}}{d\beta} \stackrel{!}= 0$ yields
 
 \begin{aligned}
 \hat \beta_1 =& \frac{\sum_{i=1}^n(x_i-\xbar)(y_i - \ybar)}
@@ -144,12 +142,20 @@ with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
 - $\beta_0$, $\beta_1$ define the *popular regression line*
 
 $$ 
-\text{SE}(\hat\beta_1)^2=\frac{\hat\sigma^2}{\sum_{i=1}^n(x_i-\xbar)^2} \qquad 
-\text{SE}(\hat\beta_0)^2=\hat\sigma^2\left[\frac 1 n + \frac{\xbar^2}{\sum_{i=1}^n(x_i-\xbar)^2}\right]
+\text{SE}(\hat\beta_1)^2=\frac{\sigma^2}{\sum_{i=1}^n(x_i-\xbar)^2} \qquad 
+\text{SE}(\hat\beta_0)^2=\sigma^2\left[\frac 1 n + \frac{\xbar^2}{\sum_{i=1}^n(x_i-\xbar)^2}\right]
 $$
-where $\sigma^2:=\text{Var}(\eps)$ is beeing estimated by $\hat\sigma^2:=\frac{(y_i-\hat y_i)^2}{(n-2)}$
+where $\sigma^2:=\text{Var}(\eps)$ is the variance of the the random error term.  
+$\sigma^2$ is unknown, but can be estimated with the residuals by 
+$\hat\sigma^2:=\frac{\sum_{i=1}^n(y_i-\hat y_i)^2}{(n-2)}$
 
-Beispiel zu Figure 3.3
+# Example to Accuracy Assessment
+Assume the linear model 
+$$ 
+Y = 2 + 3\cdot X + \eps  \eps \stackrel{i.i.d.}{\sim}N(0,4)
+$$ 
+i.e. the true $\beta_0$,  $\beta_1$ are 2 and 3, respectively.
+
 ```{r}
 par(mfrow=c(1,2))
 x <- rnorm(100)
@@ -169,6 +175,9 @@ for(k in 1:100){
 }
 abline(2,3,col="red",lwd=2)
 ```
+Left: sample of $n:=100$ observations. True regression line in red, sample based
+regression line in blue.  
+Right: sample-based regression lines of 100 samples
 
 ```{r}
 mean(B1)
@@ -217,11 +226,21 @@ $$
 \eps_1 \\ \vdots \\ \eps_n
 \end{smallmatrix}\right)}_{\stackrel{i.i.d.}\sim \,\,\, N(0,\sigma^2)}
 $$
-Then the estimator for the coefficients can be expressed as 
+
+$X$ is called *design matrix*.  
+The estimator for the coefficients can then be expressed as 
 
 $$ 
-\hat \beta = \underbrace{(X^T X)^{-1}X^T }_{\small{\text{ Pseudinverse of }} X} \cdot Y
+\hat \beta = \underbrace{(X^T X)^{-1}X^T }_{\small{\text{ Pseudoinverse of }} X} \cdot Y
 $$ 
+
+The predictions for $Y$ based on $X$ are then
+
+$$
+\hat Y = X\hat \beta = X (X^T X)^{-1}X^T \cdot Y := H \cdot Y
+$$
+
+where $H$ is called *prediction* or *hat matrix*.
 
 # Other Considerations
 
