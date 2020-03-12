@@ -24,6 +24,7 @@ output: slidy_presentation
 ```{r setup, include=FALSE}
 # library(rgl)
 library(knitr)
+library(pander)
 
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(
@@ -42,15 +43,9 @@ opts_knit$set(root.dir = "../..") ## knit in grand-parent folder for the sake of
 ```
 
 
-$$
-% define makros
-\def\xbar{\overline{x}}
-\def\Xbar{\overline{X}}
+$$\newcommand\xbar{\overline{x}}
 \def\ybar{\overline{y}}
-\def\Xbar{\overline{X}}
-
-\def\eps{\epsilon}
-$$
+\def\eps{\epsilon}$$
 
 # Chapter Overview
 
@@ -69,7 +64,7 @@ Advertising <- read.csv("Introduction to Statistical Learning - 2020/chapter3-li
 ```
 
 ```{r}
-DT::datatable(Advertising)
+pander(head(Advertising))
 ```
 
 
@@ -95,7 +90,7 @@ $$ Y \approx \beta_0 + \beta_1 X $$
 - Often called "coefficients" "parameters"
 - Both are unknown, will be estimated
 
-With estimates $\hat\beta_0$ and $\hat\beta_1$, one can make make predictions 
+With estimates $\hat\beta_0$  ,  $\hat\beta_1$, one can make make predictions 
 for $Y$ based on observed values of $X$:
 
 $$ \hat y = \beta_0 + \beta_1 x $$
@@ -107,13 +102,16 @@ $$\text{RSS}:= (y_1 - \hat y_1) + \ldots + (y_n - \hat y_n)$$
 
 - $\frac{d\text{RSS}}{d\beta} \stackrel{!}= 0$ yields
 
-$$
+
+
 \begin{aligned}
 \hat \beta_1 =& \frac{\sum_{i=1}^n(x_i-\xbar)(y_i - \ybar)}
 {\sum_{i=1}^n(x_i-\xbar)^2} \\
 \hat \beta_0 =& \ybar - \hat \beta_1 \cdot \xbar
 \end{aligned}
-$$ 
+ 
+
+with $\ybar:=\frac{1}{n}\sum_{i=1}^n y_i$ and $\xbar:=\frac{1}{n}\sum_{i=1}^n x_i$ the sample means
 
 # .
 ## Advertising Example
@@ -144,6 +142,12 @@ with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
 - true model: $Y = f(X) + \tilde\eps$ 
 - best linear approximation: $Y = \beta_0 + \beta_1 + \eps$
 - $\beta_0$, $\beta_1$ define the *popular regression line*
+
+$$ 
+\text{SE}(\hat\beta_1)^2=\frac{\hat\sigma^2}{\sum_{i=1}^n(x_i-\xbar)^2} \qquad 
+\text{SE}(\hat\beta_0)^2=\hat\sigma^2\left[\frac 1 n + \frac{\xbar^2}{\sum_{i=1}^n(x_i-\xbar)^2}\right]
+$$
+where $\sigma^2:=\text{Var}(\eps)$ is beeing estimated by $\hat\sigma^2:=\frac{(y_i-\hat y_i)^2}{(n-2)}$
 
 Beispiel zu Figure 3.3
 ```{r}
@@ -195,7 +199,29 @@ qqnorm(B1)
 # rglsegments <- segments3d(CC,col=1, lwd=1.5, alpha=0.8)
 ```
 
+# Small Excursus: Matrix Notation and Hat Matrix
 
+Linear model in matrix notation: 
+
+$$
+\underbrace{\left(\begin{smallmatrix} y_1 \\ \vdots \\ y_n \end{smallmatrix}\right)}_{=:Y} =
+\underbrace{\left(\begin{smallmatrix} 
+1 & x_{11} & \ldots & x_{1p} \\ 
+\vdots & \vdots & & \vdots \\ 
+1 & x_{n1} & \ldots & x_{np}
+\end{smallmatrix}\right)}_{=:X} \cdot 
+\underbrace{\left(\begin{smallmatrix}
+\beta_0 \\ \vdots \\ \beta_p 
+\end{smallmatrix}\right)}_{=:\beta} +
+\underbrace{\left(\begin{smallmatrix}
+\eps_1 \\ \vdots \\ \eps_n
+\end{smallmatrix}\right)}_{\stackrel{i.i.d.}\sim \,\,\, N(0,\sigma^2)}
+$$
+Then the estimator for the coefficients can be expressed as 
+
+$$ 
+\hat \beta = \underbrace{(X^T X)^{-1}X^T }_{\small{\text{ Pseudinverse of }} X} \cdot Y
+$$ 
 
 # Other Considerations
 
