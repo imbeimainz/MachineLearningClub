@@ -1,7 +1,7 @@
 ---
 title: "LinReg_slidy"
 author: "Philipp Mildenberger"
-date: "5 März 2020"
+date: "16 März 2020"
 output: slidy_presentation
 ---
 <!-- --- -->
@@ -58,7 +58,7 @@ $$\newcommand\xbar{\overline{x}}
 
 
 # Motivating Example
-## Data
+## Advertising Data
 ```{r, echo=FALSE}
 Advertising <- read.csv("Introduction to Statistical Learning - 2020/chapter3-linear_regression/data/Advertising.csv")
 ```
@@ -71,13 +71,13 @@ pander(head(Advertising))
 # Motivating Example
 ## Questions
 
-* Relationship between advertising budget and `sales`?
-* How strong is relationship between advertising budget and `sales`?
-* Which media contribute to `sales`?
+* Is there a relationship between advertising budget and sales?
+* How strong is the relationship between advertising budget and sales?
+* Which media contribute to sales?
 * How accurately (and precisely) can we estimate the effect of each medium?
 * How accurately can we predict future sales?
 * Is the relationship linear?
-* Is there synergy (i.e. interaction) among the adventising media?
+* Is there synergy (i.e. interaction) among the advertising media?
 
 
 
@@ -86,21 +86,22 @@ Predict quantitative response $Y$ on the basis of $X$
 
 $$ Y \approx \beta_0 + \beta_1 X $$
 
-- $\beta_0$:= "Intercept"  and $\beta_1$:= "slope"
-- Often called "coefficients" "parameters"
+- $\beta_0$ is called "Intercept"  and $\beta_1$ "slope". Both are often called "coefficients" "parameters"
 - Both are unknown, will be estimated
 
-With estimates $\hat\beta_0$  ,  $\hat\beta_1$, one can make make predictions 
+With estimates $\hat\beta_0$  ,  $\hat\beta_1$, one can then make predictions 
 for $Y$ based on observed values of $X$:
 
 $$ \hat y = \hat \beta_0 + \hat\beta_1 x $$
 
-# Estimating the Coefficients $\beta_0$ an $\beta_1$ 
-- Least squares method minimises the residual sum of squares (RSS) 
+# Estimating the Coefficients $\beta_0$ and $\beta_1$ 
+- Let $y_i:=\hat \beta_0 + \hat\beta_1 x_i$ be the prediction for $Y$ based on the $i$-th value of $X$.
+- The residual sum of squares (RSS) is defined as
 
 $$\text{RSS}:= (y_1 - \hat y_1)^2 + \ldots + (y_n - \hat y_n)^2$$ 
 
-- Root of the derivative $\frac{d\text{RSS}}{d\beta} \stackrel{!}= 0$ yields
+- We want to minimise the RSS ("Least Squares").  
+Letting $\frac{d\text{RSS}}{d\beta} \stackrel{!}= 0$ yields
 
 \begin{aligned}
 \hat \beta_1 =& \frac{\sum_{i=1}^n(x_i-\xbar)(y_i - \ybar)}
@@ -111,14 +112,14 @@ $$\text{RSS}:= (y_1 - \hat y_1)^2 + \ldots + (y_n - \hat y_n)^2$$
 
 with $\ybar:=\frac{1}{n}\sum_{i=1}^n y_i$ and $\xbar:=\frac{1}{n}\sum_{i=1}^n x_i$ the sample means
 
-# .
-## Advertising Example
+# Advertising Example
 ```{r}
 plot(sales ~ TV, data=Advertising, pch=16, col=2)
 ```
 
-# .
-## Advertising Example
+* Scatterplot of `sales` and `TV`
+
+# Advertising Example
 ```{r}
 lm1 <- lm(sales~TV, data=Advertising)
 coefs <- lm1$coefficients
@@ -126,8 +127,10 @@ plot(sales ~ TV, data=Advertising, pch=16, col=2)
 abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
 ```
 
-# .
-## Advertising Example
+* Scatterplot of `sales` and `TV`
+* Best linear fit to the data 
+
+# Advertising Example
 ```{r}
 pred  <- predict(lm1)
 plot(sales ~ TV, data=Advertising, pch=16, col=2)
@@ -135,58 +138,159 @@ abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
 with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
 ```
 
-# Assessing Accuracy
+* Scatterplot of `sales` and `TV`
+* Best linear fit to the data 
+* Residuals of the linear regression model
 
-- true model: $Y = f(X) + \tilde\eps$ 
-- best linear approximation: $Y = \beta_0 + \beta_1 + \eps$
-- $\beta_0$, $\beta_1$ define the *popular regression line*
+# Advertising Example
+```{r}
+pred  <- predict(lm1)
+plot(sales ~ TV, data=Advertising, pch=16, col=2)
+abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
+with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
+```
+
+```{r, echo=TRUE}
+lm(sales~TV, data=Advertising)
+```
+
+# Assessing Accuracy of Coefficient Estimates
+
+We want to know how much randomness went into a particular estimate produced by
+the estimator $\hat\beta_1$. The standard error quantifies that:
 
 $$ 
 \text{SE}(\hat\beta_1)^2=\frac{\sigma^2}{\sum_{i=1}^n(x_i-\xbar)^2} \qquad 
 \text{SE}(\hat\beta_0)^2=\sigma^2\left[\frac 1 n + \frac{\xbar^2}{\sum_{i=1}^n(x_i-\xbar)^2}\right]
 $$
-where $\sigma^2:=\text{Var}(\eps)$ is the variance of the the random error term.  
-$\sigma^2$ is unknown, but can be estimated with the residuals by 
-$\hat\sigma^2:=\frac{\sum_{i=1}^n(y_i-\hat y_i)^2}{(n-2)}$
+where $\sigma^2:=\text{Var}(\eps)$ is the variance of the the random error term. 
+
+* We observe
+    * Higher $\sigma^2$ leads to larger SE
+    * Higher Variance in $X$ leads to smaller SE  
+* $\sigma^2$ is unknown, but can be estimated with the residuals by 
+
+$$\hat\sigma^2:=\frac{RSS}{(n-2)}=\frac{\sum_{i=1}^n(y_i-\hat y_i)^2}{(n-2)}.$$
+
+* The $-2$ in the denominator comes from the two degrees of freedom of the linear model.  
+    + standard error increases with number of predictors
+* By replacing $\sigma^2$ with $\hat \sigma^2$ in the formulae above, 
+we get an estimator $\widehat{\text{SE}}(\hat\beta_1)$ for $\text{SE}(\hat\beta_1)$. 
+This estimator can then be used for the construction of *confidence intervals* or for *hypothesis testing*.  
+
 
 # Example to Accuracy Assessment
-Assume the linear model 
+Assume the the true model has the form 
 $$ 
-Y = 2 + 3\cdot X + \eps  \eps \stackrel{i.i.d.}{\sim}N(0,4)
+Y = 2 + 3\cdot X + \eps \qquad \eps \stackrel{i.i.d.}{\sim}N(0,4^2)
 $$ 
-i.e. the true $\beta_0$,  $\beta_1$ are 2 and 3, respectively.
 
 ```{r}
+set.seed(40)
 par(mfrow=c(1,2))
-x <- rnorm(100)
-y <- 2+3*x + rnorm(100,0,4)
+N <- 50
+x <- rnorm(N)
+y <- 2+3*x + rnorm(N,0,4)
 plot(x,y)
 abline(2,3,col="red",lwd=2)
-abline(lm(y~x),col="blue")
+lm0 <- lm(y~x)
+abline(lm0,col="blue",lwd=2)
+RSS <- sum(lm0$residuals^2)
+# sum(lm0$residuals^2)/(N-2)
+
+x_cent_sq <- sum((x-mean(x))^2)
+# sqrt((RSS/(N-2))/x_cent_sq)
 
 plot(x,y,type="n")
-B1 <- numeric(100)
+B1 <- numeric(N)
+sig_sq <- numeric(N)
 for(k in 1:100){
-  x <- rnorm(100)
-  y <- 2+3*x + rnorm(100,0,4)
+  x <- rnorm(N)
+  y <- 2+3*x + rnorm(N,0,4)
   lm1 <- lm(y~x)
   abline(lm1,col=rgb(0,0,1,0.2))
-  B1[k] <- lm1$coefficients["x"]
+  B1[k]     <- lm1$coefficients["x"]
+  sig_sq[k] <- sum(lm1$residuals^2)/(N-2)
 }
 abline(2,3,col="red",lwd=2)
+
 ```
-Left: sample of $n:=100$ observations. True regression line in red, sample based
+Left: sample of 50 observations. True regression line in red, sample based
 regression line in blue.  
-Right: sample-based regression lines of 100 samples
+Right: sample-based regression lines of 100 different samples
 
-```{r}
-mean(B1)
-sd(B1)/10
-qqnorm(B1)
+The estimated standard error of $\hat\beta_1$ is in this case:
+
+$$
+\begin{aligned}
+\hat\sigma^2 =& \frac{RSS}{n-2} \approx \frac{679.2}{48}= 14.15 \\
+\widehat{SE}(\hat\beta_1) =& \sqrt{\frac{RSS}{\sum_{i=1}^n(x_i-\xbar)^2}} 
+\approx \sqrt{\frac{14.15}{55.7}} \approx 0.504
+\end{aligned}
+$$ 
+
+... which is the same as r shows us:
+```{r, echo=TRUE}
+pander::pander(lm0)
 ```
 
+We saw above, that the estimate for $\sigma=\sqrt{14.15}\approx 3.76$ 
+was a bit lower than the actual value of $4$. 
+If we look at the 100 different samples, we get 100 estimates that vary around
+the true value. Their overall mean is `r mean(sqrt(sig_sq))`.  
+That means: $\hat\sigma$ estimates $\sigma$ without bias.
+
+
+<!-- ```{r} -->
+<!-- mean(B1) -->
+<!-- sd(B1-3) -->
+<!-- qqnorm(B1) -->
+<!-- ``` -->
+
+# Hypothesis Testing 
+
+Standard error can be used to conduct *hypothesis tests* on the coefficients. 
+Often, one wants to assess wheter there is an relationship between $X$ and $Y$, 
+this is the same as testing whether the slope is equal to zero. 
+
+* **$H_0$**:  $\beta_1=0$ i.e. there is no relationship between $X$ and $Y$
+* **$H_A$**:  $\beta_1\neq0$ i.e. there is some relationship between $X$ and $Y$
+
+Under the assumption that the null hypothesis is true,
+we get a *t-statistic* with $n-2$ degrees of freedom.
+$$
+t=\frac{\hat\beta_1 - 0}{\widehat{\text{SE}}(\hat\beta_1)} \qquad
+$$
+This is $t$-distributed since we need to estimate the standard error. 
+
+# Assessing the Accuracy of the Model
+
+**Residual Standard Error (RSE)**
+
+The RSE is an estimate of the standard deviation of the random error $\eps$.
+
+**$R^2$**
+$R^2$ expresses the fraction of variance explained in $Y$. 
+We set $TSS:=\sum_{i=1}^n(y_i-\ybar)^2$ the total sum of squares.
+$$ 
+R^2 = \frac{\text{TSS-RSS}{TSS}} = 1-\frac{RSS}{TSS}
+$$
+
+In simple linear regression, $R^2$ equals the squared Pearson correlation.
 
 # Multiple Linear Regression
+
+Here we have more than one predictor, so the model is:
+
+$$ 
+Y=\beta_0 + \beta_1X_1 + \cdots + \beta_pX_p + \eps
+$$ 
+
+We interpret $\beta_j$ as the average eﬀect on $Y$ of a one unit increase in $X_j$,
+holding all other predictors ﬁxed.
+
+
+
 
 ```{r, webgl=TRUE}
 # lm2 <- update(lm1, .~ . + radio) ## add second predictor
