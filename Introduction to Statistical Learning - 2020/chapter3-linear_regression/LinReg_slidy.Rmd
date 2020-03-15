@@ -22,9 +22,10 @@ output: slidy_presentation
 <!-- --- -->
 
 ```{r setup, include=FALSE}
-# library(rgl)
+library(rgl)
 library(knitr)
 library(pander)
+panderOptions("missing","")
 
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(
@@ -37,9 +38,6 @@ knitr::opts_chunk$set(
   error = FALSE
 )
 opts_knit$set(root.dir = "../..") ## knit in grand-parent folder for the sake of easy (and consistent!) data access
-
-## fuer 3d graphik
-# knitr::knit_hooks$set(webgl=hook_webgl)
 ```
 
 
@@ -121,8 +119,8 @@ plot(sales ~ TV, data=Advertising, pch=16, col=2)
 
 # Advertising Example
 ```{r}
-lm1 <- lm(sales~TV, data=Advertising)
-coefs <- lm1$coefficients
+lmTV <- lm(sales~TV, data=Advertising)
+coefs <- lmTV$coefficients
 plot(sales ~ TV, data=Advertising, pch=16, col=2)
 abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
 ```
@@ -132,7 +130,7 @@ abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
 
 # Advertising Example
 ```{r}
-pred  <- predict(lm1)
+pred  <- predict(lmTV)
 plot(sales ~ TV, data=Advertising, pch=16, col=2)
 abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
 with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
@@ -144,7 +142,7 @@ with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
 
 # Advertising Example
 ```{r}
-pred  <- predict(lm1)
+pred  <- predict(lmTV)
 plot(sales ~ TV, data=Advertising, pch=16, col=2)
 abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
 with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
@@ -261,26 +259,64 @@ we get a *t-statistic* with $n-2$ degrees of freedom.
 $$
 t=\frac{\hat\beta_1 - 0}{\widehat{\text{SE}}(\hat\beta_1)} \qquad
 $$
-This is $t$-distributed since we need to estimate the standard error. 
+This is $t$-distributed since we needed to estimate the standard error. 
 
 # Assessing the Accuracy of the Model
 
 **Residual Standard Error (RSE)**
 
 The RSE is an estimate of the standard deviation of the random error $\eps$.
+It is the average amount the response will deviate from the true regression line.
 
-**$R^2$**
-$R^2$ expresses the fraction of variance explained in $Y$. 
-We set $TSS:=\sum_{i=1}^n(y_i-\ybar)^2$ the total sum of squares.
-$$ 
-R^2 = \frac{\text{TSS-RSS}{TSS}} = 1-\frac{RSS}{TSS}
+$$
+\text{RSE}=\sqrt{\frac{1}{n-2}\text{RSS}}
 $$
 
+
+**Variance Explained $R^2$**  
+
+$R^2$ expresses the fraction of variance explained in $Y$. 
+
+$$ 
+R^2 = \frac{\text{TSS}-\text{RSS}}{\text{TSS}} = 1-\frac{\text{RSS}}{\text{TSS}}
+$$
+We set $TSS:=\sum_{i=1}^n(y_i-\ybar)^2$ the total sum of squares.  
 In simple linear regression, $R^2$ equals the squared Pearson correlation.
+
+**RSE versus $R^2$**
+*$R^2$ is a relative value between 0 and 1,  
+RSE is an absolute value to be interpreted in the units of the respone.
+
+# Multiple Linear Regression
+When there is more than one predictor, we could do many simple linear regressions. In the Advertising example:
+
+
+```{r}
+pander::pander(lm(sales~TV, data=Advertising))
+```
+
+<hr>
+
+```{r}
+pander::pander(lm(sales~radio, data=Advertising))
+```
+
+<hr>
+
+```{r}
+pander::pander(lm(sales~newspaper, data=Advertising))
+```
+
+<hr> 
+
+BUT:  
+
+* We end up with multiple (possibly contradicting) predictions for one observation (market)
+* It ignores the relationship between the predictors
 
 # Multiple Linear Regression
 
-Here we have more than one predictor, so the model is:
+So with multiple predictors the model is:
 
 $$ 
 Y=\beta_0 + \beta_1X_1 + \cdots + \beta_pX_p + \eps
@@ -289,28 +325,95 @@ $$
 We interpret $\beta_j$ as the average eﬀect on $Y$ of a one unit increase in $X_j$,
 holding all other predictors ﬁxed.
 
+Similar to simple linear regression one can make predictions using the formula
+
+$$
+\hat y_i  = \hat \beta_0 + \hat\beta_1x_{i1} + \cdots + \hat\beta_px_{ip}
+$$
+
+where the estimators are obtained by minimizing the RSS:
+
+$$
+\text{RSS}:= (y_1 - \hat y_1)^2 + \ldots + (y_n - \hat y_n)^2
+$$
+
+# Multiple Linear Regression Advertising Example 
 
 
+```{r, fig.width=12}
+par(mfrow=c(1,2))
+pred  <- predict(lmTV)
 
-```{r, webgl=TRUE}
-# lm2 <- update(lm1, .~ . + radio) ## add second predictor
-# 
-# coefs <- coef(lm2)
-# a <- coefs["TV"]
-# b <- coefs["radio"]
-# c <- -1
-# d <- coefs["(Intercept)"]
-# 
-# AA <- BB <- Advertising[,c("TV","radio","sales")]
-# BB$sales <- lm2$fitted.values
-# CC <- rbind.data.frame(AA,BB)
-# CC <- CC[order(CC$TV,CC$radio),]
-# 
-# plot3d(sales ~ TV + radio, data=Advertising, col=2)
-# rglplanes <- planes3d(a, b, c, d, alpha = 0.5, col = 4)
+plot(sales ~ TV, data=Advertising, pch=16, col=2)
+abline(a=coefs[1], b=coefs[2], lwd=2, col=4)
+with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
 
-# rglsegments <- segments3d(CC,col=1, lwd=1.5, alpha=0.8)
+lmRadio <- lm(sales~radio, data=Advertising)
+pred  <- predict(lmRadio)
+coefs <- lmRadio$coefficients
+plot(sales ~ radio, data=Advertising, pch=16, col=2)
+abline(a=coefs[1], b=coefs[2], lwd=2, col=4)
+with(Advertising, segments(radio, sales, radio, pred, lwd = 1))
+par(mfrow=c(1,1))
 ```
+
+
+```{r, fig.width=12}
+lmTVRadio <- update(lmTV, .~ . + radio) ## add second predictor
+
+coefs <- coef(lmTVRadio)
+a <- coefs["TV"]
+b <- coefs["radio"]
+c <- -1
+d <- coefs["(Intercept)"]
+
+AA <- BB <- Advertising[,c("TV","radio","sales")]
+BB$sales <- lmTVRadio$fitted.values
+CC <- rbind.data.frame(AA,BB)
+CC <- CC[order(CC$TV,CC$radio),]
+
+mfrow3d(nr = 1, nc = 2)
+plot3d(sales ~ TV + radio, data=Advertising, col=2, size=5, box=FALSE)
+rglplanes   <- planes3d(a, b, c, d, alpha = 0.5, col = "lightblue")
+rglsegments <- segments3d(CC,col=1, lwd=1.5, alpha=0.8)
+
+## with interaction
+lmTVRadioInteract <- update(lmTVRadio, .~ . + TV:radio)
+
+gridTV    <- with(Advertising, seq(min(TV), max(TV), length.out = 50))
+gridRadio <- with(Advertising, seq(min(radio), max(radio), length.out = 50))
+gridSales <- predict.lm(lmTVRadioInteract,
+                        expand.grid(TV=gridTV,radio=gridRadio))
+gridSales <- matrix(gridSales, nrow=50)
+
+AA <- BB <- Advertising[,c("TV","radio","sales")]
+BB$sales <- lmTVRadioInteract$fitted.values
+CC <- rbind.data.frame(AA,BB)
+CC <- CC[order(CC$TV,CC$radio),]
+
+plot3d(sales ~ TV + radio, data=Advertising, col=2, size=5, box=FALSE)
+persp3d(gridTV, gridRadio, gridSales, add=TRUE, col="lightblue", alpha=.5)
+rglsegments <- segments3d(CC,col=1, lwd=1.5, alpha=0.8)
+rglwidget()
+```
+
+# Multiple Linear Regression Advertising Example 
+
+The coefficients for a model for `sales` with `TV`, `radio` and `newspaper` 
+look like this:
+```{r}
+lmTVRadioNews <- update(lmTVRadio, .~.+newspaper)
+pander::pander(lmTVRadioNews)
+```
+
+* `newspaper` seems no longer to have an effect on `sales`
+
+```{r}
+cors <- cor(Advertising[,c("TV","radio","newspaper","sales")])
+cors[lower.tri(cors)] <- NA
+pander::pander(cors)
+```
+
 
 # Small Excursus: Matrix Notation and Hat Matrix
 
@@ -331,8 +434,7 @@ $$
 \end{smallmatrix}\right)}_{\stackrel{i.i.d.}\sim \,\,\, N(0,\sigma^2)}
 $$
 
-$X$ is called *design matrix*.  
-The estimator for the coefficients can then be expressed as 
+$X$ is called *design matrix*. The least squares estimator for the coefficients can then be expressed as 
 
 $$ 
 \hat \beta = \underbrace{(X^T X)^{-1}X^T }_{\small{\text{ Pseudoinverse of }} X} \cdot Y
