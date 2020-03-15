@@ -284,7 +284,6 @@ We set $TSS:=\sum_{i=1}^n(y_i-\ybar)^2$ the total sum of squares.
 In simple linear regression, $R^2$ equals the squared Pearson correlation.
 
 **RSE versus $R^2$**
-
 $R^2$ is a relative value between 0 and 1,  
 RSE is an absolute value to be interpreted in the units of the respone.
 
@@ -358,6 +357,8 @@ with(Advertising, segments(radio, sales, radio, pred, lwd = 1))
 par(mfrow=c(1,1))
 ```
 
+
+# Multiple Linear Regression Advertising Example 
 
 ```{r, fig.width=12}
 lmTVRadio <- update(lmTV, .~ . + radio) ## add second predictor
@@ -484,7 +485,6 @@ rse <- function(lm) round(sqrt(sum(lm$residuals^2) / lm$df), 3)
 
 
 # 4. How accurate are our predictions?
-
 
 
 # Small Excursus: Matrix Notation and Hat Matrix
