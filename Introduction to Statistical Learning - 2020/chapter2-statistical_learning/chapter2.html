@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>An Introduction to Statistical Learning - with applications in R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irene Schmidtmann (Irene.Schmidtmann@uni-mainz.de)" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css\FMstyles.css" type="text/css" />
+    <link rel="stylesheet" href="css\animate.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, title-slide
+
+# An Introduction to Statistical Learning - with applications in R
+## Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani
+### Irene Schmidtmann (<a href="mailto:Irene.Schmidtmann@uni-mainz.de" class="email">Irene.Schmidtmann@uni-mainz.de</a>)</br>
+### 2020/03/09</br> IMBEI - University Medical Center Mainz
+
+---
+
+
+
+
+
+
+
+class: inverse, center, middle
+
+# Chapter 2:  Statistical Learning
+
+---
+# Structure of chapter 2
+Chapter gives an overview, presents concepts and definitions.
+
+2.1  What Is Statistical Learning?
+
+2.2 Assessing Model Accuracy
+
+2.3  Lab: Introduction to R (will be covered next week)
+
+Note: The figures in this presentation are taken from "An Introduction to Statistical Learning, with applications in R"  (Springer, 2013) with permission from the authors: G. James, D. Witten,  T. Hastie and R. Tibshirani
+---
+#2.1  What Is Statistical Learning?
+
+Motivating example: company wants to increase sales of a product.
+* not possible directly
+* but advertising expenditure can be controlled
+* three advertising channels
+  + TV
+  + Radio
+  + Newspapers
+  
+So there we have
+* *output variable* we want to predict
+  + `\(Y\)` Sales
+  + other terms: *response*, *dependent variable*
+* *input variables* we can control 
+  + `\(X_1\)` TV budget
+  + `\(X_2\)` Radio budget
+  + `\(X_3\)` Newspapers budget
+  + other terms: *predictors*, *independent variables*, *features*
+
+---
+#2.1  What Is Statistical Learning?
+General aim: find a function `\(f\)` that allows to predict `\(Y\)` given `\(X_1, \ldots, X_p\)`
+`$$Y = f(X) + \epsilon$$`
+with
+
+`\(f\)` fixed but unknown function of `\(X_1, \ldots, X_p\)`
+
+`\(\epsilon\)` *random error* term, independent of `\(X\)` with mean zero
+
+`\(f\)` represents *systematic information* on `\(Y\)` provided by `\(X\)`
+
+## Essence
+* Statistical learning 
+  + set of approaches for estimating `\(f\)` 
+* This chapter outlines
+  + key theoretical concepts that arise in estimating `\(f\)`
+  + tools for evaluating the estimates obtained
+
+---
+#Example 1: Advertising data
+## Data: sales and advertising budgets in 200 markets
+
+```r
+attach(Advertising)
+head(Advertising)
+```
+
+```
+## # A tibble: 6 x 5
+##      X1    TV radio newspaper sales
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;
+## 1     1 230.   37.8      69.2  22.1
+## 2     2  44.5  39.3      45.1  10.4
+## 3     3  17.2  45.9      69.3   9.3
+## 4     4 152.   41.3      58.5  18.5
+## 5     5 181.   10.8      58.4  12.9
+## 6     6   8.7  48.9      75     7.2
+```
+
+---
+# How are sales related to advertising?
+
+&lt;div class="figure" style="text-align: left"&gt;
+&lt;img src="chapter2_files/figure-html/advertise_2a-1.png" alt="Fig 2.1 Sales as function of TV, radio, and newspaper budget (in 1000's of $). Simple least squares fit"  /&gt;
+&lt;p class="caption"&gt;Fig 2.1 Sales as function of TV, radio, and newspaper budget (in 1000's of $). Simple least squares fit&lt;/p&gt;
+&lt;/div&gt;
+
+---
+# How are sales related to advertising?
+
+
+```r
+par(mfcol=c(1,3))
+
+plot(x = TV, y = sales, col="red", 
+     cex=1.5, cex.lab=1.5, cex.axis = 1.5)
+TV.reg &lt;-lm(sales ~ TV, data = Advertising)
+abline(coef = TV.reg$coefficients, col="blue",lwd=2)
+
+plot(x = radio, y = sales, col="red", 
+     cex=1.5, cex.lab=1.5, cex.axis = 1.5)
+radio.reg &lt;-lm(sales ~ radio, data = Advertising)
+abline(coef = radio.reg$coefficients, col="blue",lwd=2)
+
+plot(x = newspaper, y = sales, col="red", 
+     cex=1.5, cex.lab=1.5, cex.axis = 1.5)
+newspaper.reg &lt;-lm(sales ~ newspaper, data = Advertising)
+abline(coef = newspaper.reg$coefficients, col="blue",lwd=2)
+```
+
+
+
+---
+#Example 2: Income
+## Data: Income, education and seniority
+&lt;img src="images/fig 2.3.png" width="406" style="display: block; margin: auto;" /&gt;
+Fig 2.3 Income, education and seniority (true underlying function and simulated data are shown)
+
+---
+# 2.1.1 Why estimate f?
+## Prediction
+* Input `\(X\)` is easily obtained
+* Output `\(Y\)` is difficult to obtain
+* Therefore: predict `\(Y\)` using `\(\hat{Y} = \hat{f}(X)\)`
+  + `\(\hat{f}\)` *estimate* for f
+  + `\(\hat{Y}\)` resulting *prediction* for `\(Y\)`
+  + `\(f\)` as "black box" -- little interest in specific form if predictions is accurate
+
+---
+## Prediction: Types of error  
+* *reducible error*
+  + improvement by using best statistical learning technique
+  + "systematic error"
+* *irreducible error*
+  + cannot be overcome because of unknown `\(\epsilon\)`
+  + "random error"
+  + Assume for the moment that both `\(\hat{f}(X)\)` and `\(X\)` are fixed, then
+  
+`$$\begin{aligned}
+E(Y-\hat{Y})^{2} &amp;=E[f(X)+\epsilon-\hat{f}(X)]^{2} \\
+&amp;=\underbrace{[f(X)-\hat{f}(X)]^{2}}_{\text {Reducible }}+\underbrace{\operatorname{Var}(\epsilon)}_{\text {Irreducible }}
+\end{aligned}$$`
+
+---
+# 2.1.1 Why estimate f?
+## Inference  
+* Understand relationship between predictors and response
+* Which predictors are important?
+* Is a simple linear relationship adequate?
+
+## Prediction or inference?
+* Distinction between prediction and inference not always clear-cut
+* Researchers might be interested in both
+* Trade-Off between 
+  + accurate prediction (often more complicated models) and 
+  + interpretability (simpler models)
+
+---
+# 2.1.2 How do we estimate f?
+## Typical strategy: 
+* Use *training data* to train/teach method how to estimate `\(f\)`. 
+* Training data set typically consists of `\(n\)` data points: `\(\left\{\left(x_{1}, y_{1}\right),\left(x_{2}, y_{2}\right), \ldots,\left(x_{n}, y_{n}\right)\right\}\)`
+* Goal: apply a statistical learning method to the training data in order to estimate the unknown function `\(f\)`.
+
+---
+# 2.1.2 How do we estimate f?
+## Parametric methods
+Model based
+1. Make assumption about functional form, e. g. linear model, i. e. linear in parameters
+`$$f(X)=\beta_{0}+\beta_{1} X_{1}+\beta_{2} X_{2}+\ldots+\beta_{p} X_{p}$$`
+2. Estimate parameters `\(\beta_{0}, \beta_{1}, \dots, \beta_{p}\)`, e. g. by least squares, such that `$$Y \approx \beta_{0}+\beta_{1} X_{1}+\beta_{2} X_{2}+\ldots+\beta_{p} X_{p}$$`
+ 
+
+* Advantage
+  + Simplicity
+* Disadvantage
+  + will usually not match the true unknown form
+  + poor fit if true form is very different
+* More flexible models
+  + more parameters
+  + overfitting as model follows "noise" in the data
+
+---
+## Example: fit linear model to income data
+&lt;img src="images/fig 2.4.png" width="406" style="display: block; margin: auto;" /&gt;
+Fig 2.4 Income, education and seniority. Linear model fit by least squares:
+`$$\text { income } \approx \beta_{0}+\beta_{1} \times \text { education }+\beta_{2} \times \text { seniority }$$` Model captures main trend, but misses curvature.
+
+---
+# 2.1.2 How do we estimate f?
+## Non-parametric methods
+* No explicit assumption about form of function
+* Seek estimate 
+  + close to the data points
+  + not too wiggly
+  + not too rough
+* Advantage
+  + wider range of shapes is possible
+* Disadvantage
+  + large sample size needed for accurate estimate of `\(f\)`
+
+---
+## Example: fit thin-plate spline to income data
+* Splines
+  + piecewise polynomials, often of degree 3
+  + "glue" pieces together at interval boundaries
+  + ensure smooth transition at boundaries by conditions on derivatives
+* Thin-plate splines have a built-in penalty to obtain a function
+  + that closely approximates observations
+  + is fairly smooth
+  + minimizes 
+  
+`\(\sum_{i=1}^{K}\left\|y_{i}-f\left(x_{i}\right)\right\|^{2}+\lambda \iint\left[\left(\frac{\partial^{2} f}{\partial x_{1}^{2}}\right)^{2}+2\left(\frac{\partial^{2} f}{\partial x_{1} \partial x_{2}}\right)^{2}+\left(\frac{\partial^{2} f}{\partial x_{2}^{2}}\right)^{2}\right] \mathrm{d} x_{1} \mathrm{d} x_{2}\)`
+  + tuning parameter `\(\lambda\)` determines relative importance of smoothness and closeness to observed data
+* More about splines in chapter 7.
+
+---
+## Example: fit smooth thin-plate spline to income data
+&lt;img src="images/fig 2.5.png" width="406" style="display: block; margin: auto;" /&gt;
+Fig 2.5 Income, education and seniority. A smooth thin-plate spline fit to the income data. 
+
+---
+## Example: fit smooth thin-plate spline to income data
+&lt;img src="images/fig 2.6.png" width="406" style="display: block; margin: auto;" /&gt;
+Fig 2.6 Income, education and seniority. A rough thin-plate spline fit to the income data, `\(\lambda \approx 0\)`. 
+
+* No error on the training data, but more variability.
+* Probably overfitting, too much noise incorporated.
+
+---
+# 2.1.3 The trade-off between prediction accuracy and model interpretability
+&lt;img src="images/fig 2.7.png" width="528" style="display: block; margin: auto;" /&gt;
+Fig 2.7 Trade-off between flexibility and interpretability, using different statistical learning methods. 
+
+---
+# 2.1.4 Supervised versus unsupervised learning
+* Examples so far: supervised learning
+  + Predictors *and* response were given.
+* Unsupervised learning
+  + For every observation there is a vector of measurements `\(x_i\)`, but no associated response. `\(\Rightarrow\)` Impossibility to fit linear regression model
+  + Seek to understand relationships between variables or between observations.
+  + Typical method: cluster analysis - do observations fall in distinct groups?
+  
+---
+## Example 3: cluster analysis
+&lt;img src="images/fig 2.8.png" width="463" style="display: block; margin: auto;" /&gt;
+Fig 2.8 Clustering data set involving three groups. Groups denoted by different colored symbols. Left: The three groups are well-separated. In this setting, a clustering approach should successfully identify the three groups. Right: There is some overlap among the groups. Now the clustering task is more challenging.
+
+Here: hidden group structure assumed.
+
+---
+# 2.1.5 Regression versus classification problems
+* Problems with *quantitative* response referred to as *regression problems*
+* Problems with *qualitative* response referred to as *classification problems*
+* Distinction not always clear-cut
+  + Logistic regression used with qualitative data 
+  + Logistic regression often serves as classification method
+  + K-nearest neighbours and boosting can be used with both quantitative and qualitative data.
+* Choice of methods based on type of response
+* Type of predictors can be both, provided they are suitably coded.
+
+---
+# 2.2 Assessing model accuracy
+* No method is uniformly best
+* Selecting best approach most challenging part of statistical learning in practice
+
+## 2.2.1 Measuring quality of fit
+Most commonly used measure: mean square error
+`$$M S E=\frac{1}{n} \sum_{i=1}^{n}\left(y_{i}-\hat{f}\left(x_{i}\right)\right)^{2}$$`
+with `\(\hat{f}\left(x_{i}\right)\)` prediction that `\(\hat{f}\)` gives for `\(i\)`-th observation
+
+* Cave: this refers to the *training data*.
+* However, interest is in the `\(MSE\)` for *test data*, i. e. future data not involved in obtaining the model
+* How to achieve this?
+  + Sometimes test data is available.
+  + Minimizing `\(MSE\)` may result in serious overfitting.
+
+---
+## Some examples comparing training and test MSE
+### Example 4:
+&lt;img src="images/fig 2.9.png" width="493" style="display: block; margin: auto;" /&gt;
+Fig 2.9 Left: Data simulated from f, shown in black. Three estimates of
+`\(f\)` are shown: the linear regression line (orange curve), and two smoothing spline fits (blue and green curves). Right: Training MSE (grey curve), test MSE (red curve), and minimum possible test MSE over all methods (dashed line). Squares represent the training and test MSEs for the three fits shown in the left-hand
+panel.
+---
+### Example 5:
+&lt;img src="images/fig 2.10.png" width="493" style="display: block; margin: auto;" /&gt;
+Fig 2.10 Details as in Figure 2.9, different true `\(f\)` that is much closer to linear. Here: linear regression provides a very good fit to the data.
+
+---
+### Example 6:
+&lt;img src="images/fig 2.11.png" width="493" style="display: block; margin: auto;" /&gt;
+Fig 2.11 Details as in Figure 2.9, different true `\(f\)` that is far from linear. Here: linear regression provides a very poor fit to the data.
+
+---
+### Summary of bias and variance from examples
+&lt;img src="images/fig 2.12.png" width="493" style="display: block; margin: auto;" /&gt;
+Fig 2.12 Squared bias (blue), variance (orange), `\(Var(\epsilon)\)` (dashed line), and test `\(MSE\)` (red) for the three data sets in Figures 2.9–2.11. Vertical dotted line indicates the flexibility level corresponding to the smallest test MSE.
+
+* Decomposition of MSE for given `\(x_0\)` (expection taken then taken over all `\(x_0\)`)
+`$$E\left(y_{0}-\hat{f}\left(x_{0}\right)\right)^{2}=\operatorname{Var}\left(\hat{f}\left(x_{0}\right)\right)+\left[\operatorname{Bias}\left(\hat{f}\left(x_{0}\right)\right)\right]^{2}+\operatorname{Var}(\epsilon)$$`
+* To minimize `\(MSE\)` *variance* and *bias* must be minized simultaneously.
+* More flexible methods tend to have higher variance.
+
+---
+# 2.2.3 The classification setting
+* Concepts for model accuracy can be transferred from the regression setting. 
+* However, now the `\(y_i\)` in `\(\left\{\left(x_{1}, y_{1}\right),\left(x_{2}, y_{2}\right), \ldots,\left(x_{n}, y_{n}\right)\right\}\)` are categorical.
+* Most common approach: Determine Average error rate
+`$$\frac{1}{n} \sum_{i=1}^{n} I\left(y_{i} \neq \hat{y}_{i}\right)$$`
+  + `\(\hat{y}_{i}\)` predicted class label for *i*th observation.
+  + `\(I\left(y_{i} \neq \hat{y}_{i}\right)\)` *indicator variable* indicates whether `\(y_i\)` is predicted correctly (0) or not (1)
+  
+---
+## Bayes Classifier
+* The error rate is minimized (for test data) on average by a classfier that assigns each observation to the most likely class, given its predictor values.
+* That is, choose j such that
+`$$\operatorname{Pr}\left(Y=j | X=x_{0}\right)$$`
+is largest.
+* However, if distribution of `\(Y\)` given `\(X\)` is not known, Bayes classifier cannot be calculated.
+
+---
+### Example 7: Classification 
+&lt;img src="images/fig 2.13.png" width="347" style="display: block; margin: auto;" /&gt;
+Fig 2.13 Simulated data set consisting of 100 observations in each of two groups, indicated in blue and in orange. Purple dashed line represents the Bayes decision boundary, i. e. where 
+`\(\operatorname{Pr}(Y=1|(X_1, X_2) = \operatorname{Pr}(Y=0|(X_1, X_2)\)` . Orange background grid indicates region in which a test observation will be assigned to the orange class, blue background grid indicates the region in which a test observation will be assigned to blue class.
+
+Bayes error rate is given by `\(1-E\left(\max _{j} \operatorname{Pr}(Y=j | X)\right)\)`.
+
+---
+## K-Nearest neighbours
+* Let K positive integer
+* Choose the K points in training data set that are closest to point of interest `\(x_0\)`, denote these points by `\(\mathcal{N}_{0}\)`.
+* Estimate `\(\operatorname{Pr}\left(Y=j | X=x_{0}\right)\)` by
+`$$\operatorname{Pr}\left(Y=j | X=x_{0}\right)=\frac{1}{K} \sum_{i \in \mathcal{N}_{0}} I\left(y_{i}=j\right)$$`
+* Finally apply Bayes rule
+* Choice of K affects KNN classifier drastically - see following graphs
+
+---
+### KNN classifier illustrated
+&lt;img src="images/fig 2.14.png" width="493" style="display: block; margin: auto;" /&gt;
+Fig 2.14 The KNN approach, using K = 3
+
+---
+### KNN with K=10
+&lt;img src="images/fig 2.15.png" width="370" style="display: block; margin: auto;" /&gt;
+Fig 2.14 The black curve indicates the KNN decision boundary on the
+data from Figure 2.13, using K = 10. The Bayes decision boundary is shown as
+a purple dashed line. The KNN and Bayes decision boundaries are very similar.
+
+---
+### KNN with K=1 and K=100
+&lt;img src="images/fig 2.16.png" width="554" style="display: block; margin: auto;" /&gt;
+Fig 2.16 comparison of the KNN decision boundaries (solid black
+curves) obtained using K = 1 and K = 100 on the data from Figure 2.13. With
+K = 1, the decision boundary is overly flexible, while with K = 100 it is not
+sufficiently flexible. The Bayes decision boundary is shown as a purple dashed
+line.
+---
+### Test errors and training errors
+&lt;img src="images/fig 2.17.png" width="435" style="display: block; margin: auto;" /&gt;
+Fig 2.17 KNN training error rate (blue, 200 observations) and test
+error rate (orange, 5,000 observations) on the data from Figure 2.13, as the
+level of flexibility (assessed using 1/K) increases, or equivalently as the number
+of neighbors K decreases. The black dashed line indicates the Bayes error rate.
+The jumpiness of the curves is due to the small size of the training data set.
+
+---
+class: middle, center
+
+# Thanks!
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  /* Replace <script> tags in slides area to make them executable
+   *
+   * Runs after post-processing of markdown source into slides and replaces only
+   * <script>s on the last slide of continued slides using the .has-continuation
+   * class added by xaringan. Finally, any <script>s in the slides area that
+   * aren't executed are commented out.
+   */
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container:not(.has-continuation) script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+  var scriptsNotExecuted = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container.has-continuation script'
+  );
+  if (!scriptsNotExecuted.length) return;
+  for (var i = 0; i < scriptsNotExecuted.length; i++) {
+    var comment = document.createComment(scriptsNotExecuted[i].outerHTML)
+    scriptsNotExecuted[i].parentElement.replaceChild(comment, scriptsNotExecuted[i])
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
