@@ -397,6 +397,12 @@ plot3d(sales ~ TV + radio, data=Advertising, col=2, size=5, box=FALSE)
 persp3d(gridTV, gridRadio, gridSales, add=TRUE, col="lightblue", alpha=.5)
 rglsegments <- segments3d(CC,col=1, lwd=1.5, alpha=0.8)
 rglwidget()
+
+## Adding TV^2 as additional predictor is worth it !! 
+lmTVRadioInteractTV2 <- update(lmTVRadioInteract, .~.+ I(TV^2))
+summary(lmTVRadioInteractTV2)
+anova(lmTVRadioInteract,lmTVRadioInteractTV2)
+##
 ```
 
 # Multiple Linear Regression Advertising Example 
@@ -483,8 +489,35 @@ rse <- function(lm) round(sqrt(sum(lm$residuals^2) / lm$df), 3)
 | TV&Radio:  $`r rse(lmTVRadio)`$ | Radio&Newspaper:  $`r rse(lm(sales~radio+newspaper, data=Advertising))`$| TV&Newspaper:  $`r rse(lm(sales~TV+newspaper, data=Advertising))`$|
 | | TV&Radio&Newspaper:  $`r rse(lmTVRadioNews)`$ ||
 
+* Newspaper leads little or no change in $R^2$ and to higher *RSE* even.
+* Note: Adding an additional predictor cannot decrease $R^2$ (by design). 
 
 # 4. How accurate are our predictions?
+
+Given some values for $X$ we can make predictions for $Y$. 
+If, for example, 100000 is spent on `TV` and 20000 is spent on `radio`, the expected `sales` are $11.26$ units:
+
+$$
+\hat y = \hat\beta_0 + \hat\beta_1 x_1 + \hat\beta_2 x_2 = 
+\hat\beta_0 + \hat\beta_1 \mathtt{TV} + \hat\beta_2 \mathtt{radio} = 11.26
+$$
+
+There are three levels of uncertainty:
+1. Reducible error: $\hat beta$s are estimates
+2. Model bias: The true relationship is seldom exactly linear
+3. Irreducible error: The random error term $\eps$ 
+
+
+```{r}
+predict(lmTVRadio, 
+        data.frame(TV=100,radio=20,newspaper=0), 
+        interval = "prediction")
+predict(lmTVRadio, 
+        data.frame(TV=100,radio=20,newspaper=0), 
+        interval = "confidence")
+
+
+```
 
 
 # Small Excursus: Matrix Notation and Hat Matrix
