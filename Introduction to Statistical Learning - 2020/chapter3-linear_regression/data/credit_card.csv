@@ -1,0 +1,4 @@
+,Coefficient,Std.error,t-statistic,p-value
+Intercept,531.00,46.32,11.464,< 0.0001
+ethnicity(Asian),-18.69,65.02,-0.287,0.7740
+ethnicity(Caucasian), -12.50,56.68,-0.221,0.8260
