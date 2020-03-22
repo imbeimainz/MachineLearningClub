@@ -570,9 +570,9 @@ where $H$ is called *prediction* or *hat matrix*. $H$ contains a lot of useful i
 
 __Example:__ Credit data set
 
-- __quantitative predictors:__ records balance (average credit card debt) 
+- __quantitative predictors:__ records balance (average credit card debt), age, number of credit cards 
 
-- __qualitative predictors:__ age, number of credit cards, education, income, credit limit, and credit rating
+- __qualitative predictors:__ education, income, credit limit, and credit rating
 
 ---
 
