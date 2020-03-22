@@ -628,6 +628,11 @@ y_{i}=\beta_{0}+\beta_{1} x_{i}+\epsilon_{i}=\left\{\begin{array}{ll}
 - $\beta_{0}$ + $\beta_{1}$ as average credit card balance among females 
 - $\beta_{1}$ as average difference in credit card balance  
 
+```{r}
+creditmf = read.csv("Introduction to Statistical Learning - 2020/chapter3-linear_regression/data/creditcard_mf.csv")
+DT::datatable(creditmf)
+```
+
 => dummy p-value high  
 => no difference between genders
 
@@ -1180,9 +1185,13 @@ Prediction intervals usually larger than confidence intervals
 
 __6. Is the Relationship linear?__ 
 
-- residual plots display no pattern  
+- Display the residual plots a pattern?
 
--> relationships are linear   
+if no -> linear relationship
+
+if yes -> non-linear relationship
+
+__Advertising data:__ non-linear effects present   
 
 ---
 
@@ -1190,12 +1199,13 @@ __6. Is the Relationship linear?__
 
 __7. Is there Synergy among advertising media?__ 
 
-standard linear regression model:  
+__Standard linear regression model:__  
+
 - additive relationship between predictors and response, no interaction among predictors  
 
 -> might be unrealistic for certain datasets
 
-inclusion of an interaction term:  
+__Inclusion of an interaction term:__  
 
 - allows for accommodation of non-additive relationships  
 
