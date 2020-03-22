@@ -560,6 +560,743 @@ where $H$ is called *prediction* or *hat matrix*. $H$ contains a lot of useful i
 
 # Example Explained
 
+---
+
+## Other Considerations in the Regression Model
+
+### Qualitative Predictors
+
+- often part of the Predictors are qualitative, not quantitative.
+
+__Example:__ Credit data set
+
+- __quantitative predictors:__ records balance (average credit card debt) 
+
+- __qualitative predictors:__ age, number of credit cards, education, income, credit limit, and credit rating
+
+---
+
+```{r}
+#install.packages("ISLR")
+library("ISLR")
+data(Credit)
+par(pin = c(5,10))#pin(10,10))
+plot(Credit[, c(12,6,5,7,2,3,4)], col = "blue")
+```
+
+
+
+--- 
+
+## Qualitative Predictors
+ 
+###Predictors with Only Two Levels 
+
+- incorporation in regression model is simple.
+  
+- create indicator (dummy variable) taking on two dummy numerical values 
+
+Example:  
+
+- credit card balance between males and females 
+  (ignoring other variables)  
+
+
+\begin{equation}
+x_{i}=\left\{\begin{array}{ll}
+1 & \text { if } i \text { th person is female } \\
+0 & \text { if } i \text { th person is male }
+\end{array}\right.
+\end{equation}
+
+---
+
+## Qualitative Predictors
+
+###Predictors with Only Two Levels
+
+- insert dummy variable as predictor in regression equation:
+
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{1} x_{i}+\epsilon_{i}=\left\{\begin{array}{ll}
+\beta_{0}+\beta_{1}+\epsilon_{i} & \text { if } i \text { th person is female } \\
+\beta_{0}+\epsilon_{i} & \text { if } i \text { th person is male. }
+\end{array}\right.
+\end{equation}
+
+- $\beta_{0}$ interpretable as average credit card balance among males
+- $\beta_{0}$ + $\beta_{1}$ as average credit card balance among females 
+- $\beta_{1}$ as average difference in credit card balance  
+
+=> dummy p-value high  
+=> no difference between genders
+
+---
+
+## Qualitative Predictors
+
+###Qualitative Predictors with More than Two Levels  
+  
+- qualitative predictor with more than two levels
+  
+- single dummy variable cannot represent all possible values  
+
+=> create multiple dummy variables 
+
+
+####Creditcard example: 
+
+ethnicity:  
+
+- $x_{i1}$ = 1 if asian, 0 if not asian  
+
+- $x_{i2}$ = 1 if caucasian, 0 if not caucasian  
+
+=> always one dummy variable less than number of levels  
+=> level without dummy = baseline
+
+---
+
+## Qualitative Predictors
+
+###Qualitative Predictors with More than Two Levels
+  
+  
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{1} x_{i 1}+\beta_{2} x_{i 2}+\epsilon_{i}=\left\{\begin{array}{ll}
+\beta_{0}+\beta_{1}+\epsilon_{i} & \text { if } i \text { th person is Asian } \\
+\beta_{0}+\beta_{2}+\epsilon_{i} & \text { if } i \text { th person is Caucasian } \\
+\beta_{0}+\epsilon_{i} & \text { if } i \text { th person is African American. }
+\end{array}\right.
+\end{equation}  
+  
+
+- $\beta_{0}$ average credit card balance for African Americans  
+
+- $\beta_{1}$ difference in average balance between Asian and African American  
+
+- $\beta_{2}$ difference in average balance between Caucasian and African American 
+
+---
+
+## Qualitative Predictors
+
+###Qualitative Predictors with More than Two Levels
+
+```{r}
+creditc = read.csv("Introduction to Statistical Learning - 2020/chapter3-linear_regression/data/credit_card.csv")
+DT::datatable(creditc)
+```
+  
+=> large p-values: no statistical evidence for a real difference in credit card balance
+
+Hypothesis test via F-test:  __$H_{0}$: $\beta_{1}$ = $\beta_{2}$__ = 0 (p-value of 0.96)  
+
+=> $H_{0}$ not rejectable  
+=> no relationship between balance and ethnicity
+
+---
+
+## Extensions of the Linear Model 
+
+###Assumptions of the linear regression
+
+- standard linear regression model:   
+
+\begin{equation}
+Y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+...+\beta_{p}X_{p}+\epsilon
+\end{equation}
+
+- interpretable, reliable for real-world problems
+
+- highly restrictive assumptions  
+  
+- Additive: effect of changes in predictor $X_{j}$ on response Y independent of other predictors.  
+
+- Linear: change in response Y due to one-unit change in $X_{j}$ is constant,  
+	regardless of value of $X_{j}$  
+
+	=> often violated
+
+- __Solution:__ Extend the linear model!
+
+---
+
+## Extensions of the Linear Model 
+
+###Removing the Additive Assumption 
+
+- Example marketing: 
+
+\begin{equation}
+\text{sales}= \beta_{0}+\beta_{1}\times \text{TV}+\beta_{2}\times \text{radio}+\beta_{3}\times \text{newspaper}+\epsilon
+\end{equation}
+- states that average effect on sales of one-unit increase in TV is always $\beta_{1}$ (independent from radio)  
+
+- __Possibly wrong:__  
+
+- Increase in radio might affect the increase in TV  
+		(50/50 budget might lead to higher sales than 100/0)  
+
+=> synergy effect (marketing) / interaction effect (statistics)  
+=> model tends to underestimate sales
+
+---
+
+## Extensions of the Linear Model 
+
+- standard linear regression model with two variables:  
+  
+\begin{equation}
+Y=\beta_{0}+\beta_{1} X_{1}+\beta_{2} X_{2}+\epsilon
+\end{equation}  
+  
+  
+- increase $X_{1}$ by one unit -> $Y$ increase by average of $\beta_{1}$ units (regardless of $X_{2}$)
+  
+__Solution:__  
+
+- include a third predictor (interaction term): product of $X_{1}$ and $X_{2}$
+
+---
+
+## Extensions of the Linear Model
+  
+  
+\begin{equation}
+Y=\beta_{0}+\beta_{1} X_{1}+\beta_{2} X_{2}+\beta_{3} X_{1} X_{2}+\epsilon
+\end{equation}
+
+rewritten as:
+
+\begin{equation}
+\begin{aligned}
+Y &=\beta_{0}+\left(\beta_{1}+\beta_{3} X_{2}\right) X_{1}+\beta_{2} X_{2}+\epsilon \\
+&=\beta_{0}+\tilde{\beta}_{1} X_{1}+\beta_{2} X_{2}+\epsilon
+\end{aligned}
+\end{equation}
+
+where $\tilde\beta_{1}$ = $\beta_{1}$ + $\beta_{3}X_{2}$  
+
+=> $\tilde\beta_{1}$ changes with $X_{2}$  
+
+=> effect of $X_{1}$ on $Y$ no longer constant
+
+---
+
+## Extensions of the Linear Model 
+
+####Example 1:
+
+- linear model with interaction between radio and TV
+
+\begin{equation}
+\begin{aligned}
+\text { sales } &=\beta_{0}+\beta_{1} \times \mathrm{TV}+\beta_{2} \times \text { radio }+\beta_{3} \times(\text { radio } \times \mathrm{TV})+\epsilon \\
+&=\beta_{0}+\left(\beta_{1}+\beta_{3} \times \text { radio }\right) \times \mathrm{TV}+\beta_{2} \times \text { radio }+\epsilon
+\end{aligned}
+\end{equation}
+  
+- $\beta_{3}$ as increase in effectiveness of TV for one unit increase in radio (or vice-versa)  
+
+
+---
+
+## Extensions of the Linear Model
+
+```{r}
+adv_results = read.csv("Introduction to Statistical Learning - 2020/chapter3-linear_regression/data/advertising_interaction_table.csv")
+DT::datatable(adv_results)
+```
+
+=> results suggest that the new model is superior to the old  
+
+- p-value for interaction extremely low 
+
+__=> strong evidence for $H_a$ : $\beta_{3}$ $\neq$ 0__  
+__=> true relationship not additive__
+
+
+
+---
+
+## Extensions of the Linear Model 
+
+####Example 2:
+
+- predict number of units produced based on production lines and workers:  
+
+	-> likely that production lines dependent on workers  
+	-> include interaction term between lines and workers  
+
+- fit model: 
+
+\begin{equation}
+\begin{aligned}
+\text { units } & \approx 1.2+3.4 \times \text { lines }+0.22 \times \text { workers }+1.4 \times(\text { lines } \times \text { workers }) \\
+&=1.2+(3.4+1.4 \times \text { workers }) \times \text { lines }+0.22 \times \text { workers }
+\end{aligned}
+\end{equation}
+  
+__=> adding 1 line increases produce by 3.4 + 1.4 × workers__  
+
+__=> more workers lead to a stronger effect of lines__  
+
+
+---
+
+## Extensions of the Linear Model
+
+####Non-linear Relationships 
+
+- linear regression model assumes linear relationship between response and predictors  
+- __BUT:__ true relationship nonlinear 
+- __solution:__ extend linear model to accommodate non-linear relationships via polynomial regression  
+
+-> include transformed versions of predictors in model
+
+
+---
+
+## Potential Problems
+
+###1. Non-linearity of the Data 
+
+- true relationship might be far from linear 
+
+-> every conclusion drawn from model fit might be wrong, as well as reduced prediction accuracy  
+-> residual plots to identify non linearity
+
+- simple linear regression model: plot residuals $e_{i} = y_{i} − \hat y_{i}$, vs predictor $x_{i}$  
+
+- multiple regression model: plot residuals vs predicted/fitted values $\hat y_{i}$ 
+
+- Ideally: no discernible pattern in residual plot  
+  (patterns indicate problems with aspects of the linear model)
+
+- If residual plot indicates non-linearity  
+-> use non-linear transformations of predictors (log $X, √X$, and $X²$) in regression model
+
+
+---
+
+## Potential Problems
+
+###2. Correlation of Error Terms 
+
+- standard errors are computed for estimated regression coefficients or fitted values based  
+on the assumption of uncorrelated error terms 
+
+- if errors are uncorrelated:  
+  -> i = positive provides little/no information about i+1  
+  
+
+- if errors are correlated: 
+  -> estimated standard errors tend to underestimate true standard errors
+  
+=> confidence/prediction intervals will be narrower  
+  
+=> p-values in model are lower than reality
+    -> conclusion about significance of parameters potentially wrong  
+    
+=> overall model confidence will be too big
+
+---
+
+## Potential Problems
+
+###Occurence & Detection
+
+- correlation often occurs in context of time series data:  
+  -> observations obtained at discrete points in time  
+ 
+  => adjacent time points often have correlated errors
+  
+- Detection of correlation:  
+  
+-> plot residuals as a function of time
+
+- __if errors are uncorrelated:__ no discernible pattern
+
+- __else:__ tracking in residuals (adjacent residuals have similar values)
+
+
+---
+
+## Potential Problems
+
+###3. Non-constant Variance of Error Terms 
+
+- non-constant variances in errors (heteroscedasticity)   
+ -> standard errors, confidence intervals and hypothesis test rely on constant variance
+ 
+- detectable through a funnel shape in residual plot
+
+- __solution:__ transform response Y with a concave function (e.g. log Y or √ Y)  
+
+	=> greater shrinkage of larger responses 
+	=> reduction in heteroscedasticity
+
+---
+
+## Potential Problems
+
+Variance of each response might be known: 
+
+- example: every ith response = average of $n_{i}$ raw observations
+
+- if each raw observation is uncorrelated with variance $\sigma^{2}$, the average has the variance  
+
+\begin{equation}
+\sigma_{i}^{2}=\sigma^{2} / n
+\end{equation}
+
+- __solution:__ fit model by weighted least squares  
+					(weights proportional to inverse weighted variances) 
+
+---
+
+## Potential Problems
+
+###4. Outliers 
+
+- outliers: $y_{i}$ far from value predicted by the model
+
+- if an outlier has no unusual predictor value 
+	-> little effect on least squares fit. 
+
+__BUT:__ 
+
+- RSE increases with outliers 
+	=> important for fit interpretation  
+	
+- $R^{2}$ decreases with outlier
+
+---
+
+## Potential Problems
+
+__Outlier detection:__
+
+- Residual plots 
+	-> sometimes difficult to decide what is an outlier
+
+- __instead:__ plot studentized residuals (divide each residual $e_{i}$ by its estimated standard error)  
+
+	=> observation with studentized residuals greater than 3 in absolute value are possible outliers
+
+- __possible solution:__ if due to an error in data collection or recording
+	=> remove the outlier  
+	
+- __BUT:__ outlier may indicate a deficiency in model
+
+---
+
+## Potential Problems
+
+###5. High Leverage Points 
+
+- High leverage observation have unusual values for $x_{i}$  
+		=> sizable impact on estimated regression line   
+		=> too many can impact the entire fit  
+
+- for simple linear regression, high leverage is easy to identify  
+	-> predictor value outside of normal range  
+
+- for multiple linear regression with many predictors, the observation might be unusual in the full set of predictors   
+	-> quantify an observation’s leverage through leverage statistic  
+	(high value = high leverage) 
+
+---
+
+## Potential Problems
+
+- simple linear regression:
+
+\begin{equation}
+h_{i}=\frac{1}{n}+\frac{\left(x_{i}-\bar{x}\right)^{2}}{\sum_{i^{\prime}=1}^{n}\left(x_{i^{\prime}}-\bar{x}\right)^{2}}
+\end{equation}
+
+- $h_{i}$ increases with distance of $x_{i}$ from $\tilde x$
+
+- $h_{i}$ always between $\frac 1n$ and 1, average leverage for all observations always equal to $\frac {(p + 1)} n$  
+	-> if observations statistic >> $\frac {(p + 1)} n$, leverage might be high 
+
+--- 
+
+## Potential Problems
+
+###6. Collinearity 
+
+- 2 or more predictor variables are closely related to eachother
+
+- problem: difficult to separate out individual effects on the response of collinear variables  
+
+	or: the limit and rating increase / decrease together  
+	-> association with response difficult to determine
+
+- collinearity reduces accuracy of estimates of regression coefficients  
+	-> standard error for $\tilde\beta_j$ grows 
+
+- t-statistic for predictor calculated by dividing $\tilde\beta_j$ by its standard error 
+	-> collinearity results in decline in t-statistic. 
+
+	=> possible fail to reject $H_0$ : $\beta_j$ = 0
+	=> reducing power of hypothesis test
+
+- __solution:__ predictors with large absolute values in the correlation matrix indicate a pair of highly correlated variables 
+
+---
+
+## Potential Problems
+
+- __BUT:__ collinearity may exist between three and more variables  
+(even without a pair of variables with high correlation)  
+	=> so called multicollinearity  
+	
+- assession of multicollinearity: variance inflation factor (VIF)
+
+\begin{equation}
+\operatorname{VIF}\left(\hat{\beta}_{j}\right)=\frac{1}{1-R_{X_{j} | X_{-j}}^{2}}
+\end{equation}
+
+where $R^{2}_{Xj}$ = $R^2$ from a regression of $X_j$ onto all other predictors  
+	
+- VIF > 5 or 10: problematic amount of collinearity
+
+- __solutions:__ 
+- drop one problematic variable from regression  
+	=> little effect on the regression, since collinear variable redundant  
+	=> combine collinear variables into a single predictor 
+
+---
+
+## The Marketing Plan 
+
+
+__1. Relationship between advertising sales and budget?__
+ 
+- fit multiple regression model of sales onto TV, radio, and newspaper
+
+\begin{equation}
+sales= \beta_{0}+\beta_{1}\times TV+\beta_{2}\times radio+\beta_{3}\times newspaper+\epsilon
+\end{equation}
+
+- test $H_0$ : $\beta_{TV}$ = $\beta_{radio}$ = $\beta_{newspaper}$ = 0  
+
+- F-statistic to determine if $H_0$ rejected  
+here: p-value very low  
+=> relationship between advertising and sales present 
+
+---
+
+## The Marketing Plan
+
+__2. How strong is the relationship?__
+
+- RSE estimates standard deviation of response from population regression line  
+
+- for Advertising:  
+RSE = 1,681 units  
+mean value for response = 14,022  
+=> percentage error roughly 12 %.  
+
+- $R^2$ statistic shows percentage of variability in the response, explained by predictors  
+=> 90 % of variance in sales
+
+---
+
+## The Marketing Plan
+
+__3. Which media contribute to sales?__
+
+- in multiple linear regression:  
+
+p-values for TV and radio low  
+
+p-value for newspaper not  
+
+=> only TV and radio related to sales
+
+---
+
+## The Marketing Plan
+
+__4. How large is the effect of each medium on sales?__
+
+- standard error of $\hat\beta_j$ usable to construct confidence intervals for $\beta_j$  
+
+- Advertising data 95 % confidence intervals:  
+	TV: (0.043, 0.049)  
+	radio: (0.172, 0.206)  
+	newspaper (−0.013, 0.011)  
+	
+	=> confidence intervals for TV / radio are narrow and $\neq$ 0 
+		-> __related to sales__  
+
+	=> newspaper includes 0 
+		-> __variable not statistically significant__
+
+---
+
+## The Marketing Plan
+
+Collinearity responsible for the wide standard errors and the confidence interval of newspaper?
+
+- VIF scores: 
+
+	1.005 (TV)  
+	1.145 (radio)  
+	1.145 (newspaper)  
+
+-> no evidence of collinearity  
+						
+- association of each medium on sales: 3 simple linear regressions
+
+Results: strong association between TV and sales and between radio and sales  
+-> only mild association between newspaper and sales and only when TV and radio are ignored 
+
+---
+
+## The Marketing Plan
+
+__5. How accurately can we predict future sales?__
+
+- accuracy of estimates depends on prediction of individual response:  
+(prediction intervals)  
+
+\begin{equation}
+Y=f(X)+\epsilon
+\end{equation}
+
+- or average response f(X) for confidence intervals
+
+Prediction intervals usually larger than confidence intervals  
+-> account for uncertainty of irreducible error 
+
+---
+
+## The Marketing Plan
+
+__6. Is the Relationship linear?__ 
+
+- residual plots display no pattern  
+
+-> relationships are linear   
+
+---
+
+## The Marketing Plan
+
+__7. Is there Synergy among advertising media?__ 
+
+standard linear regression model:  
+- additive relationship between predictors and response, no interaction among predictors  
+
+-> might be unrealistic for certain datasets
+
+inclusion of an interaction term:  
+
+- allows for accommodation of non-additive relationships  
+
+-> small p-value of interaction term indicates presence of such relationships 
+
+=> advertising data: interaction term increases $R^2$ from 90% to 97% in the model 
+
+---
+
+## Comparison of Linear Regression with K-Nearest Neighbors 
+
+__Linear regression__  
+
+parametric approach (assumes linear functional form f(X))  
+
+advantages:  
+- easy to fit (estimate small number of coefficients)  
+- coefficients with simple interpretations  
+- tests of statistical significance easily performed  
+
+disadvantage:  
+- strong assumptions about the form of f(X)  
+	-> if specified form far from truth, prediction accuracy decreases  
+	=> poor fit
+
+---
+
+## Comparison of Linear Regression with K-Nearest Neighbors 
+
+__Non-parametric methods__:  
+
+no explicit assumptions for parametric form for f(X)  
+
+-> more flexible approach for performing regression  
+
+__K-nearest neighbors regression (KNN regression)__
+
+1) get the values for K and the prediction point $x_{0}$,  
+2) identify K training observations closest to $x_0$ ($N_0$)  
+3) estimate f($x_0$) with average of all training responses in $N_0$  
+
+\begin{equation}
+\hat{f}\left(x_{0}\right)=\frac{1}{K} \sum_{x_{i} \in \mathcal{N}_{0}} y_{i}
+\end{equation}
+
+---
+
+## Comparison of Linear Regression with K-Nearest Neighbors 
+
+__Optimal value for K?__  
+
+Bias-variance tradeoff:  
+
+small K = most flexible fit  
+->low bias  
+->high variance  
+=> prediction in a given region may depend on only one observation  
+
+large K = smoother, less variable fit 
+=> may cause a bias, since smoothing can mask structures of f(X)
+
+---
+
+## Comparison of Linear Regression with K-Nearest Neighbors 
+
+__When does a parametric approach perform better than a non-parametric?__
+
+=> when the parametric form is close to the true form of f
+
+For a more linear relationship:
+
+- If K is large, KNN performs only slightly worse than least squares regression  
+- For smaller Ks, the performance grows worse
+
+__BUT:__ the true relationship between X and Y is rarely exactly linear
+
+- with increasing extent of non-linearity ...  
+
+...comes little change in MSE for the non-parametric (KNN method)  
+
+...comes a increase in test set MSE of linear regression
+
+---
+
+## Comparison of Linear Regression with K-Nearest Neighbors
+
+__The Curse of dimensionality__
+
+KNN performs worse in higher dimensions 
+-> spreading observations over higher dimensions = reduction in sample size
+
+=> K observations nearest to given test observation $x_0$ may be very far away from $x_0$ in p-dimensional space when p is large
+
+=> poor prediction of f($x_0$), poor KNN fit
+
+__general rule:__ parametric methods outperform non-parametric in the case of few observations per predictor
+
+
+Also, when the test MSE of KNN is only slightly lower than the test MSE of linear regression...
+
+...linear regression is still easier to interpret 
 
 
 
