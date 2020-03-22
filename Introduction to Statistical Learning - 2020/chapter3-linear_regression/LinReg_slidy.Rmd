@@ -843,7 +843,7 @@ __=> true relationship not additive__
 \end{aligned}
 \end{equation}
   
-__=> adding 1 line increases produce by 3.4 + 1.4 × workers__  
+__=> adding 1 line increases produced product by 3.4 + 1.4 × workers__  
 
 __=> more workers lead to a stronger effect of lines__  
 
@@ -889,14 +889,14 @@ __=> more workers lead to a stronger effect of lines__
 
 ###2. Correlation of Error Terms 
 
-- standard errors are computed for estimated regression coefficients or fitted values based  
+- standard errors for estimated regression coefficients or fitted values are based  
 on the assumption of uncorrelated error terms 
 
 - if errors are uncorrelated:  
   -> i = positive provides little/no information about i+1  
   
 
-- if errors are correlated: 
+- if errors are correlated:  
   -> estimated standard errors tend to underestimate true standard errors
   
 => confidence/prediction intervals will be narrower  
@@ -1046,10 +1046,10 @@ h_{i}=\frac{1}{n}+\frac{\left(x_{i}-\bar{x}\right)^{2}}{\sum_{i^{\prime}=1}^{n}\
 - t-statistic for predictor calculated by dividing $\tilde\beta_j$ by its standard error 
 	-> collinearity results in decline in t-statistic. 
 
-	=> possible fail to reject $H_0$ : $\beta_j$ = 0
+	=> possible failure to reject $H_0$ : $\beta_j$ = 0  
 	=> reducing power of hypothesis test
 
-- __solution:__ predictors with large absolute values in the correlation matrix indicate a pair of highly correlated variables 
+- __Detection:__ predictors with large absolute values in the correlation matrix indicate a pair of highly correlated variables 
 
 ---
 
@@ -1099,14 +1099,17 @@ here: p-value very low
 
 __2. How strong is the relationship?__
 
-- RSE estimates standard deviation of response from population regression line  
+Two measures for model accuracy:
+- __Residual Standard Error:__ estimates standard deviation of the response from population regression line  
 
 - for Advertising:  
 RSE = 1,681 units  
 mean value for response = 14,022  
+
 => percentage error roughly 12 %.  
 
-- $R^2$ statistic shows percentage of variability in the response, explained by predictors  
+- __$R^2$ statistic__: shows what percentage of variability in the response is explained by the predictors  
+
 => 90 % of variance in sales
 
 ---
@@ -1117,9 +1120,9 @@ __3. Which media contribute to sales?__
 
 - in multiple linear regression:  
 
-p-values for TV and radio low  
+p-values for TV and radio low (< 0.001)  
 
-p-value for newspaper not  
+p-value for newspaper not (0.8599)  
 
 => only TV and radio related to sales
 
@@ -1131,7 +1134,7 @@ __4. How large is the effect of each medium on sales?__
 
 - standard error of $\hat\beta_j$ usable to construct confidence intervals for $\beta_j$  
 
-- Advertising data 95 % confidence intervals:  
+- Advertising data 95% confidence intervals:  
 	TV: (0.043, 0.049)  
 	radio: (0.172, 0.206)  
 	newspaper (−0.013, 0.011)  
@@ -1146,7 +1149,7 @@ __4. How large is the effect of each medium on sales?__
 
 ## The Marketing Plan
 
-Collinearity responsible for the wide standard errors and the confidence interval of newspaper?
+__Collinearity responsible for the wide standard errors and the confidence interval of newspaper?__  
 
 - VIF scores: 
 
@@ -1167,14 +1170,21 @@ Results: strong association between TV and sales and between radio and sales
 
 __5. How accurately can we predict future sales?__
 
-- accuracy of estimates depends on prediction of individual response:  
-(prediction intervals)  
+- accuracy of estimates depends on ...  
+
+... prediction of individual response:  
 
 \begin{equation}
 Y=f(X)+\epsilon
 \end{equation}
 
-- or average response f(X) for confidence intervals
+=> prediction intervals  
+
+... average response  
+
+f(X) 
+
+=> confidence intervals
 
 Prediction intervals usually larger than confidence intervals  
 -> account for uncertainty of irreducible error 
@@ -1219,14 +1229,14 @@ __Inclusion of an interaction term:__
 
 __Linear regression__  
 
-parametric approach (assumes linear functional form f(X))  
+Parametric approach (assumes linear functional form f(X))  
 
-advantages:  
+__Advantages:__  
 - easy to fit (estimate small number of coefficients)  
 - coefficients with simple interpretations  
 - tests of statistical significance easily performed  
 
-disadvantage:  
+__disadvantage:__  
 - strong assumptions about the form of f(X)  
 	-> if specified form far from truth, prediction accuracy decreases  
 	=> poor fit
@@ -1273,7 +1283,7 @@ large K = smoother, less variable fit
 
 __When does a parametric approach perform better than a non-parametric?__
 
-=> when the parametric form is close to the true form of f
+=> when the parametric form is close to the true form of $f$
 
 For a more linear relationship:
 
@@ -1286,7 +1296,7 @@ __BUT:__ the true relationship between X and Y is rarely exactly linear
 
 ...comes little change in MSE for the non-parametric (KNN method)  
 
-...comes a increase in test set MSE of linear regression
+...comes an increase in test set MSE of linear regression
 
 ---
 
@@ -1294,7 +1304,7 @@ __BUT:__ the true relationship between X and Y is rarely exactly linear
 
 __The Curse of dimensionality__
 
-KNN performs worse in higher dimensions 
+KNN performs worse in higher dimensions  
 -> spreading observations over higher dimensions = reduction in sample size
 
 => K observations nearest to given test observation $x_0$ may be very far away from $x_0$ in p-dimensional space when p is large
