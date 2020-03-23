@@ -1,7 +1,7 @@
 ---
-title: "LinReg_slidy"
-author: "Philipp Mildenberger"
-date: "16 März 2020"
+title: "Linear Regression"
+author: "Jan Linke, Philipp Mildenberger"
+date: "23 März 2020"
 output: slidy_presentation
 ---
 <!-- --- -->
@@ -55,19 +55,37 @@ $$\newcommand\xbar{\overline{x}}
 - Comparison to $K$-Nearest Neighbors
 
 
-# Motivating Example
-## Advertising Data
+---
+
+## Motivating Example
+### Advertising Data
 ```{r, echo=FALSE}
 Advertising <- read.csv("Introduction to Statistical Learning - 2020/chapter3-linear_regression/data/Advertising.csv")
 ```
 
-```{r}
-pander(head(Advertising))
+```{r, fig.align='center'}
+pander(head(Advertising[,-1]))
+```
+
+```{r, fig.width=12}
+par(mfrow=c(1,3))
+plot(sales ~ TV, data=Advertising, pch=16, col=2)
+abline(lm(sales~TV, data=Advertising), lwd=2, col=4)
+
+plot(sales ~ radio, data=Advertising, pch=16, col=2)
+abline(lm(sales~radio, data=Advertising), lwd=2, col=4)
+
+plot(sales ~ newspaper, data=Advertising, pch=16, col=2)
+abline(lm(sales~newspaper, data=Advertising), lwd=2, col=4)
+
+par(mfrow=c(1,1))
 ```
 
 
-# Motivating Example
-## Questions
+--- 
+
+## Motivating Example
+### Questions
 
 * Is there a relationship between advertising budget and sales?
 * How strong is the relationship between advertising budget and sales?
@@ -79,10 +97,13 @@ pander(head(Advertising))
 
 
 
-# Simple Linear Regression
+--- 
+
+## Simple Linear Regression
 Predict quantitative response $Y$ on the basis of $X$
 
-$$ Y \approx \beta_0 + \beta_1 X $$
+$$ Y \approx \beta_0 + \beta_1 X  \qquad 
+Y = \beta_0 + \beta_1 X + \eps \quad \eps\stackrel{i.i.d.}= N(0,\sigma^2)$$
 
 - $\beta_0$ is called "Intercept"  and $\beta_1$ "slope". Both are often called "coefficients" "parameters"
 - Both are unknown, will be estimated
@@ -92,7 +113,9 @@ for $Y$ based on observed values of $X$:
 
 $$ \hat y = \hat \beta_0 + \hat\beta_1 x $$
 
-# Estimating the Coefficients $\beta_0$ and $\beta_1$ 
+--- 
+
+## Estimating the Coefficients $\beta_0$ and $\beta_1$ 
 - Let $y_i:=\hat \beta_0 + \hat\beta_1 x_i$ be the prediction for $Y$ based on the $i$-th value of $X$.
 - The residual sum of squares (RSS) is defined as
 
@@ -110,14 +133,18 @@ Letting $\frac{d\text{RSS}}{d\beta} \stackrel{!}= 0$ yields
 
 with $\ybar:=\frac{1}{n}\sum_{i=1}^n y_i$ and $\xbar:=\frac{1}{n}\sum_{i=1}^n x_i$ the sample means. These are direct (i.e. non-iterative) calculations :)
 
-# Advertising Example
+---
+
+## Advertising Example
 ```{r}
 plot(sales ~ TV, data=Advertising, pch=16, col=2)
 ```
 
 * Scatterplot of `sales` and `TV`
 
-# Advertising Example
+---
+
+## Advertising Example
 ```{r}
 lmTV <- lm(sales~TV, data=Advertising)
 coefs <- lmTV$coefficients
@@ -128,7 +155,9 @@ abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
 * Scatterplot of `sales` and `TV`
 * Best linear fit to the data 
 
-# Advertising Example
+---
+
+## Advertising Example
 ```{r}
 pred  <- predict(lmTV)
 plot(sales ~ TV, data=Advertising, pch=16, col=2)
@@ -140,7 +169,9 @@ with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
 * Best linear fit to the data 
 * Residuals of the linear regression model
 
-# Advertising Example
+---
+
+## Advertising Example
 ```{r}
 pred  <- predict(lmTV)
 plot(sales ~ TV, data=Advertising, pch=16, col=2)
@@ -152,7 +183,9 @@ with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
 lm(sales~TV, data=Advertising)
 ```
 
-# Assessing Accuracy of Coefficient Estimates
+---
+
+## Assessing Accuracy of Coefficient Estimates
 
 We want to know how much randomness went into a particular estimate produced by
 the estimator $\hat\beta_1$. The standard error quantifies that:
@@ -163,27 +196,32 @@ $$
 $$
 where $\sigma^2:=\text{Var}(\eps)$ is the variance of the the random error term. 
 
+\pause 
+
 * We observe
     * Higher $\sigma^2$ leads to larger SE
     * Higher Variance in $X$ leads to smaller SE  
 * $\sigma^2$ is unknown, but can be estimated with the residuals by 
 
-$$\hat\sigma^2:=\frac{RSS}{(n-2)}=\frac{\sum_{i=1}^n(y_i-\hat y_i)^2}{(n-2)}.$$
+ $$\hat\sigma^2:=\frac{RSS}{(n-2)}=\frac{\sum_{i=1}^n(y_i-\hat y_i)^2}{(n-2)}.$$
 
-* The $-2$ in the denominator comes from the two degrees of freedom of the linear model.  
+ * The $-2$ in the denominator comes from the two degrees of freedom of the linear model.  
     + standard error increases with number of predictors
-* By replacing $\sigma^2$ with $\hat \sigma^2$ in the formulae above, 
+ * By replacing $\sigma^2$ with $\hat \sigma^2$ in the formulae above, 
 we get an estimator $\widehat{\text{SE}}(\hat\beta_1)$ for $\text{SE}(\hat\beta_1)$. 
 This estimator can then be used for the construction of *confidence intervals* or for *hypothesis testing*.  
 
 
-# Example to Accuracy Assessment
+---
+
+## Example to Accuracy Assessment
+
 Assume the the true model has the form 
 $$ 
 Y = 2 + 3\cdot X + \eps \qquad \eps \stackrel{i.i.d.}{\sim}N(0,4^2)
 $$ 
 
-```{r}
+```{r, fig.width=12}
 set.seed(40)
 par(mfrow=c(1,2))
 N <- 50
@@ -222,7 +260,7 @@ The estimated standard error of $\hat\beta_1$ is in this case:
 $$
 \begin{aligned}
 \hat\sigma^2 =& \frac{RSS}{n-2} \approx \frac{679.2}{48}= 14.15 \\
-\widehat{SE}(\hat\beta_1) =& \sqrt{\frac{RSS}{\sum_{i=1}^n(x_i-\xbar)^2}} 
+\widehat{SE}(\hat\beta_1) =& \sqrt{\frac{\hat\sigma^2}{\sum_{i=1}^n(x_i-\xbar)^2}} 
 \approx \sqrt{\frac{14.15}{55.7}} \approx 0.504
 \end{aligned}
 $$ 
@@ -245,7 +283,9 @@ That means: $\hat\sigma$ estimates $\sigma$ without bias.
 <!-- qqnorm(B1) -->
 <!-- ``` -->
 
-# Hypothesis Testing 
+---
+
+## Hypothesis Testing 
 
 Standard error can be used to conduct *hypothesis tests* on the coefficients. 
 Often, one wants to assess wheter there is an relationship between $X$ and $Y$, 
@@ -261,9 +301,11 @@ t=\frac{\hat\beta_1 - 0}{\widehat{\text{SE}}(\hat\beta_1)} \qquad
 $$
 This is $t$-distributed since we needed to estimate the standard error. 
 
-# Assessing the Accuracy of the Model
+---
 
-**Residual Standard Error (RSE)**
+## Assessing the Accuracy of the Model
+
+### Residual Standard Error (RSE)
 
 The RSE is an estimate of the standard deviation of the random error $\eps$.
 It is the average amount the response will deviate from the true regression line.
@@ -273,7 +315,7 @@ $$
 $$
 
 
-**Variance Explained $R^2$**  
+### Variance Explained $R^2$
 
 $R^2$ expresses the fraction of variance explained in $Y$. 
 
@@ -283,11 +325,14 @@ $$
 We set $TSS:=\sum_{i=1}^n(y_i-\ybar)^2$ the total sum of squares.  
 In simple linear regression, $R^2$ equals the squared Pearson correlation.
 
-**RSE versus $R^2$**
+### RSE versus $R^2$
+
 $R^2$ is a relative value between 0 and 1,  
 RSE is an absolute value to be interpreted in the units of the respone.
 
-# Multiple Linear Regression
+---
+
+## Multiple Linear Regression
 When there is more than one predictor, we could do many simple linear regressions. In the Advertising example:
 
 
@@ -314,7 +359,9 @@ BUT:
 * We end up with multiple (possibly contradicting) predictions for one observation (market)
 * It ignores the relationship between the predictors
 
-# Multiple Linear Regression
+---
+
+## Multiple Linear Regression
 
 So with multiple predictors the model is:
 
@@ -323,7 +370,8 @@ Y=\beta_0 + \beta_1X_1 + \cdots + \beta_pX_p + \eps
 $$ 
 
 We interpret $\beta_j$ as the average eﬀect on $Y$ of a one unit increase in $X_j$,
-holding all other predictors ﬁxed.
+holding all other predictors ﬁxed. $p$ is the number of predictors in the model.
+
 
 Similar to simple linear regression one can make predictions using the formula
 
@@ -337,8 +385,9 @@ $$
 \text{RSS}:= (y_1 - \hat y_1)^2 + \ldots + (y_n - \hat y_n)^2
 $$
 
-# Multiple Linear Regression Advertising Example 
+---
 
+## Multiple Linear Regression Advertising Example 
 
 ```{r, fig.width=12}
 par(mfrow=c(1,2))
@@ -357,8 +406,6 @@ with(Advertising, segments(radio, sales, radio, pred, lwd = 1))
 par(mfrow=c(1,1))
 ```
 
-
-# Multiple Linear Regression Advertising Example 
 
 ```{r, fig.width=12}
 lmTVRadio <- update(lmTV, .~ . + radio) ## add second predictor
@@ -405,7 +452,9 @@ anova(lmTVRadioInteract,lmTVRadioInteractTV2)
 ##
 ```
 
-# Multiple Linear Regression Advertising Example 
+---
+
+## Multiple Linear Regression Advertising Example 
 
 The coefficients for a model for `sales` with `TV`, `radio` and `newspaper` 
 look like this:
@@ -422,14 +471,18 @@ cors[lower.tri(cors)] <- NA
 pander::pander(cors)
 ```
 
-# Some Important Questions
+---
+
+## Some Important Questions
 
 1. Is at least one of the predictors useful in predicting the response?
 2. Do all the predictors help explain $Y$, or is only a subset of the predictors useful?
 3. How well does the model fit the data?
 4. Given a set of predictor values, what response value should we predict, and how accurate is our prediction?
 
-# 1. Is there a Relationship Between the Repsone and Predictors?
+---
+
+## 1. Is there a Relationship Between the Repsone and Predictors?
 
 
 \begin{aligned} 
@@ -448,7 +501,9 @@ $$
 * If subset of predictors is taken for granted, the $F$-statistic can also be 
 uesd to test whether additional parameters are useful.
 
-# 2. Do we need all predictors?
+---
+
+## 2. Do we need all predictors?
 
 * First we need am method to judge the quality of models
     * $F$-test, AIC, BIC, adjusted $R^2$, ... 
@@ -460,11 +515,13 @@ uesd to test whether additional parameters are useful.
     * backward selection
     * mixed forward&backward selection
 
-# 3. How well does the model fit the data?
+---
+
+## 3. How well does the model fit the data?
 
 Most common are RSE and $R^2$, which we've seen for simple linear regression
 
-## $R^2$ 
+### $R^2$ 
 ```{r}
 r_sq <- function(lm) round(summary(lm)$r.squared,3)
 ```
@@ -477,7 +534,7 @@ r_sq <- function(lm) round(summary(lm)$r.squared,3)
 
 
 
-## RSE 
+### RSE 
 
 ```{r}
 rse <- function(lm) round(sqrt(sum(lm$residuals^2) / lm$df), 3)
@@ -492,7 +549,9 @@ rse <- function(lm) round(sqrt(sum(lm$residuals^2) / lm$df), 3)
 * Newspaper leads little or no change in $R^2$ and to higher *RSE* even.
 * Note: Adding an additional predictor cannot decrease $R^2$ (by design). 
 
-# 4. How accurate are our predictions?
+---
+
+## 4. How accurate are our predictions?
 
 Given some values for $X$ we can make predictions for $Y$. 
 If, for example, 100000 is spent on `TV` and 20000 is spent on `radio`, the expected `sales` are $11.26$ units:
@@ -503,12 +562,13 @@ $$
 $$
 
 There are three levels of uncertainty:
+
 1. Reducible error: $\hat beta$s are estimates
 2. Model bias: The true relationship is seldom exactly linear
-3. Irreducible error: The random error term $\eps$ 
+3. Irreducible error: The random error term $\eps$ reflects 
 
 
-```{r}
+```{r, echo=TRUE}
 predict(lmTVRadio, 
         data.frame(TV=100,radio=20,newspaper=0), 
         interval = "prediction")
@@ -519,8 +579,9 @@ predict(lmTVRadio,
 
 ```
 
+---
 
-# Small Excursus: Matrix Notation and Hat Matrix
+## Small Excursus: Matrix Notation and Hat Matrix
 
 Linear model in matrix notation: 
 
@@ -553,12 +614,6 @@ $$
 
 where $H$ is called *prediction* or *hat matrix*. $H$ contains a lot of useful information, most importantly: The values on the main diagonal are the **leverages** of each observation.
 
-
-# Other Considerations
-
-
-
-# Example Explained
 
 ---
 
