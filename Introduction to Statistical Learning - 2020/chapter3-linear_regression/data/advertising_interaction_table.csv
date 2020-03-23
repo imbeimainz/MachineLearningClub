@@ -1,0 +1,5 @@
+,Coefficient,Std.error,t-statistic,p-value
+Intercept,6.7502,0.248,27.23,< 0.0001
+TV,0.0191,0.002,12.70,< 0.0001
+radio,0.0289,0.009,3.24,0.0014
+TV x radio,0.0011,0.000,20.73,< 0.0001

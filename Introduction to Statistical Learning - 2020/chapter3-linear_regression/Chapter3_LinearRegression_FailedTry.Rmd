@@ -1,0 +1,135 @@
+---
+title: "Chapter 3 Linear Regression"
+subtitle: ""
+author: "Jan Linke </br> Philipp Mildenberger</br>"
+date: "2020/03/16</br>
+  IMBEI - University Medical Center Mainz"
+output: 
+  xaringan::moon_reader:
+    css: ["default", "default-fonts","css/animate.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: [center, middle]
+---
+
+```{r setup, include=FALSE}
+library(rgl)
+library(knitr)
+
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  eval = TRUE,
+  message = FALSE,
+  echo = FALSE,
+  warnings = FALSE,
+  fig.align = "center",
+  warning = FALSE,
+  error = FALSE
+)
+opts_knit$set(root.dir = "..") ## knit in parent folder for the sake of easy data access
+
+## fuer 3d graphik
+knitr::knit_hooks$set(webgl=hook_webgl)
+```
+
+# Chapter Overview
+
+- Motivating Example
+- Simple Linear Regression
+- Multiple Linear Regression
+- Other Considerations in the Regression Model
+- Example expained
+- Comparison to $K$-Nearest Neighbors
+
+---
+
+# Motivating Example
+## Data 
+```{r, echo=FALSE}
+## laden, relativer Pfad, sollte funktionieren wenn als R-project geoeffnet.
+## quick'n'dirty hack: option 1 fuer arbeit in 
+try(Advertising <- read.csv("Introduction to Statistical Learning - 2020/chapter3-linear_regression/data/Advertising.csv"),TRUE)
+try(Advertising <- read.csv("data/Advertising.csv"),TRUE) 
+```
+
+```{r}
+head(Advertising)
+```
+
+---
+class: center, middle
+
+## Questions
+
+
+* Relationship between advertising budget and `sales`?
+* How strong is relationship between advertising budget and `sales`?
+* Which media contribute to `sales`?
+* How accurately (and precisely) can we estimate the effect of each medium?
+* How accurately can we predict future sales?
+* Is the relationship linear?
+* Is there synergy (i.e. interaction) among the adventising media?
+
+---
+
+# Simple Linear Regression
+Predict quantitative response $Y$ on the basis of $X$
+
+$$ Y \approx \beta_0 + \beta_1 X $$ 
+
+$\beta_0$ and $\beta_1$ are unknown constants
+
+---
+## Advertising Example 
+```{r}
+plot(sales ~ TV, data=Advertising, pch=16, col=2)
+```
+
+---
+## Advertising Example
+```{r}
+lm1 <- lm(sales~TV, data=Advertising)
+coefs <- lm1$coefficients
+plot(sales ~ TV, data=Advertising, pch=16, col=2)
+abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
+```
+
+---
+## Advertising Example
+```{r}
+pred  <- predict(lm1)
+plot(sales ~ TV, data=Advertising, pch=16, col=2)
+abline(a=coefs[1],b=coefs[2], lwd=2, col=4)
+with(Advertising,segments(TV, sales, TV, pred, lwd = 1))
+```
+
+
+# Multiple Linear Regression
+
+```{r, webgl=TRUE}
+x <- sort(rnorm(1000))
+y <- rnorm(1000)
+z <- rnorm(1000) + atan2(x,y)
+
+plot3d(x, y, z, col=rainbow(1000))
+
+```
+
+
+---
+
+# Other Considerations
+
+---
+
+# Example Explained
+
+---
+
+class: center, middle
+
+# Done!
+

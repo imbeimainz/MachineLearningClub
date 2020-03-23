@@ -1,0 +1,4 @@
+,Coefficient,Std.error,t-statistics,p-value
+Intercept, 56.9001,1.8004,31.6,< 0.0001
+horsepower,-0.4662,0.0311,-15.0,< 0.0001
+horsepower^2,0.0012,0.0001,10.1,< 0.0001
