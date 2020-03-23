@@ -1099,7 +1099,7 @@ here: p-value very low
 
 __2. How strong is the relationship?__
 
-Two measures for model accuracy:
+Two measures for model accuracy:  
 - __Residual Standard Error:__ estimates standard deviation of the response from population regression line  
 
 - for Advertising:  
@@ -1159,9 +1159,10 @@ __Collinearity responsible for the wide standard errors and the confidence inter
 
 -> no evidence of collinearity  
 						
-- association of each medium on sales: 3 simple linear regressions
+- association of each medium on sales: 3 simple linear regressions  
 
-Results: strong association between TV and sales and between radio and sales  
+__Results:__ strong association between TV and sales and between radio and sales  
+
 -> only mild association between newspaper and sales and only when TV and radio are ignored 
 
 ---
@@ -1274,7 +1275,7 @@ small K = most flexible fit
 ->high variance  
 => prediction in a given region may depend on only one observation  
 
-large K = smoother, less variable fit 
+large K = smoother, less variable fit  
 => may cause a bias, since smoothing can mask structures of f(X)
 
 ---
@@ -1294,7 +1295,7 @@ __BUT:__ the true relationship between X and Y is rarely exactly linear
 
 - with increasing extent of non-linearity ...  
 
-...comes little change in MSE for the non-parametric (KNN method)  
+...comes little change in mean squared error (MSE) for the non-parametric (KNN method)  
 
 ...comes an increase in test set MSE of linear regression
 
