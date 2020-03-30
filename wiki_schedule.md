@@ -20,11 +20,10 @@ schedule_df <- rbind(
   c("rescheduled!", "2020-03-16", ""),
   c("Chapter 3", "2020-03-23", "Philipp + Jan"),
   c("Chapter 4", "2020-03-30", "Jochem + Robert"),
-  c("Chapter 4", "2020-04-20", "Jochem + Robert"),
-  c("Chapter 5", "2020-04-27", "Dan + Jennifer"),
+  c("Chapter 5", "2020-04-20", "Dan + Jennifer"),
+  c("Chapter 6", "2020-04-27", "Gregor + "),
   c("Chapter 6", "2020-05-04", "Gregor + "),
-  c("Chapter 6", "2020-05-11", "Gregor + "),
-  c("Recap?", "2020-TBD", "TBD"),
+  c("Recap?", "2020-05-11", "TBD"),
   c("Chapter 7", "2020-05-18", ""),
   c("Chapter 7", "2020-05-25", ""),
   c("Chapter 8", "2020-06-01", "Franziska + "),
@@ -46,11 +45,10 @@ knitr::kable(schedule_df)
 | rescheduled\! | 2020-03-16 |                         | rescheduled\! |
 | Chapter 3     | 2020-03-23 | Philipp + Jan           | Chapter 3     |
 | Chapter 4     | 2020-03-30 | Jochem + Robert         | Chapter 4     |
-| Chapter 4     | 2020-04-20 | Jochem + Robert         | Chapter 4     |
-| Chapter 5     | 2020-04-27 | Dan + Jennifer          | Chapter 5     |
+| Chapter 5     | 2020-04-20 | Dan + Jennifer          | Chapter 5     |
+| Chapter 6     | 2020-04-27 | Gregor +                | Chapter 6     |
 | Chapter 6     | 2020-05-04 | Gregor +                | Chapter 6     |
-| Chapter 6     | 2020-05-11 | Gregor +                | Chapter 6     |
-| Recap?        | 2020-TBD   | TBD                     | Recap?        |
+| Recap?        | 2020-05-11 | TBD                     | Recap?        |
 | Chapter 7     | 2020-05-18 |                         | Chapter 7     |
 | Chapter 7     | 2020-05-25 |                         | Chapter 7     |
 | Chapter 8     | 2020-06-01 | Franziska +             | Chapter 8     |
