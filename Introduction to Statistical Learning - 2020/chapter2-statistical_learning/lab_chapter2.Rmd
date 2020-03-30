@@ -1,0 +1,344 @@
+---
+title: >
+  ISL - Chapter 2 Labs
+author: Federico Marini
+output: 
+  html_document:
+  # BiocStyle::html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    theme: cosmo
+    code_folding: show
+    code_download: true
+editor_options: 
+  chunk_output_type: console
+
+---
+
+# Chapter 2 Lab: Introduction to R
+
+This one is indeed a soft intro!
+
+No worry to make things wrong: TRY!
+
+Got R?
+
+- R can be downloaded from http://cran.r-project.org/
+
+Start...
+
+- an R script (tired!)
+- an R Markdown document (wired!)
+
+## Basic commands
+
+Functions are noted as `funcname(input1, input2)` - `input`s are called _arguments_
+
+Creating a vector by `c`oncatenating
+
+```{r}
+c(1, 3, 2, 5)
+x <- c(1, 3, 2, 5) # use <- for assignment, leave = for parameter values
+x
+
+x = c(1,6,2)
+y = c(1,4,3)
+```
+
+Navigating history:
+
+- up arrow
+- ctrl + up (RStudio) while typing part of the command
+
+Help:
+
+- use `?`
+- `help(funcname)`
+
+Length (of a vector)
+
+```{r}
+length(x)
+length(y)
+```
+
+Adding things together
+
+```{r}
+1 + 4
+x + y # if same length
+x + 1
+x + c(1,2)
+```
+
+
+Listing objects, removing them
+
+```{r}
+ls()
+rm(x, y)
+ls()
+```
+
+Create a matrix of numbers
+
+```{r}
+?matrix
+x <- matrix(data=c(1,2,3,4), nrow=2, ncol=2)
+x
+x <- matrix(data=c(1,2,3,4), 2, 2)
+x
+# Recommended: specify arguments!
+matrix(c(1,2,3,4),2,2,byrow=TRUE)
+```
+
+Squaring, squared root
+
+```{r}
+x
+sqrt(x)
+sqrt(x)[,1]
+x^2
+```
+
+Random normal variables, with `rnorm`
+
+```{r}
+# bonus - when dealing with random quantities!
+set.seed(42)
+
+x <- rnorm(50)
+# default: mean of 0 and standard deviation of 1
+y <- x + rnorm(50,mean=50,sd=.1) 
+```
+
+Computing the correlation between two sets of numbers
+
+```{r}
+cor(x,y)
+```
+
+Mean & Standard deviation
+
+```{r}
+mean(x)
+sd(x)
+mean(y)
+sd(y)
+var(x)
+var(y)
+
+set.seed(3)
+y <- rnorm(100)
+mean(y)
+var(y)
+sqrt(var(y))
+sd(y)
+```
+
+
+## Graphics
+
+Meet the `plot()` function!
+
+`plot(x,y)`
+
+```{r}
+?plot
+```
+
+
+The plot() function is the primary way to plot data in R. For instance, plot(x,y) produces a scatterplot of the numbers in x versus the numbers in y. There are many additional options that can be passed in to the plot() function. For example, passing in the argument xlab will result in a label on the x-axis. To find out more information about the plot() function, type ?plot.
+
+```{r}
+set.seed(42)
+x <- rnorm(100)
+y <- rnorm(100)
+plot(x,y)
+plot(x,y,
+     xlab="this is the x-axis",
+     ylab="this is the y-axis",
+     main="Plot of X vs Y")
+# plot()
+```
+      
+Saving the output:
+
+```
+open device
+plot...
+close device
+```
+
+```{r}
+pdf("Figure.pdf")
+plot(x,y,col="green")
+dev.off()
+```
+
+Devices: `pdf()`, `jpeg()`, ...
+
+Creating `seq`uences of numbers
+
+```{r}
+?seq
+seq(0,1)
+seq(0,1,length=10)
+pi
+seq(-pi,pi,length=50)
+```
+
+Some more complex plots:
+
+- `contour()` to represent 3d data
+
+```{r}
+?contour
+?outer
+
+# assignment and printing trick ;)
+(x <- seq(-pi,pi,length=50))
+y <- x
+f <- outer(x,y,function (x,y)cos(y)/(1+x^2))
+f
+contour(x, y, f)
+contour(x,y,f,nlevels=45,add=T)
+fa <- (f-t(f))/2
+contour(x,y,fa,nlevels=15)
+```
+
+- `image()` to produce a color-coded plot whose colors depend on the z value (a.k.a. heatmap)
+
+```{r}
+image(x,y,fa)
+```
+
+
+- `persp()` to produce a three-dimensional plot - The arguments theta and phi control the angles at which the plot is viewed.
+
+```{r}
+persp(x,y,fa)
+persp(x,y,fa,theta=30)
+persp(x,y,fa,theta=30,phi=20)
+persp(x,y,fa,theta=30,phi=70)
+persp(x,y,fa,theta=30,phi=40)
+```
+
+## Indexing data
+
+Examining a subset of a dataset `A`
+
+```{r}
+A <- matrix(1:16,4,4)
+A
+A[2,3]
+A[c(1,3),c(2,4)]
+A[1:3,2:4]
+A[1,]
+A[1:2,]
+A[,1:2]
+A[-c(1,3),]
+```
+
+`dim`ensions
+
+```{r}
+dim(A)
+```
+
+
+## Loading data
+
+```{r}
+library(ISLR)
+Auto
+write.table(Auto, file = "Auto.txt")
+read.table(file = "Auto.txt")
+
+?read.csv
+
+# fix(Auto)
+View(Auto)
+knitr::kable(Auto)
+class(Auto)
+dim(Auto)
+names(Auto)
+str(Auto)
+na.omit(Auto)
+dim(na.omit(Auto))
+```
+
+
+## Additional summaries
+
+Scatterplot of quantitative variables
+
+```{r, error=TRUE}
+plot(cylinders , mpg)
+```
+
+
+To refer to a variable, we must type the data set and the variable name joined with a `$` symbol.
+
+DO NOT USE `attach()`
+
+```{r}
+plot(Auto$cylinders, Auto$mpg)
+plot(Auto$cylinders)
+
+# but this is actually a factor...
+
+Auto$cylinders <- as.factor(Auto$cylinders)
+plot(Auto$cylinders, Auto$mpg)
+plot(Auto$cylinders)
+
+# customizing the aspect
+plot(Auto$cylinders, Auto$mpg, col="red", varwidth=T, xlab="cylinders", ylab = "MPG")
+plot(Auto$cylinders, Auto$mpg, col="red", horizontal=T, xlab="cylinders", ylab = "MPG")
+
+```
+
+Histogram
+
+```{r}
+hist(Auto$mpg)
+hist(Auto$mpg, col = 2)
+hist(Auto$mpg, breaks=15)
+```
+
+Scatterplot matrix
+
+```{r, fig.width=10, fig.height=10}
+pairs(Auto)
+
+# for just a subset
+pairs(~mpg + displacement + horsepower + weight, Auto)
+```
+
+
+`identify()`: a useful interactive method for identifying the value for a particular variable for points on a plot. 
+
+```{r}
+plot(Auto$horsepower, Auto$mpg)
+identify(Auto$horsepower,Auto$mpg,Auto$name)
+# click, click, click, and then ESC
+```
+
+One of your best friends: `summary()`, to produce a numerical summary of each variable in a particular data set
+
+```{r}
+summary(Auto)
+summary(Auto$mpg)
+summary(Auto$cylinders)
+```
+
+Done for today
+
+```{r eval=FALSE}
+q()
+quit()
+```
+
+but first, you can `savehistory("history_filename.R")` - still, I would recommend to always use a script anyway!
+
