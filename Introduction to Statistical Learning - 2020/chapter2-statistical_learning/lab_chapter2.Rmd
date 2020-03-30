@@ -342,3 +342,8 @@ quit()
 
 but first, you can `savehistory("history_filename.R")` - still, I would recommend to always use a script anyway!
 
+# Session Info {-}
+
+```{r}
+sessionInfo()
+```
