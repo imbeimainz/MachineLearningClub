@@ -83,11 +83,11 @@ lm.fit5 <- lm(medv~poly(lstat, 5), data = Boston)
 summary(lm.fit5)
 
 
-anova(lm.fit5,lm.fit2)
+anova(lm.fit5, lm.fit2)
 par(mfrow=c(1,1))
-plot(medv~lstat)
-points(lstat,fitted(lm.fit2), col="red")
-points(lstat,fitted(lm.fit5), col="green")
+plot(Boston$medv~Boston$lstat)
+points(Boston$lstat, fitted(lm.fit2), col="red")
+points(Boston$lstat, fitted(lm.fit5), col="green")
 
 
 # logging one of the predictors
