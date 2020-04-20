@@ -32,16 +32,15 @@ schedule_df <- rbind(
   c("Chapter 3", "2020-03-23", "Philipp + Jan"),
   c("Chapter 4", "2020-03-30", "Jochem + Robert"),
   c("Chapter 5", "2020-04-20", "Dan + Jennifer"),
-  c("Chapter 6", "2020-04-27", "Gregor + "),
-  c("Chapter 6", "2020-05-04", "Gregor + "),
-  c("Recap?", "2020-05-11", "TBD"),
-  c("Chapter 7", "2020-05-18", ""),
-  c("Chapter 7", "2020-05-25", ""),
-  c("Chapter 8", "2020-06-01", "Franziska + "),
+  c("Chapter 6", "2020-04-27", "Gregor + Rex (Part 1, Gregor)"),
+  c("Chapter 10", "2020-05-04", "Toni + Alicia (Part 1)"),
+  c("Chapter 6", "2020-05-11", "Gregor + Rex (Part 1, Rex)"),
+  c("Chapter 7", "2020-05-18", "?"),
+  c("Chapter 7", "2020-05-25", "?"),
+  c("Chapter 8", "2020-06-01", "Franziska + ?"),
   c("Chapter 9", "2020-06-08", "Manuel + Lars"),
   c("Chapter 9", "2020-06-15", "Manuel + Lars"),
-  c("Chapter 10", "2020-06-22", "Toni + Alicia"),
-  c("Chapter 10", "2020-06-29", "Toni + Alicia"))
+  c("Chapter 10", "2020-06-22", "Toni + Alicia"))
   # c("Topic2", "2020-03-09", "Person2", ""),
   
 ```
