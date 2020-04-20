@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Chapter 5</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dan Baaken" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/FMstyles.css" type="text/css" />
+    <link rel="stylesheet" href="css/animate.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, title-slide
+
+# Chapter 5
+## Resampling Methods: Cross-Validation
+### </br>Dan Baaken</br></br></br>
+### 2020/04/20
+
+---
+
+
+
+
+# Resampling methods (RM)
+
+“indispensable tool in modern statistics“
+
+- model assessment: process of evaluating a model‘s performance
+
+- model selection: process of selecting the proper level of flexibility
+
+--
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+Two methods: 
+
+1) Cross-Validation (CV)
+
+2) Bootstrap
+
+---
+
+# Cross-Validation
+
+test error
+
+- average error that results from using statistical learning methods (SLM) to predict the response on a new observation
+
+- needs designated test set 
+
+--
+
+&lt;br&gt;
+&lt;br&gt;
+
+training error
+
+- estimate of the test error
+
+- in the absence of a very large test set, test error can be estimated using available training data
+
+---
+
+# Cross-Validation
+
+basic concept:
+
+1) estimate the test error by holding out a subset of the training data from the fitting process
+
+2) apply SLM to the held out observations
+
+--
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+We will look at:
+
+- Validation Set Approach
+
+- Leave-One-Out CV (LOOCV)
+
+- `\(k\)`-fold CV
+
+---
+
+# The Validation Set Approach - Concept
+
+aim: estimate the test error associated with fitting a SLM on a set of 	observations
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;img src="images/5.1.png" width="800px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# The Validation Set Approach - Example
+
+dataset: `Auto` (392 observations)
+
+- independent variable: `horsepower`
+
+- dependent variable: `mpg`
+
+&lt;br&gt;
+&lt;br&gt;
+
+--
+
+Which regression model gives better results in predicting `mpg`?
+
+- linear
+
+- quadratic
+
+- cubic
+
+- higher-order
+
+---
+
+# The Validation Set Approach - Example
+
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;img src="images/5.2.png" width="800px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# The Validation Set Approach - Limitations
+
+- validation estimate of the test error can be **highly variable**, depending on which observations are included in training set and validation set
+
+- tends to **overestimate** the test error rate for the model fit on entire data
+
+- CV addresses these limitations
+
+---
+
+# Leave-One-Out Cross-Validation - Concept
+
+- LOOCV uses a single observation for validation set `\(\text{(}x_1\text{, }y_1\text{)}\)`
+
+- remaining observations are used for the training set with `\(n-1\)` observations `\(\text{\{(}x_2, y_2\text{),…, (}x_n, y_n\text{)\}}\)`
+
+- prediction `\(\hat y_1\)` is made using value `\(x_1\)`
+
+- calculation of `\(MSE_1= (y_1 - \hat y_1)^2\)`
+
+--
+
+- repeat procedure by selecting `\(\text{(}x_2\text{, }y_2\text{)}\)` for validation set, `\(\text{\{(}x_1, y_1\text{), (}x_3, y_3\text{),…, (}x_n, y_n\text{)\}}\)` for training set, calculate `\(MSE_2= (y_2 - \hat y_2)^2\)`
+
+- repeat procedure n times
+
+--
+
+&lt;br&gt;
+
+**LOOCV estimate:**
+
+`$$CV_{(n)} = \frac{1}{n} \sum_{i=1}^{n}MSE_i$$`
+
+---
+
+# Leave-One-Out Cross-Validation - Concept
+
+&lt;br&gt;
+
+&lt;img src="images/5.3.png" width="800px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Leave-One-Out Cross-Validation - Advantages
+
+- less bias using training sets of `\(n-1\)`
+
+     &amp;rightarrow; **less overestimation**
+
+- performing LOOCV multiple times always yields the same results 
+
+     &amp;rightarrow; **no randomness** in the training/validation set splits
+
+--
+
+&lt;img src="images/5.4.png" width="600px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Leave-One-Out Cross-Validation - Limitation
+
+- LOOCV might be expensive to implement:
+
+     - model has to be fit `\(n\)` times
+     
+     - time consuming when `\(n\)` is large and individual model is slow to fit
+
+--
+
+- magic formula:
+
+.pull-left[
+&lt;img src="images/magic.png" width="200px" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+`$$CV_{(n)} = \frac{1}{n}\sum_{i=1}^{n}\bigg(\frac{y_i-\hat y_i}{1-h_i}\bigg)^2$$`
+
+with
+
+`$$h_i=\frac{1}{n} + \frac{(x_i-\bar x)^2}{\sum_{i'=1}^{n} (x_{i'} - \bar x)^2}$$`
+
+= leverage, defined in Chapter 3.37
+]
+
+---
+
+# `\(k\)`-fold Cross Validation - Concept
+
+- randomly dividing set of observations into `\(k\)` groups of approximately equal size
+
+- LOOCV is a special case of `\(k\)`-fold CV in which `\(k = n\)`
+
+** `\(k\)`-fold CV estimate:**
+
+`$$CV_{(n)} = \frac{1}{n}\sum_{i=1}^{k}MSE_i$$`
+
+--
+
+&lt;img src="images/5.5.png" width="600px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Accuracy of Cross-Validation estimates
+
+.center[
+&lt;span style='color: blue;'&gt;true test MSE&lt;/span&gt;   &lt;span style='color: black;'&gt;LOOCV estimate&lt;/span&gt;   &lt;span style='color: orange;'&gt;10-fold CV estimate&lt;/span&gt;
+]
+
+&lt;img src="images/5.6.png" width="680px" style="display: block; margin: auto;" /&gt;
+&lt;img src="images/2.9_10_11.png" width="400px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Bias-Variance Trade-Off for `\(k\)`-fold CV
+
+bias
+
+- validation set approach: **overestimation**
+
+- LOOCV: **nearly unbiased** because each training set contains `\(n-1\)` observations
+
+- `\(k\)`-fold CV with `\(k = 5\)` or `\(k = 10\)`: **intermediate level of bias**
+
+&lt;br&gt;
+
+--
+
+variance
+
+- LOOCV: `\(n\)` fitted models, trained on almost identical sets of observations
+
+     &amp;rightarrow; outputs are highly correlated: **high variance**
+
+- `\(k\)`-fold CV with `\(k &lt; n\)`
+
+     &amp;rightarrow; less correlated since  overlap between training sets in each model is smaller: **less variance**
+
+---
+
+# Rule of thumb for `\(k\)`-fold CV
+
+`\(k = 5\)` or `\(k = 10\)` has been empirically shown to yield test error rate estimates that suffer neither from
+
+.pull-left[
+- excessively high bias nor
+
+- very high variance
+]
+
+.pull-right[
+&lt;img src="images/thumb.png" width="400px" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Cross-Validation on Classification Problems
+
+Quantify test error
+
+- when `\(Y\)` is quantiative: MSE
+
+- When `\(Y\)` is qualitative: number of missclassified observations
+     
+     - `\(k\)`-fold CV error rate and validation set error rates are defined analogously
+
+     - e.g. for LOOCV:
+     
+`$$CV_{(n)} = \frac{1}{n} \sum_{i=1}^{n}Err_i$$`
+
+with `\(Err_i = I(y_i ≠ \hat y_i)\)`
+
+---
+
+# Cross-Validation on Classification Problems
+
+&lt;img src="images/5.7.png" width="450px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Cross-Validation on Classification Problems
+
+.center[
+&lt;span style='color: orange;'&gt;test error&lt;/span&gt;   &lt;span style='color: blue;'&gt;training error&lt;/span&gt;   &lt;span style='color: black;'&gt;10-fold CV error&lt;/span&gt;
+]
+
+&lt;img src="images/5.8.png" width="800px" style="display: block; margin: auto;" /&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
