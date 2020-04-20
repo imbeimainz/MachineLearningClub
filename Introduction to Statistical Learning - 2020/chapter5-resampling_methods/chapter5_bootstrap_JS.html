@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Chapter 5</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jennifer Schlecht" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/FMstyles.css" type="text/css" />
+    <link rel="stylesheet" href="css/animate.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, title-slide
+
+# Chapter 5
+## Resampling Methods: The Bootstrap
+### </br>Jennifer Schlecht</br></br></br>
+### 2020/04/20
+
+---
+
+
+
+
+# The bootstrap
+
+Aim: Quantify uncertainty associated with a given estimator or statistical learning method
+
+&amp;rightarrow; Easy application to a wide range of methods
+
+--
+
+&lt;br&gt;
+&lt;br&gt;
+
+### Example
+
+We wish to invest money in two financial assets
+
+The two assets yield returns of `\(X\)` and `\(Y\)`, `\(X\)` and `\(Y\)` are random quantities
+
+---
+
+# How do we determine `\(\alpha\)`?
+
+`\(\alpha\)` = fraction to be invested in `\(X\)`
+
+Invest `\(\alpha\)` in `\(X\)`, invest `\(\text{1 - }\alpha\)` in `\(Y\)`
+
+--
+
+&lt;br&gt;
+
+Problem: Variability associated with the returns of the two investments
+
+&amp;rightarrow; Choose `\(\alpha\)` to minimize the total risk (=variance) of our investment which is given by `\(\text{Var(}\alpha X \text{ + (1 - }\alpha\text{)}Y)\)`
+
+---
+
+# How do we determine `\(\alpha\)`?
+
+`\(\alpha\)` that minimizes the risk:
+
+`$$\alpha = \frac{\sigma_Y^2 - \sigma_{XY}}{\sigma_X^2 + \sigma_Y^2 - 2\sigma_{XY}}$$`
+
+`\(\sigma_X^2\text{ = Var(}X\text{)}\)`
+
+`\(\sigma_Y^2\text{ = Var(}Y\text{)}\)`
+
+`\(\sigma_{XY}\text{ = Cov(}X\text{,}Y\text{)}\)`
+
+---
+
+# Simulation
+
+At the time of investment: `\(\sigma_X^2\)`, `\(\sigma_Y^2\)`, and `\(\sigma_{XY}\)` are unknown
+
+But: We can estimate these variances using past measurements of `\(X\)` and `\(Y\)`
+
+--
+
+&lt;br&gt;
+
+`$$\hat\alpha = \frac{\hat\sigma_Y^2 - \hat\sigma_{XY}}{\hat\sigma_X^2 + \hat\sigma_Y^2 - 2\hat\sigma_{XY}}$$`
+
+--
+
+&lt;br&gt;
+
+Therefore: Simulate 100 pairs of returns for investments `\(X\)` and `\(Y\)`, four times
+
+---
+
+# Simulation
+
+&lt;img src="images/5.9.png" width="480px" style="display: block; margin: auto;" /&gt;
+
+Four `\(\hat\alpha\)` values range between 0.532 and 0.657
+
+---
+
+# Simulation
+
+Simulate 100 pairs of returns for investments `\(X\)` and `\(Y\)`, 1,000 times
+
+`\(\sigma_X^2\text{ = 1}\)`
+
+`\(\sigma_Y^2\text{ = 1.25}\)`
+
+`\(\sigma_{XY}\text{ = 0.5}\)`
+
+`\(\alpha\text{ = 0.6}\)`
+
+Estimate `\(\alpha\)` by substituting estimates of `\(\sigma_X^2\)`, `\(\sigma_Y^2\)`, and `\(\sigma_{XY}\)` into formula
+
+---
+
+# Simulation
+
+&lt;img src="images/5.10_left.png" width="380px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Simulation
+
+`$$\bar\alpha = \frac{1}{1,000}\sum_{r=1}^{1,000} \hat\alpha_r = 0.5996$$`
+
+`$$\sqrt{\frac{1}{1,000-1} \sum_{r=1}^{1,000}(\hat\alpha_r - \bar\alpha)^2} = 0.083$$`
+---
+
+# The bootstrap
+
+Problem: Simulated data, we cannot draw random samples from the **original population**
+
+Solution: We draw `\(B\)` random samples `\(Z^{*1}\)`, `\(Z^{*2}\)`, …, `\(Z^{*B}\)` of `\(n\)` observations from the **original data set** `\(Z\)` with replacement
+
+&amp;rightarrow; `\(B\)` distinct bootstrap data sets
+
+&amp;rightarrow; `\(B\)` estimates for `\(\alpha\)`: `\(\hat\alpha^{*1}\)`, `\(\hat\alpha^{*2}\)`, …, `\(\hat\alpha^{*B}\)`
+
+---
+
+# The bootstrap
+
+&lt;img src="images/5.11.png" width="700px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# The bootstrap
+
+`$$SE_B(\hat\alpha) = \sqrt{\frac{1}{B-1} \sum_{r=1}^{B}\bigg(\hat\alpha^{*r} - \frac{1}{B} \sum_{r'=1}^{B} \hat\alpha^{*r'}\bigg)^2}$$`
+&lt;br&gt;
+&lt;br&gt;
+
+`\(SE_B(\hat\alpha)\)` serves as an estimate of the standard error of `\(\hat\alpha\)`
+
+&amp;rightarrow; Simulation: 0.083
+
+&amp;rightarrow; Bootstrap: 0.087
+
+---
+
+# Comparison: Simulation vs. the bootstrap
+
+&lt;img src="images/5.10.png" width="1100px" style="display: block; margin: auto;" /&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
