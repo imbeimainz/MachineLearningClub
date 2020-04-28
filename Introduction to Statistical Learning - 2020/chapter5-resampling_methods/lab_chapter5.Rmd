@@ -22,19 +22,28 @@ Cross-Validation and the Bootstrap
 
 ```{r}
 library("ISLR")
+
+# to be consistent with R < 3.6.0: 
+## RNGkind(sample.kind = "Rounding")
+
+# training set 1
 set.seed(1)
-train <- sample(392, 196)
+train <- sample(392, 196, replace = FALSE)
 lm.fit <- lm(mpg ~ horsepower, data = Auto, subset = train)
 
 # attach(Auto)
+Auto
+dim(Auto)
+plot(Auto$horsepower, Auto$mpg)
 mean((Auto$mpg - predict(lm.fit, Auto))[-train]^2)
 lm.fit2 <- lm(mpg ~ poly(horsepower, 2), data = Auto, subset = train)
 mean((Auto$mpg - predict(lm.fit2, Auto))[-train]^2)
 lm.fit3 <- lm(mpg ~ poly(horsepower, 3), data = Auto, subset = train)
 mean((Auto$mpg - predict(lm.fit3, Auto))[-train]^2)
 
+# training set 2
 set.seed(2)
-train <- sample(392, 196)
+train <- sample(392, 196, replace = FALSE)
 lm.fit <- lm(mpg ~ horsepower, data = Auto, subset = train)
 mean((Auto$mpg - predict(lm.fit, Auto))[-train]^2)
 lm.fit2 <- lm(mpg ~ poly(horsepower, 2), data = Auto, subset = train)
@@ -53,13 +62,13 @@ coef(lm.fit)
 
 library("boot")
 glm.fit <- glm(mpg ~ horsepower, data = Auto)
-cv.err <- cv.glm(Auto, glm.fit)
-cv.err$delta
+cv.err <- cv.glm(Auto, glm.fit) # default k: number of observations = LOOCV
+cv.err$delta # cross-validation estimate of prediction error
 
 cv.error <- rep(0, 5)
 for (i in 1:5) {
   glm.fit <- glm(mpg ~ poly(horsepower, i), data = Auto)
-  cv.error[i] <- cv.glm(Auto, glm.fit)$delta[1]
+  cv.error[i] <- cv.glm(Auto, glm.fit)$delta[1] # function does not make use of formula 5.2
 }
 cv.error
 ```
@@ -74,6 +83,8 @@ for (i in 1:10) {
   cv.error.10[i] <- cv.glm(Auto, glm.fit, K = 10)$delta[1]
 }
 cv.error.10
+plot(cv.error.10)
+
 ```
 
 # The Bootstrap
@@ -82,6 +93,7 @@ cv.error.10
 head(Portfolio)
 colnames(Portfolio)
 summary(Portfolio)
+dim(Portfolio)
 
 alpha.fn <- function(data, index) {
   X <- data$X[index]
@@ -91,8 +103,23 @@ alpha.fn <- function(data, index) {
 alpha.fn(Portfolio, 1:100)
 
 set.seed(1)
-alpha.fn(Portfolio, sample(100, 100, replace = T))
+
+s <- sample(100, 100, replace = TRUE)
+table(s)
+table(table(s))
+alpha.fn(Portfolio, s)
+
 boot(Portfolio, alpha.fn, R = 1000)
+
+
+set.seed(1)
+b <- boot(Portfolio, alpha.fn, R = 1000) # repeat 1000 times
+b
+b$t0 # original
+head(b$t)
+mean(b$t-b$t0) # bias
+sd(b$t) # standard error
+plot(b)
 ```
 
 # Estimating the Accuracy of a Linear Regression Model
