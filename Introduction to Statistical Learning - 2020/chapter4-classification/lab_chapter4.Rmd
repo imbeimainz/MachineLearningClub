@@ -13,7 +13,6 @@ output:
     code_download: true
 editor_options: 
   chunk_output_type: console
-
 ---
 
 Logistic Regression, LDA, QDA, and KNN
@@ -22,13 +21,17 @@ Logistic Regression, LDA, QDA, and KNN
 
 ```{r error=TRUE}
 library("ISLR")
+library("corrplot")
 names(Smarket)
 dim(Smarket)
+head(Smarket)
 summary(Smarket)
 pairs(Smarket)
 cor(Smarket)
 cor(Smarket[, -9])
 pheatmap::pheatmap(cor(Smarket[, -9]))
+corrplot(cor(cbind(Smarket[, -9],(Smarket$Direction=="Up"))))
+plot(Smarket$Today,Smarket$Direction)
 
 # attach(Smarket)
 
@@ -45,15 +48,24 @@ coef(glm.fit)
 summary(glm.fit)$coef
 summary(glm.fit)$coef[, 4]
 glm.probs <- predict(glm.fit, type = "response")
+plot(predict(glm.fit),glm.probs)    #plot logits versus probabilities
+
+#explore this relationship for a wider range of predictors via artificial manipulation
+d<-Smarket
+d$Lag1<-20*Smarket$Lag1
+plot(predict(glm.fit,d),predict(glm.fit,d,type="response"))
+
+
 glm.probs[1:10]
-contrasts(Smarket$Direction)
+contrasts(Smarket$Direction)  # Find out, which Probility is modeled, which is the one which is coded as 1 in the contrast
 
-
+# find predicted outcome on binary scale and show confusion matrix (syn.: classification table)
 glm.pred <- rep("Down", 1250)
 glm.pred[glm.probs > .5] <- "Up"
 table(glm.pred, Smarket$Direction)
 (507 + 145) / 1250
-mean(glm.pred == Smarket$Direction)
+mean(glm.pred == Smarket$Direction)  # true classification proportion 'Trefferrate' = 1 - error rate
+mean(glm.pred != Smarket$Direction)  # error rate
 
 
 train <- (Smarket$Year < 2005)
@@ -120,8 +132,10 @@ train.Direction <- Smarket$Direction[train]
 
 set.seed(1)
 knn.pred <- knn(train.X, test.X, train.Direction, k = 1)
+# knn.pred <- knn(train.X, train.X, train.Direction, k = 1)
 table(knn.pred, Direction.2005)
 (83 + 43) / 252
+table(knn.pred[train], train.Direction)
 
 knn.pred <- knn(train.X, test.X, train.Direction, k = 3)
 table(knn.pred, Direction.2005)
@@ -133,6 +147,7 @@ mean(knn.pred == Direction.2005)
 ```{r}
 dim(Caravan)
 # attach(Caravan)
+head(Caravan)
 summary(Caravan$Purchase)
 348 / 5822
 standardized.X <- scale(Caravan[, -86])
