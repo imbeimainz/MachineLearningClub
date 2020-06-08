@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>An Introduction to Statistical Learning - with applications in R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irene Schmidtmann (Irene.Schmidtmann@uni-mainz.de)" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css\FMstyles.css" type="text/css" />
+    <link rel="stylesheet" href="css\animate.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, title-slide
+
+# An Introduction to Statistical Learning - with applications in R
+## Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani
+### Irene Schmidtmann (<a href="mailto:Irene.Schmidtmann@uni-mainz.de" class="email">Irene.Schmidtmann@uni-mainz.de</a>)</br>
+### 2020/06/08</br> IMBEI - University Medical Center Mainz
+
+---
+
+
+
+
+
+
+
+class: inverse, center, middle
+
+# Chapter 7:  Moving Beyond Linearity
+
+---
+# Structure of chapter 7
+Chapter 7 deals with several methods for tackling non-linear relationship between response and independent variable(s)
+
+Today: 
+
+7.1 Polynomial Regression
+
+7.2 Step Functions (piecewise constant functions)
+
+7.3 Basis Functions -- generalization of polynomial and piecewise-constant models
+
+7.4 Regression Splines
+
+Next week: 
+
+7.5 Smoothing Splines // 7.6 Local Regression // 7.7 Generalized Additive Models
+
+Note: The figures in this presentation are taken from "An Introduction to Statistical Learning, with applications in R"  (Springer, 2013) with permission from the authors: G. James, D. Witten,  T. Hastie and R. Tibshirani
+---
+#7.1  Polynomial Regression
+Extend linear regression by replacing the standard linear model 
+
+`$$y_{i}=\beta_{0}+\beta_{1} x_{i}+\epsilon_{i}$$`
+with a polynomial function
+`$$y_{i}=\beta_{0}+\beta_{1} x_{i}+\beta_{2} x_{i}^{2}+\beta_{3} x_{i}^{3}+\ldots+\beta_{d} x_{i}^{d}+\epsilon_{i}$$`
+* Fitting model by least squares
+* Large `\(d\)` allows for very non-linear curves, but typically `\(d \le 4\)`
+* For larger `\(d\)` strange shapes may occur, especially at the boundaries of the range of the `\(X\)` variable
+---
+
+#  Polynomial Regression: Examples
+
+Fit polynomials of degree 4 to wage data and display fitted curves with 95% confidence intervals for estimates.
+&lt;div class="figure" style="text-align: left"&gt;
+&lt;img src="chapter7_files/figure-html/Fig7_1-1.png" alt="Fig 7.1 Fit polynomial to wage data. Left: wage against age. Right: Modelling binary event 'high income' (wage &amp;gt; 250) using logistic regression."  /&gt;
+&lt;p class="caption"&gt;Fig 7.1 Fit polynomial to wage data. Left: wage against age. Right: Modelling binary event 'high income' (wage &gt; 250) using logistic regression.&lt;/p&gt;
+&lt;/div&gt;
+---
+#  Polynomial Regression: How to obtain confidence intervals for predictions?
+The fitted value for a particular value `\(x_0\)` is given by
+`$$\hat{f}\left(x_{0}\right)=\hat{\beta}_{0}+\hat{\beta}_{1} x_{0}+\hat{\beta}_{2} x_{0}^{2}+\hat{\beta}_{3} x_{0}^{3}+\hat{\beta}_{4} x_{0}^{4}$$`
+Let `\(\hat{C}\)` the covariance matrix of the `\(\hat{\beta}_{j}\)` and `\(\ell_{0}^{T}=\left(1, x_{0}, x_{0}^{2}, x_{0}^{3}, x_{0}^{4}\right)\)`, then 
+
+`$$\operatorname{Var}\left[\hat{f}\left(x_{0}\right)\right]=\ell_{0}^{T} \hat{\mathbf{C}} \ell_{0}$$`
+Obtain standard error of estimate by taking the square root and compute approximate 95% confidence interval as
+
+
+`$$\hat{f}\left(x_{0}\right) \pm 1.96 \sqrt{\operatorname{Var}\left[\hat{f}\left(x_{0}\right)\right]}$$`
+Similarly obtain confidence interval for linear predictor in logistic regression. Use inverse logistic transform to obtain predicted probability with confidence interval.
+---
+# 7.2 Step functions
+* Polynomial functions as predictors impose *global structure* on the non-linear function of `\(X\)`.
+* *Step functions* avoid this by effectively converting a continous variable into an *ordered categorical variable*.
+* Specifiy cutpoints `\(c_{1}, c_{2}, \dots, c_{K}\)` in the range of `\(X\)` and define `\(K+1\)` new variables:
+`$$\begin{aligned}
+C_{0}(X) &amp;=I\left(X&lt;c_{1}\right) \\
+C_{1}(X) &amp;=I\left(c_{1} \leq X&lt;c_{2}\right) \\
+C_{2}(X) &amp;=I\left(c_{2} \leq X&lt;c_{3}\right) \\
+&amp; \vdots \\
+C_{K-1}(X) &amp;=I\left(c_{K-1} \leq X&lt;c_{K}\right) \\
+C_{K}(X) &amp;=I\left(c_{K} \leq X\right)
+\end{aligned}$$`
+where `\(I(\cdot)\)` is an *indicator function*.
+---
+
+# 7.2 Step functions (continued)
+* Use least squares to fit
+`$$y_{i}=\beta_{0}+\beta_{1} C_{1}\left(x_{i}\right)+\beta_{2} C_{2}\left(x_{i}\right)+\ldots+\beta_{K} C_{K}\left(x_{i}\right)+\epsilon_{i}$$`
+* Interpretation: 
+  + `\(\beta_0\)` is the mean of `\(Y\)` for `\(X &lt; c_1\)`.
+  + `\(\beta_0 + \beta_j\)` is the mean of `\(Y\)` for `\(c_{j} \leq X &lt; c_{j+1}\)`. Hence `\(\beta_j\)` describes the average difference in the response between `\(X &lt; c_1\)` and `\(X \epsilon \left[ c_{j}, c_{j+1} \right)\)`
+* Problem: how to choose the `\(c_j\)` if there are no natural breakpoints?
+* Nevertheless: popular in epidemiology, e.g.
+  + five year age groups
+  + quartiles or quintiles of covariates
+---
+
+# Step functions: examples
+Fit step functions to wage data and display fitted functions with 95% confidence intervals for estimates.
+
+&lt;div class="figure" style="text-align: left"&gt;
+&lt;img src="images/Fig 7.2.png" alt="Fig 7.2 Fit step functions to wage data. Left: Weight against age. Right: Modelling binary event wage &amp;gt; 250 using logistic regression." width="70%" /&gt;
+&lt;p class="caption"&gt;Fig 7.2 Fit step functions to wage data. Left: Weight against age. Right: Modelling binary event wage &gt; 250 using logistic regression.&lt;/p&gt;
+&lt;/div&gt;
+* Possible disadvantage: trends may be missed
+---
+
+# 7.3 Basis functions
+Both polynomials and step functions are special cases of a more general approach, namely using *basis functions*.
+
+Idea: Use a set of fixed functions applied to `\(X\)`, thus transforming `\(X\)` suitably
+
+`$$y_{i}=\beta_{0}+\beta_{1} b_{1}\left(x_{i}\right)+\beta_{2} b_{2}\left(x_{i}\right)+\beta_{3} b_{3}\left(x_{i}\right)+\ldots+\beta_{K} b_{K}\left(x_{i}\right)+\epsilon_{i}$$`
+* Polynomial regression: `\(b_j(x_{i}) = x_{i}^{j}\)`
+* Step functions: `\(b_{j}\left(x_{i}\right)=I\left(c_{j} \leq x_{i}&lt;c_{j+1}\right)\)`
+* Other types of functions are possible, e. g. splines.
+* Still can determine coefficients `\(\beta_j\)` by least squares.
+---
+
+# 7.4 Regression splines
+## 7.4.1 Piecewise polynomials
+* Combine ideas of polynomials and function defined piecewise: *pieceswise polynomial regression*,
+  - typically low degree of polynomial, e. g. `\(d = 3\)`
+  - e. g. for two parts of the range of `\(X\)`: fit two different polynomials
+`$$y_{i}=\left\{\begin{array}{ll}
+\beta_{01}+\beta_{11} x_{i}+\beta_{21} x_{i}^{2}+\beta_{31} x_{i}^{3}+\epsilon_{i} &amp; \text { if } x_{i}&lt;c \\
+\beta_{02}+\beta_{12} x_{i}+\beta_{22} x_{i}^{2}+\beta_{32} x_{i}^{3}+\epsilon_{i} &amp; \text { if } x_{i} \geq c
+\end{array}\right.$$`
+
+  - `\(K\)` *knots* lead to `\(K+1\)` separate polynomials
+  - piecewise linear functions `\((d=1)\)` are also possible.
+
+---
+
+# Piecewise polynomials: example
+&lt;div class="figure" style="text-align: left"&gt;
+&lt;img src="images/Fig 7.3a.png" alt="Fig 7.3a Fit pieceswise polynomial to subset of wage data. Knot at age=50" width="50%" /&gt;
+&lt;p class="caption"&gt;Fig 7.3a Fit pieceswise polynomial to subset of wage data. Knot at age=50&lt;/p&gt;
+&lt;/div&gt;
+
+* 8 df are used as 8 parameters must be estimated
+* Problem: No apparent reason for jump at age=50
+* Discontinuity at knot should be remedied
+---
+
+## 7.4.2 Constraints and splines
+* Discontinuity at knot can be avoided by imposing *constraints*:
+fitted curve must be continuous, 
+i. e. at the knot `\(x_k\)` we must have
+`$$\beta_{0k}+\beta_{1k} x_{k}+\beta_{2k} x_{k}^{2}+\beta_{3k} x_{k}^{3} = \\
+\beta_{0(k+1)}+\beta_{1(k+1)} x_{k}+\beta_{2(k+1)} x_{k}^{2}+\beta_{3(k+1)} x_{k}^{3}$$`
+---
+
+## Piecewise polynomials with continuity constraint: example
+
+&lt;div class="figure" style="text-align: left"&gt;
+&lt;img src="images/Fig 7.3b.png" alt="Fig 7.3b Fit pieceswise polynomial to subset of wage data. Knot at age=50, continuity constraint" width="50%" /&gt;
+&lt;p class="caption"&gt;Fig 7.3b Fit pieceswise polynomial to subset of wage data. Knot at age=50, continuity constraint&lt;/p&gt;
+&lt;/div&gt;
+* Better, but spike at knot still not satisfying, therefore: impose more constraints
+---
+
+## Smooth fit
+Imposing further constraints for smoothness leads to (cubic) *splines*:
+* Demand continous first derivative
+`$$\beta_{1k} + 2 \beta_{2k} x_{k} + 3 \beta_{3k} x_{k}^{2} = \beta_{1(k+1)} + 2 \beta_{2(k+1)} x_{k} + 3 \beta_{3(k+1)} x_{k}^{2}$$`
+* Demand continous second derivative
+`$$2 \beta_{2k} + 6 \beta_{3k} x_{k} = 2 \beta_{2(k+1)} + 6 \beta_{3(k+1)} x_{k}$$`
+* Each constraint frees up one df.
+* So cubic spline with one knot only uses 5 df.
+* More knots can be added.
+* In general, a cubic splines with `\(K\)` knots uses `\(4 + K\)` df.
+---
+
+## Comparison of piecewise polynomials
+&lt;div class="figure" style="text-align: left"&gt;
+&lt;img src="images/Fig 7.3.png" alt="Fig 7.3 Various piecewise polynomials fitted to subset of wage data. Knot at age=50" width="60%" /&gt;
+&lt;p class="caption"&gt;Fig 7.3 Various piecewise polynomials fitted to subset of wage data. Knot at age=50&lt;/p&gt;
+&lt;/div&gt;
+---
+
+## 7.4.3 The spline basis representation 
+How to fit piecewise degree-d polynomial under continuity constraint on function and `\(d-1\)` derivatives?
+
+* Basis model can be used for cubic spline with `\(K\)` knots can be modeled as
+`$$y_{i}=\beta_{0}+\beta_{1} b_{1}\left(x_{i}\right)+\beta_{2} b_{2}\left(x_{i}\right)+\cdots+\beta_{K+3} b_{K+3}\left(x_{i}\right)+\epsilon_{i}$$`
+for appropriate choice of basis functions `\(b_{1}, b_{2}, \dots, b_{K+3}\)`.
+* Fit by least squares
+* Most direct of many possible representations
+  + basis for cubic polynomial `\(x, x^{2}, x^{3}\)`
+  + add one *truncated power basis* function for each knot `\(\xi_k\)`, i. e.
+`$$h(x, \xi_k)=(x-\xi_k)_{+}^{3}=\left\{\begin{array}{cl}
+(x-\xi_k)^{3} &amp; \text { if } x&gt;\xi_k \\
+0 &amp; \text { otherwise }
+\end{array}\right.$$`
+  + adding *truncated power basis* functions will preserve continuity and continuous first and second order derivatives at knots
+  + Thus fitting a cubic spline with `\(K\)` knots amounts to least square regression with intercept and `\(3 + K\)` predictors `$$X, X^{2}, X^{3}, h\left(X, \xi_{1}\right), h\left(X, \xi_{2}\right), \ldots, h\left(X, \xi_{K}\right)$$`
+---
+
+## Cubic spline: example
+&lt;div class="figure" style="text-align: left"&gt;
+&lt;img src="images/Fig 7.4.png" alt="Fig 7.4 Cubic spline fitted to subset of wage data. Three knots at ages 25, 40 and 60" width="50%" /&gt;
+&lt;p class="caption"&gt;Fig 7.4 Cubic spline fitted to subset of wage data. Three knots at ages 25, 40 and 60&lt;/p&gt;
+&lt;/div&gt;
+* Problem with splines: high variance at extreme values of `\(X\)`
+* Remedy: impose yet another constraint
+  + Function must be linear at the boundary, i. e. if `\(X &lt; \xi_1\)` and `\(X &gt; \xi_K\)`
+  + Resulting function is called *natural spline* and has narrower confidence intervals
+---
+
+## 7.4.4 Choosing the number and locations of the knots
+* Choice of location
+  + High flexibility in regions with many knots `\(\rightarrow\)` place many knots in area with rapid variation is expected, few where stability is expected
+  + However, in practice knots are usually placed uniformly
+      - specify df's (e. g. 4) and let software place knots at uniform quantiles (e. g. quartiles) of the predictor
+* Choice of number
+  + Trial and error: search for best looking curve
+  + Cross validation: minimize RSS
+
+---
+## Cubic spline with 3 knots: example
+&lt;div class="figure" style="text-align: left"&gt;
+&lt;img src="images/Fig 7.5.png" alt="Fig 7.4 Cubic spline with knots at age quartiles fitted to wage data. Left: wage against age. Right: Modelling binary event 'high income' (wage &amp;gt; 250) using logistic regression." width="60%" /&gt;
+&lt;p class="caption"&gt;Fig 7.4 Cubic spline with knots at age quartiles fitted to wage data. Left: wage against age. Right: Modelling binary event 'high income' (wage &gt; 250) using logistic regression.&lt;/p&gt;
+&lt;/div&gt;
+---
+
+## Cubic spline choice of number of knots: example
+&lt;div class="figure" style="text-align: left"&gt;
+&lt;img src="images/Fig 7.6.png" alt="Fig 7.6 Ten-fold cross-validated mean squared errors for selecting the degrees of freedom when fitting splines to the wage data. Left: natural spline. Right: cubic spline." width="70%" /&gt;
+&lt;p class="caption"&gt;Fig 7.6 Ten-fold cross-validated mean squared errors for selecting the degrees of freedom when fitting splines to the wage data. Left: natural spline. Right: cubic spline.&lt;/p&gt;
+&lt;/div&gt;
+* 1 df (linear regression) inadequate
+* Suitable df's
+  + 3 df for natural spline
+  + 4 df for cubic spline
+---
+
+## 7.4.5 Comparison to polynomial regression
+Regression splines often give better results then polynomial regression
+
+* Flexibility by introducing many knots instead of high degrees of polynomials
+* Extra-flexibility of high degrees polynomials produce spurious results at boundaries
+* Splines produce more stable estimates
+* Knots can be chosen according to expected behaviour of function
+---
+
+class: middle, center
+
+# Thanks!
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
