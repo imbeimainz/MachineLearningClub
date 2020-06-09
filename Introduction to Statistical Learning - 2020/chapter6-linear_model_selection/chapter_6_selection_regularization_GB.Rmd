@@ -1,0 +1,462 @@
+---
+title: "Linear Model Selection and Regularization"
+subtitle: "  Subset Selection </br>  & </br>  Shrinkage Methods"
+author: "Gregor Buch</br>"
+date: "2020/04/27 "
+output:
+  xaringan::moon_reader:
+    css: ["default", "default-fonts","css/FMstyles.css","css/animate.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: [center, middle]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  eval = TRUE,
+  message = FALSE,
+  echo = TRUE,
+  warnings = FALSE,
+  fig.align = "center"
+)
+```
+
+# Motivation
+
+### Improve Accuracy
+- Least-squares is ideal where $n>>p$
+- Not as good if $n>p$
+- Linear equations do not solve if $n<<p$
+
+### Improve Interpretability
+ - Remove irrelevant predictors
+
+---
+
+# Outline
+
+### Subset Selection
+- Best Subset Selection
+- Stepwise Selection (Forward, Backward, Hybrid)
+- Chossing Optimal Model
+  
+### Shrinkage
+- Ridge Regression
+- The Lasso
+- Selecting Turning Parameter 
+  
+### Dimension Reduction (part two)
+
+
+---
+
+# Subset Selection: Best Subset Selection 
+
+- Try all possible combinations of $p$ predictors and choose the best one
+
+
+- Advantages: Exhaustive & simple
+
+
+- Disadvantages: Computationally intensive 
+
+  - $2^p$ possible models must be evaluated
+  
+  - "becomes computationally infeasible for values of $p$ greater than around 40" 
+
+---
+
+
+# Subset Selection: Best Subset Selection 
+
+![BSS_Algo](images/BSS_Algo.png)
+
+
+---
+
+
+
+# Subset Selection: Best Subset Selection 
+
+![BSS_RSSvsn_p](images/BSS_RSSvsn_p.png)
+
+Each possible model with all predictors of `Credit` data set. Red frontier tracks the best model for a given number of predictors, according to $RSS$ and $R^2$
+
+---
+
+
+# Subset Selection: Stepwise Selection 
+
+Stepwise methods explore a more restricted set of  models, reducing overfitting and reducing time to select/fit the model.
+
+
+Three types: 
+
+- Forward Stepwise
+
+- Backward Stepwise
+
+- Hybrid Approaches
+
+---
+
+
+# Subset Selection: Stepwise Selection 
+## Forward Stepwise 
+- Begins with a model containing no predictors
+- Adds the predictor that gives the greatest improvement to the model
+- Adds further predictors until all predictors are added
+- Of all models created, the “best” is chosen
+![FSS_Algo](images/FSS_Algo.png)
+
+
+---
+
+# Subset Selection: Stepwise Selection 
+## Backward Stepwise 
+- A model is built including all predictors
+- At each step, the least-predictive is removed 
+- Of each of the models produced by each step, the best model is selected
+- Cannot be used when $n < p$
+![FSS_Algo](images/BWSS_Algo.png)
+
+
+---
+
+# Subset Selection: Stepwise Selection 
+## Hybrid approaches
+
+- Hybrid combine both forward and backward selection.
+
+- These models begin with a null model and add predictors like forward selection.
+
+- At each step, they also remove predictors that are less-informative, like backward selection. 
+
+
+
+---
+
+
+
+# Stepwise Selection vs Best Subset Selection
+
+### Stepwise Selection:
+- Faster than best subset selection
+- Tractable for problems with $p > 40$
+
+
+### Best Subset Selection
+- Guaranteed to find the best possible model
+
+---
+
+
+
+# Subset Selection: Optimal Model 
+
+“The model containing all of the predictors will always have the smallest $RSS$ and the
+largest $R^2$, since these quantities are related to the training error.”
+
+
+We wish to choose a model with a low test error.
+
+
+### Estimating test error:
+
+- Adjust the training error to account for bias
+
+- Directly estimate with cross-validation or a validation set
+
+---
+
+# Subset Selection: Optimal Model
+ ## Adjusting with $C_p$ 
+
+<center>
+ $c_p = \frac{1}{n}\left ( RSS + 2d \hat{\sigma}^2 \right)$
+</center>
+$~$
+- For least-squares models
+
+- An unbiased estimate of MSE, if $\hat{\sigma}^2$ is an unbiased estimate of $\sigma^2$
+
+- The penalty increases as the number of predictors in the model increases
+
+- Choose the model with the lowest $C_p$ value
+
+
+---
+
+# Subset Selection: Optimal Model
+ ## Adjusting with Akaike Information Criterion $AIC$
+<center>
+$AIC = \frac{1}{n\hat{\sigma}^2}\left ( RSS + 2d \hat{\sigma}^2 \right)$
+</center>
+$~$
+- For models fit with maximum likelihood
+
+- Omitted an additive constant: Proportional to $C_p$
+
+---
+
+# Subset Selection: Optimal Model
+ ## Adjusting with Bayesian Information Criterion $BIC$
+<center>
+$BIC = \frac{1}{n\hat{\sigma}^2}\left ( RSS + log(n)d\hat{\sigma}^2 \right)$
+</center>
+$~$
+- For models fit with maximum likelihood 
+
+- Omitted an additive constant
+
+- Heavier penalty on the number of predictors than $C_p$
+
+---
+
+# Subset Selection: Optimal Model
+ ## Adjusting with Adjusted $R^2$
+<center>
+$Adjusted R^2 = 1 - \frac{RSS/(n-d-1)}{TSS/(n-1)}$
+
+$TSS = \sum (y_i − \bar{y})^2$
+</center>
+$~$
+- Regular $R^2$ always increases with added predictors.
+
+- The Adjusted $R^2$, is corrected for the number of predictors $d$, such that it may decrease as additional, less-informative predictors are added to the model. 
+
+- A large value of Adjusted $R^2$ indicates a model with low test error.
+
+
+---
+# Subset Selection: Optimal Model
+ ## Comparison: $C_p$ vs $BIC$ vs $R^2$
+
+![FSS_Algo](images/C_vs_BIC_vs_R.png)
+
+---
+# Subset Selection: Optimal Model
+ ## Estimating with Validation or Cross-Validation 
+
+- Compute validation set error or cross-validation error for each model
+
+- Select model with smallest test error 
+
+- Direkt estimated test error based on fewer assumptions
+
+
+---
+
+# Subset Selection: Optimal Model
+ ## Comparison: Adjusing vs Estimating
+
+![FSS_Algo](images/CV_SSS.png)
+
+---
+
+# Subset Selection: Optimal Model
+ ## one-standard-error-rule
+
+- Calculate the standard error of test MSE for each model.
+Select the smallest model for which the estimated test error is within one SE of the lowest point in the curve. 
+
+" The rationale here is that
+if a set of models appear to be more or less equally good, then we might
+as well choose the simplest model—that is, the model with the smallest
+number of predictors. "
+
+
+---
+
+# Shrinkage methods:  
+
+- Fit a model with all predictors that shrinks coefficient estimates towards zero
+
+- Shrinking coefficient estimates can significantly reduce their variance
+
+- Two best known shrinkage methods: ridge and lasso
+
+
+---
+
+
+# Shrinkage methods: Ridge
+
+- Very similar to least squares in that both methods select coefficients that reduce RSS
+
+- Coefficients are estimated by minimizing slightly different quantity 
+
+ 
+$~$
+$~$
+<center>
+
+$\sum_{i=1}^{n}\left (y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij}  \right )^2 + \lambda \sum_{j=1}^{p} \beta_j^2 = RSS + \lambda \sum_{j=1}^{p} \beta_j^2$
+
+
+---
+
+# Shrinkage methods: Ridge
+
+<center>
+
+$RSS + \lambda \sum_{j=1}^{p} \beta_j^2$ 
+
+</center> 
+
+### Shrinkage penalty
+- Is small when coefficients close to zero
+- Has the effect of shrinking $β_j$ toward zero
+- Only applied to coefficients, not to the intercept
+
+### Tuning parameter
+- Controls impact of shrinkage penalty
+- When $\lambda = 0$: Same results as least squares
+- As $\lambda \rightarrow \infty$, coefficients approach zero
+- Ridge offers a different set of coefficients for each value of $\lambda$
+- Selecting a good value for $\lambda$ is critical
+
+---
+
+
+# Shrinkage methods: Ridge
+
+![FSS_Algo](images/Ridge_lam_pen.png)
+
+---
+
+# Shrinkage methods: Ridge
+
+- Unlike least squares, ridge is very scale dependent
+
+- Therefore must standardize coefficients
+
+- The following formula will ensure all coefficients have a standard deviation of one
+
+$~$
+$~$
+
+<center>
+$\tilde{x}_{i j} = \frac{x_{i j}}{\sqrt{\frac{1}{n} \sum_{i=1}^{n}\left(x_{i j}-\bar{x}_{j}\right)^{2}}}$
+
+---
+
+# Shrinkage methods: Ridge
+- Advantage of ridge is rooted in the bias-variance trade-off
+- As $\lambda$ increases, bias increases, but variance decreases
+
+![FSS_Algo](images/Ridge_MSE.png)
+
+---
+
+
+# Shrinkage methods: The Lasso
+
+- Similar to Ridge, but with $|\beta_j|$, which forces some coefficients to be zero: Performs variable selection
+
+- Creates models that are easier to interpret
+
+- Shrinks coefficient estimates towards zero
+
+$~$
+$~$
+
+<center>
+$\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}+\lambda \sum_{j=1}^{p}\left|\beta_{j}\right|=\mathrm{RSS}+\lambda \sum_{j=1}^{p}\left|\beta_{j}\right|$
+
+
+
+---
+
+# Shrinkage methods: The Lasso
+
+![FSS_Algo](images/Lasso_lam_pen.png)
+
+---
+
+
+# Shrinkage methods: Alternative Formulation
+
+### Ridge
+
+<center>
+$\underset{\beta}{\operatorname{minimize}}\left\{\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}\right\} \quad \text { subject to } \quad \sum_{j=1}^{p} \beta_{j}^{2} \leq s$
+</center>
+
+### Lasso
+
+<center>
+$\underset{\beta}{\operatorname{minimize}}\left\{\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}\right\} \quad \text { subject to } \quad \sum_{j=1}^{p}\left|\beta_{j}\right| \leq s$
+</center>
+
+- We are trying to find the set of estimates that lead to the smallest $RSS$, subject to the constraint that there is a budget $s$ 
+
+- If $s$ is very large, it yields least squares solution
+
+
+
+---
+
+# Shrinkage methods: Graphical intuition
+
+![FSS_Algo](images/2d_pen_ridge_lasso.png)
+
+---
+
+# Shrinkage methods: Ridge vs Lasso
+
+- Qualitatively, both give very similar results.
+For both, as $\lambda$ increases, variance decreases and bias increases
+
+- If all predictors associated with outcome, ridge slightly outperforms lasso
+
+- When not all predictors associated with outcome or when some predictors have very large coefficients, lasso slightly outperforms ridge
+
+- Ridge regression more or less shrinks every dimension of the data by the same proportion, whereas the lasso more or less shrinks all coefficients toward or to zero by a similar amount
+
+- Biggest advantage of lasso is variable selection, making model interpretation easier
+
+- Use cross-validation to determine which technique is better for a particular dataset
+
+
+---
+
+# Shrinkage methods: Bayesian point of view 
+
+- In Bayesian theory, we assume $\beta$ has a prior distribution: $p(\beta)$ Multiplying that prior by the likelihood gives us the posterior distribution. 
+
+- If $p(\beta)$ follows a Gaussian distribution with mean 0 and SD that is a function of $\lambda$ then the most likely posterior value for $\beta$ is the ridge regression solution
+
+- If $p(\beta)$ follows a Laplace distribution with mean 0 and a scale parameter of $\lambda$ then the most likely posterior value for $\beta$ is the lasso regression solution
+
+
+
+
+
+---
+
+
+# Shrinkage methods: Selecting $\lambda$
+
+- Cross validation is a simple way to choose the best $\lambda$
+
+ - Choose a grid of $\lambda$ values and compute cross-validation error for each value of $\lambda$
+ - Choose $\lambda$ for which error is smallest
+
+![FSS_Algo](images/CV_lam.png)
+
+
+
+
+---
+
+
+class: middle, center
+
+# Happy End
+
+
