@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Linear Model Selection and Regularization</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Gregor Buch" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/FMstyles.css" type="text/css" />
+    <link rel="stylesheet" href="css/animate.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, title-slide
+
+# Linear Model Selection and Regularization
+## Subset Selection </br> &amp; </br> Shrinkage Methods
+### Gregor Buch</br>
+### 2020/04/27
+
+---
+
+
+
+
+# Motivation
+
+### Improve Accuracy
+- Least-squares is ideal where `\(n&gt;&gt;p\)`
+- Not as good if `\(n&gt;p\)`
+- Linear equations do not solve if `\(n&lt;&lt;p\)`
+
+### Improve Interpretability
+ - Remove irrelevant predictors
+
+---
+
+# Outline
+
+### Subset Selection
+- Best Subset Selection
+- Stepwise Selection (Forward, Backward, Hybrid)
+- Chossing Optimal Model
+  
+### Shrinkage
+- Ridge Regression
+- The Lasso
+- Selecting Turning Parameter 
+  
+### Dimension Reduction (part two)
+
+
+---
+
+# Subset Selection: Best Subset Selection 
+
+- Try all possible combinations of `\(p\)` predictors and choose the best one
+
+
+- Advantages: Exhaustive &amp; simple
+
+
+- Disadvantages: Computationally intensive 
+
+  - `\(2^p\)` possible models must be evaluated
+  
+  - "becomes computationally infeasible for values of `\(p\)` greater than around 40" 
+
+---
+
+
+# Subset Selection: Best Subset Selection 
+
+![BSS_Algo](images/BSS_Algo.png)
+
+
+---
+
+
+
+# Subset Selection: Best Subset Selection 
+
+![BSS_RSSvsn_p](images/BSS_RSSvsn_p.png)
+
+Each possible model with all predictors of `Credit` data set. Red frontier tracks the best model for a given number of predictors, according to `\(RSS\)` and `\(R^2\)`
+
+---
+
+
+# Subset Selection: Stepwise Selection 
+
+Stepwise methods explore a more restricted set of  models, reducing overfitting and reducing time to select/fit the model.
+
+
+Three types: 
+
+- Forward Stepwise
+
+- Backward Stepwise
+
+- Hybrid Approaches
+
+---
+
+
+# Subset Selection: Stepwise Selection 
+## Forward Stepwise 
+- Begins with a model containing no predictors
+- Adds the predictor that gives the greatest improvement to the model
+- Adds further predictors until all predictors are added
+- Of all models created, the “best” is chosen
+![FSS_Algo](images/FSS_Algo.png)
+
+
+---
+
+# Subset Selection: Stepwise Selection 
+## Backward Stepwise 
+- A model is built including all predictors
+- At each step, the least-predictive is removed 
+- Of each of the models produced by each step, the best model is selected
+- Cannot be used when `\(n &lt; p\)`
+![FSS_Algo](images/BWSS_Algo.png)
+
+
+---
+
+# Subset Selection: Stepwise Selection 
+## Hybrid approaches
+
+- Hybrid combine both forward and backward selection.
+
+- These models begin with a null model and add predictors like forward selection.
+
+- At each step, they also remove predictors that are less-informative, like backward selection. 
+
+
+
+---
+
+
+
+# Stepwise Selection vs Best Subset Selection
+
+### Stepwise Selection:
+- Faster than best subset selection
+- Tractable for problems with `\(p &gt; 40\)`
+
+
+### Best Subset Selection
+- Guaranteed to find the best possible model
+
+---
+
+
+
+# Subset Selection: Optimal Model 
+
+“The model containing all of the predictors will always have the smallest `\(RSS\)` and the
+largest `\(R^2\)`, since these quantities are related to the training error.”
+
+
+We wish to choose a model with a low test error.
+
+
+### Estimating test error:
+
+- Adjust the training error to account for bias
+
+- Directly estimate with cross-validation or a validation set
+
+---
+
+# Subset Selection: Optimal Model
+ ## Adjusting with `\(C_p\)` 
+
+&lt;center&gt;
+ `\(c_p = \frac{1}{n}\left ( RSS + 2d \hat{\sigma}^2 \right)\)`
+&lt;/center&gt;
+`\(~\)`
+- For least-squares models
+
+- An unbiased estimate of MSE, if `\(\hat{\sigma}^2\)` is an unbiased estimate of `\(\sigma^2\)`
+
+- The penalty increases as the number of predictors in the model increases
+
+- Choose the model with the lowest `\(C_p\)` value
+
+
+---
+
+# Subset Selection: Optimal Model
+ ## Adjusting with Akaike Information Criterion `\(AIC\)`
+&lt;center&gt;
+`\(AIC = \frac{1}{n\hat{\sigma}^2}\left ( RSS + 2d \hat{\sigma}^2 \right)\)`
+&lt;/center&gt;
+`\(~\)`
+- For models fit with maximum likelihood
+
+- Omitted an additive constant: Proportional to `\(C_p\)`
+
+---
+
+# Subset Selection: Optimal Model
+ ## Adjusting with Bayesian Information Criterion `\(BIC\)`
+&lt;center&gt;
+`\(BIC = \frac{1}{n\hat{\sigma}^2}\left ( RSS + log(n)d\hat{\sigma}^2 \right)\)`
+&lt;/center&gt;
+`\(~\)`
+- For models fit with maximum likelihood 
+
+- Omitted an additive constant
+
+- Heavier penalty on the number of predictors than `\(C_p\)`
+
+---
+
+# Subset Selection: Optimal Model
+ ## Adjusting with Adjusted `\(R^2\)`
+&lt;center&gt;
+`\(Adjusted R^2 = 1 - \frac{RSS/(n-d-1)}{TSS/(n-1)}\)`
+
+`\(TSS = \sum (y_i − \bar{y})^2\)`
+&lt;/center&gt;
+`\(~\)`
+- Regular `\(R^2\)` always increases with added predictors.
+
+- The Adjusted `\(R^2\)`, is corrected for the number of predictors `\(d\)`, such that it may decrease as additional, less-informative predictors are added to the model. 
+
+- A large value of Adjusted `\(R^2\)` indicates a model with low test error.
+
+
+---
+# Subset Selection: Optimal Model
+ ## Comparison: `\(C_p\)` vs `\(BIC\)` vs `\(R^2\)`
+
+![FSS_Algo](images/C_vs_BIC_vs_R.png)
+
+---
+# Subset Selection: Optimal Model
+ ## Estimating with Validation or Cross-Validation 
+
+- Compute validation set error or cross-validation error for each model
+
+- Select model with smallest test error 
+
+- Direkt estimated test error based on fewer assumptions
+
+
+---
+
+# Subset Selection: Optimal Model
+ ## Comparison: Adjusing vs Estimating
+
+![FSS_Algo](images/CV_SSS.png)
+
+---
+
+# Subset Selection: Optimal Model
+ ## one-standard-error-rule
+
+- Calculate the standard error of test MSE for each model.
+Select the smallest model for which the estimated test error is within one SE of the lowest point in the curve. 
+
+" The rationale here is that
+if a set of models appear to be more or less equally good, then we might
+as well choose the simplest model—that is, the model with the smallest
+number of predictors. "
+
+
+---
+
+# Shrinkage methods:  
+
+- Fit a model with all predictors that shrinks coefficient estimates towards zero
+
+- Shrinking coefficient estimates can significantly reduce their variance
+
+- Two best known shrinkage methods: ridge and lasso
+
+
+---
+
+
+# Shrinkage methods: Ridge
+
+- Very similar to least squares in that both methods select coefficients that reduce RSS
+
+- Coefficients are estimated by minimizing slightly different quantity 
+
+ 
+`\(~\)`
+`\(~\)`
+&lt;center&gt;
+
+`\(\sum_{i=1}^{n}\left (y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij}  \right )^2 + \lambda \sum_{j=1}^{p} \beta_j^2 = RSS + \lambda \sum_{j=1}^{p} \beta_j^2\)`
+
+
+---
+
+# Shrinkage methods: Ridge
+
+&lt;center&gt;
+
+`\(RSS + \lambda \sum_{j=1}^{p} \beta_j^2\)` 
+
+&lt;/center&gt; 
+
+### Shrinkage penalty
+- Is small when coefficients close to zero
+- Has the effect of shrinking `\(β_j\)` toward zero
+- Only applied to coefficients, not to the intercept
+
+### Tuning parameter
+- Controls impact of shrinkage penalty
+- When `\(\lambda = 0\)`: Same results as least squares
+- As `\(\lambda \rightarrow \infty\)`, coefficients approach zero
+- Ridge offers a different set of coefficients for each value of `\(\lambda\)`
+- Selecting a good value for `\(\lambda\)` is critical
+
+---
+
+
+# Shrinkage methods: Ridge
+
+![FSS_Algo](images/Ridge_lam_pen.png)
+
+---
+
+# Shrinkage methods: Ridge
+
+- Unlike least squares, ridge is very scale dependent
+
+- Therefore must standardize coefficients
+
+- The following formula will ensure all coefficients have a standard deviation of one
+
+`\(~\)`
+`\(~\)`
+
+&lt;center&gt;
+`\(\tilde{x}_{i j} = \frac{x_{i j}}{\sqrt{\frac{1}{n} \sum_{i=1}^{n}\left(x_{i j}-\bar{x}_{j}\right)^{2}}}\)`
+
+---
+
+# Shrinkage methods: Ridge
+- Advantage of ridge is rooted in the bias-variance trade-off
+- As `\(\lambda\)` increases, bias increases, but variance decreases
+
+![FSS_Algo](images/Ridge_MSE.png)
+
+---
+
+
+# Shrinkage methods: The Lasso
+
+- Similar to Ridge, but with `\(|\beta_j|\)`, which forces some coefficients to be zero: Performs variable selection
+
+- Creates models that are easier to interpret
+
+- Shrinks coefficient estimates towards zero
+
+`\(~\)`
+`\(~\)`
+
+&lt;center&gt;
+`\(\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}+\lambda \sum_{j=1}^{p}\left|\beta_{j}\right|=\mathrm{RSS}+\lambda \sum_{j=1}^{p}\left|\beta_{j}\right|\)`
+
+
+
+---
+
+# Shrinkage methods: The Lasso
+
+![FSS_Algo](images/Lasso_lam_pen.png)
+
+---
+
+
+# Shrinkage methods: Alternative Formulation
+
+### Ridge
+
+&lt;center&gt;
+`\(\underset{\beta}{\operatorname{minimize}}\left\{\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}\right\} \quad \text { subject to } \quad \sum_{j=1}^{p} \beta_{j}^{2} \leq s\)`
+&lt;/center&gt;
+
+### Lasso
+
+&lt;center&gt;
+`\(\underset{\beta}{\operatorname{minimize}}\left\{\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}\right\} \quad \text { subject to } \quad \sum_{j=1}^{p}\left|\beta_{j}\right| \leq s\)`
+&lt;/center&gt;
+
+- We are trying to find the set of estimates that lead to the smallest `\(RSS\)`, subject to the constraint that there is a budget `\(s\)` 
+
+- If `\(s\)` is very large, it yields least squares solution
+
+
+
+---
+
+# Shrinkage methods: Graphical intuition
+
+![FSS_Algo](images/2d_pen_ridge_lasso.png)
+
+---
+
+# Shrinkage methods: Ridge vs Lasso
+
+- Qualitatively, both give very similar results.
+For both, as `\(\lambda\)` increases, variance decreases and bias increases
+
+- If all predictors associated with outcome, ridge slightly outperforms lasso
+
+- When not all predictors associated with outcome or when some predictors have very large coefficients, lasso slightly outperforms ridge
+
+- Ridge regression more or less shrinks every dimension of the data by the same proportion, whereas the lasso more or less shrinks all coefficients toward or to zero by a similar amount
+
+- Biggest advantage of lasso is variable selection, making model interpretation easier
+
+- Use cross-validation to determine which technique is better for a particular dataset
+
+
+---
+
+# Shrinkage methods: Bayesian point of view 
+
+- In Bayesian theory, we assume `\(\beta\)` has a prior distribution: `\(p(\beta)\)` Multiplying that prior by the likelihood gives us the posterior distribution. 
+
+- If `\(p(\beta)\)` follows a Gaussian distribution with mean 0 and SD that is a function of `\(\lambda\)` then the most likely posterior value for `\(\beta\)` is the ridge regression solution
+
+- If `\(p(\beta)\)` follows a Laplace distribution with mean 0 and a scale parameter of `\(\lambda\)` then the most likely posterior value for `\(\beta\)` is the lasso regression solution
+
+
+
+
+
+---
+
+
+# Shrinkage methods: Selecting `\(\lambda\)`
+
+- Cross validation is a simple way to choose the best `\(\lambda\)`
+
+ - Choose a grid of `\(\lambda\)` values and compute cross-validation error for each value of `\(\lambda\)`
+ - Choose `\(\lambda\)` for which error is smallest
+
+![FSS_Algo](images/CV_lam.png)
+
+
+
+
+---
+
+
+class: middle, center
+
+# Happy End
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
