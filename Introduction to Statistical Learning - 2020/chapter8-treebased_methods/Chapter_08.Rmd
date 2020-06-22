@@ -1,0 +1,351 @@
+---
+title: "An Introduction to Statistical Learning - with applications in R"
+subtitle: "Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani"
+author: "Franziska Härtner (f.haertner@uni-mainz.de)</br>"
+date: "2020/06/22</br>
+  IMBEI - University Medical Center Mainz"
+output:
+  xaringan::moon_reader:
+    css: ["default", "default-fonts","css/FMstyles.css","css/animate.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: [center, middle]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  eval = TRUE,
+  message = FALSE,
+  echo = TRUE,
+  warnings = FALSE,
+  fig.align = "center"
+)
+library(ISLR)
+library(tree)
+library(readr)
+library(lattice)
+library(knitr)
+
+attach(Hitters)
+```
+
+class: inverse, center, middle
+
+# Chapter 8:  Tree-Based Methods
+
+---
+# 8.1 The Basics of Decision Trees
+
+```{r Fig8_1, echo=FALSE, eval=TRUE, fig.height = 6, fig.width = 12, fig.cap = "Regression Tree of the 'Hitters' data. The response is quantitative and here it is the log salary of a baseball player. The internal nodes serve to split the predictor space in two and the terminal nodes represent the mean value of the response in that region.", fig.align = "center"}
+hit_sub <- Hitters[c("Hits", "Years", "Salary")]
+hit_sub <- hit_sub[!is.na(hit_sub$Salary),]
+hit_sub$Salary <- log(hit_sub$Salary)
+tree_hitters <- tree(Salary~., data=hit_sub)
+prune_hitters <- prune.tree(tree_hitters, best=3)
+plot(prune_hitters)
+text(prune_hitters, pretty=0)
+```
+
+---
+
+# 8.1 The Basics of Decision Trees
+
+```{r Fig8_2, echo=FALSE, eval=TRUE, out.width = "80%", fig.pos="h", fig.cap = "The three resulting regions after partitioning the predictor space with the previous regression tree.", fig.align = "center"}
+include_graphics(path = "images/8.2-1.png")
+```
+
+---
+
+# 8.1.1 Prediction via Stratification of the Feature Space
+
+1. We divide the predictor space - that is, the set of possible values for $X_{1}, X_{2}, \ldots, X_{p}$ into $J$ distinct and non-overlapping regions, $R_{1}, R_{2}, \ldots, R_{J}$.
+
+--
+
+2. For every observation that falls into the region $R_{j}$, we make the same
+prediction, which is simply the mean of the response values for the
+training observations in $R_{j}$.
+
+---
+
+# 8.1.1 Prediction via Stratification of the Feature Space
+
+## How to find regions in regression trees?
+
+Find regions $R_{1}, R_{2}, \ldots, R_{J}$ such that the residual sum of squares (RSS) is minimized
+$$RSS = \sum_{j=1}^{J} \sum_{i \in R_{j}}\left(y_{i}-\hat{y}_{R_{j}}\right)^{2}$$
+
+---
+
+
+# 8.1.1 Prediction via Stratification
+
+## General Decision Tree Problem
+
+* Choose __uncertainty measure__ (e.g. RSS, Gini index etc.)
+
+* __Partition prediction space__ such that uncertainty measure is minimized
+
+* Possible side conditions:
+  * Minimize overall number of nodes
+  * Minimize number of terminal nodes
+  * Minimize tree depth
+  * Minimize average tree depth
+
+--
+
+Trying to find the optimal partition of the prediction space is a combinatorial problem $\rightarrow$ _number of possible partitions_ that one would have to try out _grows extremely fast_ with growing $J$. That means you will probably have to wait for a long time for the algorithm to finish...
+
+---
+
+# 8.1.1 Prediction via Stratification
+
+## 'CART' Approach
+
+* Makes use of a __top-down__, __greedy__ aproach $\rightarrow$ _recursive binary splitting_:
+
+  * Start from the top
+  
+  * Evaluate the problem greedily: "I will choose the split that gives me the best result right now, completely disregarding all possible future steps."
+  
+  * The greedy approach is not guaranteed to find the optimal solution
+
+---
+
+# 8.1.1 Prediction via Stratification
+
+## 'CART' Approach Details
+
+* Select predictor $X_j$ and cutpoint $s$ and create the regions
+$R_{1}(j, s)=\left\{X | X_{j}<s\right\}$ and $R_{2}(j, s)=\left\{X | X_{j} \geq s\right\}$
+
+* find the $j$, $s$ that minimize 
+$$\sum_{i: x_{i} \in R_{1}(j, s)}\left(y_{i}-\hat{y}_{R_{1}}\right)^{2}+\sum_{i: x_{i} \in R_{2}(j, s)}\left(y_{i}-\hat{y}_{R_{2}}\right)^{2}$$
+$\hat{y}_{R_{1}}$ is the mean response for the training observations in $R_{1}(j, s)$ and $\hat{y}_{R_{2}}$ is the mean response for the training observations in $R_{2}(j, s)$
+
+---
+
+# 8.1.1 Prediction via Stratification
+
+## 'CART' Approach Details
+
+* Split by best predictor and cutpoint
+
+* Continue splitting in new regions (recursively)
+
+* Finish if no region contains more than 5 observations
+
+* Predict the response for a given test observation using the mean of the training observations in the region to which that test observation belongs
+
+---
+
+# 8.1.1 Prediction via Stratification
+
+## Problem: Overfitting
+
+* Too many splits could lead to __overfitting__
+
+"A smaller tree with fewer splits (that is, fewer regions $R_{1}, R_{2}, \ldots, R_{J}$) might lead to lower variance and better interpretation at the cost of a little bias."
+
+Solution: __Pruning__
+
+---
+
+# 8.1.1 Prediction via Stratification
+
+## Cost complexity pruning
+
+* Introduce $\alpha$ as a parameter for controlling the number of regions and fit of a tree to the training data
+* $\alpha$ is non-negative, and each value of $\alpha$ represents a tree for which 
+$$\sum_{m=1}^{|T|} \sum_{i: x_{i} \in R_{m}}\left(y_{i}-\hat{y}_{R_{m}}\right)^{2}+\alpha|T|$$
+is __minimal__. $|T|$ is the number of terminal nodes, $R_m$ is the region corresponding the the $m$th terminal node, $\hat{y}_{R_{m}}$ is the mean response for the training observations in $R_{m}$
+
+$\rightarrow$ a larger $\alpha$ has a punishing effect and more branches will be pruned.
+
+* The optimal $\hat{\alpha}$, representing the tree with the lowest uncertainty measure, is determined using cross-validation
+
+---
+
+# 8.1.1 Prediction via Stratification
+
+## Cost complexity pruning
+
+```{r Fig8_4, echo=FALSE, eval=TRUE, fig.height = 6, fig.width = 12, fig.cap = "Regression Tree of the 'Hitters' data before pruning", fig.align = "center"}
+plot(tree_hitters)
+text(tree_hitters, pretty=0)
+```
+
+
+---
+
+# 8.1.1 Prediction via Stratification
+
+## Cost complexity pruning
+
+```{r Fig8_5, echo=FALSE, eval=TRUE, fig.height = 6, fig.width = 12, fig.cap = "Regression Tree of the 'Hitters' data after pruning", fig.align = "center"}
+plot(prune_hitters)
+text(prune_hitters, pretty=0)
+```
+
+
+---
+
+# 8.1.1 Prediction via Stratification
+
+## CART Algorithm with cost complexity pruning
+
+1. Use recursive binary splitting to grow a large tree on the training data, stopping only when each terminal node has fewer than some minimum number of observations.
+2. Apply cost complexity pruning to the large tree in order to obtain a sequence of best subtrees, as a function of $\alpha$.
+3. Use K-fold cross-validation to choose $\alpha$. For each $k=1, \ldots, K$:
+
+  3.1. Repeat Steps 1 and 2 on the $\frac{K-1}{K}$th fraction of the training data, excluding the $k$th fold.
+  
+  3.2. Evaluate the mean squared prediction error on the data in the left-out $k$th fold, as a function of $\alpha$.
+  
+  Average the results, and pick $\alpha$ to minimize the average error.
+4. Return the subtree from Step 2 that corresponds to the chosen value of $\alpha$.
+
+---
+
+# 8.1.1 Prediction via Stratification
+```{r Fig8_6, echo=FALSE, eval=TRUE, out.width = "80%", fig.pos="h", fig.align = "center"}
+include_graphics(path = "images/8.5-1.png")
+```
+MSE values of the regression trees from the 'Hitters' data with varying values of $\alpha$. Standard error bands are displayed. 
+
+---
+
+# 8.1.2 Classification Trees
+* Very similar to a regression tree, except that it is used to predict a qualitative response rather than a quantitative one.
+
+* For a classification tree, we predict that each observation belongs to the _most commonly occurring class_ of training observations in the region to which it belongs.
+
+
+```{r Fig8_7, echo=FALSE, eval=TRUE, out.width = "40%", fig.pos="h", fig.align = "center"}
+include_graphics(path = "images/8_7.PNG")
+```
+
+---
+
+# 8.1.2 Classification Trees
+
+* Algorithm to construct a classification tree is almost identical to constructing a regression tree 
+* Instead of RSS other measures are required.
+* Examples:
+
+Classification error rate:
+$$E=1-\max _{k}\left(\hat{p}_{m k}\right)$$
+Gini index:
+$$G=\sum_{k=1}^{K} \hat{p}_{m k}\left(1-\hat{p}_{m k}\right)$$
+Entropy:
+$$D=-\sum_{k=1}^{K} \hat{p}_{m k} \log \hat{p}_{m k}$$
+
+
+---
+
+# 8.1.3 Trees Versus Linear Models
+Which model is better? Depends...
+```{r Fig8_8, echo=FALSE, eval=TRUE, out.width = "50%", fig.pos="h", fig.align = "center", fig.cap="Top Row: True linear boundary; Bottom row: true non-linear boundary. Left column: linear model; Right column: tree-based model"}
+include_graphics(path = "images/8.7-1.png")
+```
+
+---
+
+# 8.1.4 Advantages and Disadvantages of Trees
+
+| Advantages | Disadvantages |
+|------|-----|
+| Trees are very easy to explain to people. In fact, they are even easier to explain than linear regression! | Unfortunately, trees generally do not have the same level of predictive accuracy as some of the other regression and classification approaches seen in this book. |
+| Some people believe that decision trees more closely mirror human decision-making than do the regression and classification approaches seen in previous chapters. | Additionally, trees can be very non-robust. In other words, a small change in the data can cause a large change in the final estimated tree. |
+| Trees can be displayed graphically, and are easily interpreted even by a non-expert (especially if they are small). | - |
+| Trees can easily handle qualitative predictors without the need to create dummy variables. | - |
+---
+
+# 8.2.1 Bagging
+
+## Improving predictive accuracy
+
+* Bootstrap subsets from training data
+* Train tree using one of the $B$ bootstrapped training sets to get $\hat{f}^{* b}(x)$
+* Average all predictions at point $x$:
+$$\hat{f}_{\mathrm{bag}}(x)=\frac{1}{B} \sum_{b=1}^{B} \hat{f}^{* b}(x)$$
+* For classification trees: for each test observation, we record the class predicted by each of the B trees, and take a _majority vote_
+
+* Bagging reduces variance compared to unpruned trees and produces less bias compared to pruned trees
+
+---
+
+# 8.2.1 Bagging
+```{r Fig8_9, echo=FALSE, eval=TRUE, out.width = "55%", fig.cap="Bagging and random forest results for the 'Heart' data. The test error (black and orange) is shown as a function of B, the number of bootstrapped training sets used. Bagging improves the test error slightly.", fig.pos="h", fig.align = "center"}
+include_graphics(path = "images/8.8-1.png")
+```
+
+---
+
+# 8.2.2 Random Forests
+
+* __Idea:__ reduce correlation between trees to reduce variance even more
+
+* when building the decision trees on bootstrapped training samples only a random sample of $m$ predictors is chosen
+
+* mostly, $m \approx \sqrt{p}$
+
+---
+
+# 8.2.2 Random Forests
+```{r Fig8_10, echo=FALSE, eval=TRUE, out.width = "60%", fig.cap="Test error for increasing number of random forests. Data is 15-class gene expression data. ", fig.pos="h", fig.align = "center"}
+include_graphics(path = "images/8.10-1.png")
+```
+As with bagging, random forests will not overfit if we increase $B$, so in
+practice we use a value of $B$ sufficiently large for the error rate to
+have settled down.
+
+---
+
+# 8.2.3 Boosting
+* grow trees __sequentially__: each tree is grown using information from previously grown trees
+
+* each tree is fit on a modified version of the original data set
+
+  * instead of fitting the tree to the outcome $Y$, a __new tree is fitted on the residuals__ obtained from the previous step
+  
+  * the __number of terminal nodes__ is determined by the parameter $d$, and the trees are rather __small__
+  
+  * the new tree is then added to the previous function, weighted with a __shrinkage parameter__ $\lambda$
+  
+  * the residuals are updated
+
+---
+
+## 8.2.3 Boosting algorithm for regression trees
+1. Set $\hat{f}(x)=0$ and $r_{i}=y_{i}$ for all $i$ in the training set.
+2. For $b=1,2, \ldots, B$, repeat:
+  
+  2.1 Fit a tree $\hat{f}^{b}$ with $d$ splits ( $d + 1$ terminal nodes) to the training data $(X, r)$.
+  
+  2.2 Update $\hat{f}^{b}$ by adding in a shrunken version of the new tree:
+  $$\hat{f}(x) \leftarrow \hat{f}(x)+\lambda \hat{f}^{b}(x)$$
+  2.3 Update the residuals,
+  $$r_{i} \leftarrow r_{i}-\lambda \hat{f}^{b}\left(x_{i}\right)$$
+3. Output the boosted model,
+
+$$\hat{f}(x)=\sum_{b=1}^{B} \lambda \hat{f}^{b}(x)$$
+
+---
+
+# 8.2.3 Boosting
+```{r Fig8_11, echo=FALSE, eval=TRUE, out.width = "60%", fig.cap="Test error performing boosting for an increasing number of trees. Data is 15-class gene expression data. ", fig.pos="h", fig.align = "center"}
+include_graphics(path = "images/8.11-1.png")
+```
+Depth-1 trees slightly outperform depth-2 trees, and both outperform the
+random forest. 
+
+---
+
+class: middle, center
+
+# Thanks!
