@@ -29,8 +29,6 @@ library(tree)
 library(readr)
 library(lattice)
 library(knitr)
-
-attach(Hitters)
 ```
 
 class: inverse, center, middle
