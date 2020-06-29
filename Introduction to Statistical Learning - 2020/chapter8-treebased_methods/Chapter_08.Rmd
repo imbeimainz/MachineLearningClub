@@ -29,8 +29,6 @@ library(tree)
 library(readr)
 library(lattice)
 library(knitr)
-
-attach(Hitters)
 ```
 
 class: inverse, center, middle
@@ -41,7 +39,7 @@ class: inverse, center, middle
 # 8.1 The Basics of Decision Trees
 
 ```{r Fig8_1, echo=FALSE, eval=TRUE, fig.height = 6, fig.width = 12, fig.cap = "Regression Tree of the 'Hitters' data. The response is quantitative and here it is the log salary of a baseball player. The internal nodes serve to split the predictor space in two and the terminal nodes represent the mean value of the response in that region.", fig.align = "center"}
-hit_sub <- Hitters[c("Hits", "Years", "Salary")]
+hit_sub <- Hitters[, c("Hits", "Years", "Salary")]
 hit_sub <- hit_sub[!is.na(hit_sub$Salary),]
 hit_sub$Salary <- log(hit_sub$Salary)
 tree_hitters <- tree(Salary~., data=hit_sub)
