@@ -1,0 +1,190 @@
+%Sätze, Definitionen , Beispiele und Beweise
+
+%\newcounter{claim}[section]
+%\addtocounter{claim}{0} 
+
+
+%\theoremstyle{plain}
+%\newtheorem*{theo}{Theorem \thesection.\arabic{claim}} 
+%\newtheorem*{lem}{Lemma \thesection.\arabic{claim}}
+%\newtheorem*{cor}{Corollary \thesection.\arabic{claim}}
+%\newtheorem*{propo}{Proposition \thesection.\arabic{claim}}
+
+%\theoremstyle{definition}
+%\newtheorem*{define}{Definition \thesection.\arabic{claim}}
+
+%\theoremstyle{remark}
+%\newtheorem*{bem}{Remark \thesection.\arabic{claim}}
+%\newtheorem*{bsp}{Example \thesection.\arabic{claim}}
+
+%\newcommand{\definition}[1]{\stepcounter{claim} \begin{define}#1\end{define}}
+%\newcommand{\remark}[1]{\stepcounter{claim} \begin{bem}#1\end{bem}}
+%\newcommand{\example}[1]{\stepcounter{claim} \begin{bsp}#1\end{bsp}}
+%\newcommand{\pf}[1]{\begin{proof}#1\end{proof}}
+%\newcommand{\theorem}[1]{\stepcounter{claim} \begin{theo}#1\end{theo}}
+%\newcommand{\proposition}[1]{\stepcounter{claim} \begin{propo}#1\end{propo}}
+%\newcommand{\lemma}[1]{\stepcounter{claim} \begin{lem}#1\end{lem}}
+%\newcommand{\corollary}[1]{\stepcounter{claim} \begin{cor}#1\end{cor}}
+
+
+\theoremstyle{plain}
+\newtheorem{theo}{Theorem} \numberwithin{theo}{section} 
+\newtheorem{lem}[theo]{Lemma}
+\newtheorem{cor}[theo]{Corollary}
+\newtheorem{propo}[theo]{Proposition}
+\newtheorem{problem}[theo]{Problem}
+
+\theoremstyle{definition}
+\newtheorem{define}[theo]{Definition}
+
+\theoremstyle{remark}
+\newtheorem{bem}[theo]{Remark}
+\newtheorem{bsp}[theo]{Example}
+
+
+\newcommand{\definition}[1]{\begin{define}#1\end{define}}
+\newcommand{\remark}[1]{\begin{bem}#1\end{bem}}
+\newcommand{\example}[1]{\begin{bsp}#1\end{bsp}}
+\newcommand{\pf}[1]{\begin{proof}#1\end{proof}}
+\newcommand{\theorem}[1]{\begin{theo}#1\end{theo}}
+\newcommand{\proposition}[1]{\begin{propo}#1\end{propo}}
+\newcommand{\lemma}[1]{\begin{lem}#1\end{lem}}
+\newcommand{\corollary}[1]{\begin{cor}#1\end{cor}}
+\newcommand{\Problem}[1]{\begin{problem}#1\end{problem}}
+
+% Referenzen
+\newcommand{\theoref}{\ref}
+
+
+% Aufzählungen
+\newcommand{\stichpunkte}[1]{
+\begin{itemize}
+	#1
+\end{itemize}
+}
+
+\newcommand{\enumeration}[1]{
+\begin{enumerate}
+	#1
+\end{enumerate}
+}
+
+\newcommand{\case}[1]{
+\begin{cases}
+#1
+\end{cases}
+}
+
+% Matrizen
+\newcommand{\matrice}[1]{\begin{pmatrix}#1\end{pmatrix}}
+
+%Gleichungen
+\newcommand{\eqns}[1]{\begin{eqnarray*}#1\end{eqnarray*}}
+\newcommand{\eqn}[1]{\begin{equation}#1\end{equation}}
+\newcommand{\eqnumformung}[1]{\begin{equation*}
+\begin{array}{rccl}#1
+\end{array}
+\end{equation*}
+}
+
+% Mengen
+
+\newcommand{\M}[1]{\mathcal{#1}} % für Mengen 
+\newcommand{\Hi}{\M{H}}          % Hilbertraum
+
+
+
+\newcommand{\C}{\mathbb{C}}   %komplexe Zahlen
+\newcommand{\R}{\mathbb{R}}   %relle Zahlen
+\newcommand{\Q}{\mathbb{Q}}   %rationale Zahlen
+\newcommand{\Z}{\mathbb{Z}}   %ganze Zahlen
+\newcommand{\N}{\mathbb{N}}   %natürliche Zahlen
+\newcommand{\K}{\mathbb{K}}   %Körper
+\newcommand{\T}{\mathbb{T}}   %Torus
+
+
+
+\newcommand{\SL}{\mathcal{L}} %script L
+\newcommand{\SM}{\mathcal{M}} %script M
+\newcommand{\SH}{\mathcal{H}} %script H
+\newcommand{\SK}{\mathcal{K}} %script K
+\newcommand{\SA}{\mathcal{A}} %script A
+\newcommand{\SB}{\mathcal{B}} %script B
+\newcommand{\SC}{\mathcal{C}} %script C
+\newcommand{\SD}{\mathcal{D}} %script D
+\newcommand{\SF}{\mathcal{F}} %script F
+\newcommand{\SO}{\mathcal{O}} %script O
+\newcommand{\SR}{\mathcal{R}} %script R
+\newcommand{\sS}{\mathcal{S}} %script S
+\newcommand{\SU}{\mathcal{U}} %script U
+\newcommand{\SV}{\mathcal{V}} %script V
+\newcommand{\SW}{\mathcal{W}} %script W
+
+\newcommand{\sg}{\mathfrak{g}}   %Lie Algebra g
+\newcommand{\sh}{\mathfrak{h}}   %Lie Algebra h
+\newcommand{\so}{\mathfrak{o}}   %Lie Algebra o
+\newcommand{\su}{\mathfrak{u}}   %Lie Algebra u
+\newcommand{\sgl}{\mathfrak{gl}} %Lie Algebra gl
+\newcommand{\spu}{\mathfrak{pu}} %Lie Algebra pu
+
+
+% Funktoren
+\newcommand{\fL}{\textbf{L}} % Lie-Funktor L
+
+% Konstanten
+\DeclareMathOperator*{\I}{i}     %% imaginäre Einheit
+\DeclareMathOperator*{\E}{e}     %% Euler´sche Zahl
+
+% griechische Kleinbuchstaben
+
+\newcommand{\eps}{\varepsilon}
+
+% Differentialoperatoren
+
+\newcommand{\mydiv}{\text{ div}}
+\newcommand{\pdt}{\frac{\partial}{\partial t}}
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\dt}{\frac{d}{dt}}
+
+% Mathe-Operatoren
+\DeclareMathOperator*{\Tr}{Tr}     %% Spur; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\im}{im}     %% Bild; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Ker}{ker}   %% Kern; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\lin}{lin}   %% lineare Hülle; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Hom}{Hom}   %% Homomorphismen; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\End}{End}   %% Endomorphismen; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Aut}{Aut}   %% Automorphismen; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Iso}{Iso}   %% Isomorphismen; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Mot}{Mot}   %% Bewegungsgruppe; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Aff}{Aff}   %% Affine Gruppe; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Diff}{Diff} %% Diffeomorphismen; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\GL}{GL}     %% invertierbare Operatoren; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Mat}{Mat}   %% Matrizen; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\diag}{diag} %% Diagonalmatrizen; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Ad}{Ad}     %% Adjungierte auf Gruppenebene; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\ad}{ad}     %% Adjungierte auf Algebrenebene; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Der}{Der}   %% Derivationen; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\diam}{diam} %% Durchmesser; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\id}{id}     %% Identität; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\supp}{supp} %% Tr"ager einer Funktion; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+\DeclareMathOperator*{\Pro}{P}     %% Projektiv-Funktor; soll in Sätzen immer normal gedruckt erscheinen (nicht kursiv)
+
+%Normen, Skalarprodukte, Erzeugnisse
+\newcommand{\mynorm}[2]{\left\|#1\right\|_{#2}}
+\newcommand{\opnorm}[1]{\mynorm{#1}{\text{op}}}
+\newcommand{\skp}[3]{\left\langle #1,#2 \right\rangle_{#3}}
+\newcommand{\gen}[2]{\left\langle #1\right\rangle_{#2}}
+
+
+%Style
+\newcommand{\oline}[1]{\overline{#1}}
+\newcommand{\iof}{if and only if }                           %% if and only if
+%\newcommand{\im}{\text{im}}                                   %% prints im(...) in math mode
+%\newcommand{\lin}[1]{\text{span}\left\{#1\right\}}           %% prints span{...} in math mode
+%\newcommand{\Hom}[1]{\text{Hom}\left(#1\right)}              %% prints Hom(...) in math mode 
+%\newcommand{\Iso}[1]{\text{Iso}\left(#1\right)}              %% prints Iso(...) in math mode 
+\newcommand{\1}{\mathbbm{1}}                                 %% prints the identity operator in math mode 
+
+%Sonstiges
+
+\newcommand{\mybinom}[2]{\left(^{#1}_{#2}\right)}  %% Binomialkoeffizienten
