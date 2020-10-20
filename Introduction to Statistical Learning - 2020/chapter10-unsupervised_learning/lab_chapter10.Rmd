@@ -3,7 +3,7 @@ title: >
   ISL - Chapter 10 Labs
 author: XXX
 output: 
-  html_document:
+  pdf_document:
   # BiocStyle::html_document:
     toc: true
     toc_float: true
