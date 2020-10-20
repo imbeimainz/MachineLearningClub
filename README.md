@@ -20,7 +20,9 @@ This repository serves the purpose of being a one-stop shop for all the material
 
 ## Current activities
 
-During Mar 2020 - [] 2020, we will read [Introduction to Statistical Learning](https://github.com/imbeimainz/MachineLearningClub/tree/master/Introduction%20to%20Statistical%20Learning%20-%202020).
+* Oct 2020 -  2021, we will read ...
+
+* Mar 2020 - Jul 2020, we have read [Introduction to Statistical Learning](https://github.com/imbeimainz/MachineLearningClub/tree/master/Introduction%20to%20Statistical%20Learning%20-%202020).
 
 See the [schedule wiki](https://github.com/imbeimainz/MachineLearningClub/wiki) for the schedule of presentations.
 
