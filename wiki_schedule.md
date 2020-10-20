@@ -1,7 +1,7 @@
 
 # Home
 
-Welcome to the IMBEIbookclub wiki\!
+Welcome to the MachineLearningClub wiki\!
 
 ## Details
 
@@ -64,4 +64,4 @@ knitr::kable(schedule_df)
 
 Then, take the content of the generated `wiki_schedule.md` file and
 replace the content of the Wiki at
-<https://github.com/imbeimainz/IMBEIbookclub/wiki>
+<https://github.com/imbeimainz/MachineLearningClub/wiki>
