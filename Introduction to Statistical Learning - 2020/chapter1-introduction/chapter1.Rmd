@@ -133,7 +133,7 @@ In-depth introduction to machine learning in 15 hours of expert videos: https://
 
 # Guidelines and Logistics
 
-https://github.com/imbeimainz/IMBEIbookclub
+https://github.com/imbeimainz/MachineLearningClub
 
 ![](images/bookclub_repo.png)
 
@@ -141,7 +141,7 @@ https://github.com/imbeimainz/IMBEIbookclub
 
 # Guidelines and Logistics
 
-https://github.com/imbeimainz/IMBEIbookclub
+https://github.com/imbeimainz/MachineLearningClub
 
 Time: Mondays, 13.15 - 14.45
 Where: IMBEI Sitzungssaal (Building 902)
@@ -152,14 +152,14 @@ Proposal: the channel `#bookclub` in the Slack workspace https://imbeibiostats-b
 
 Sharing code, outputs:
 
-https://github.com/imbeimainz/IMBEIbookclub - please respect the folder structure
+https://github.com/imbeimainz/MachineLearningClub - please respect the folder structure
 
 
 ---
 
 # Schedule
 
-https://github.com/imbeimainz/IMBEIbookclub/wiki
+https://github.com/imbeimainz/MachineLearningClub/wiki
 
 ![](images/bookclub_wiki.png)
 

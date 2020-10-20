@@ -4,6 +4,7 @@
     <title>An Introduction to Statistical Learning - with applications in R</title>
     <meta charset="utf-8" />
     <meta name="author" content="Federico Marini (marinif@uni-mainz.de)" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/FMstyles.css" type="text/css" />
@@ -129,7 +130,7 @@ In-depth introduction to machine learning in 15 hours of expert videos: https://
 
 # Guidelines and Logistics
 
-https://github.com/imbeimainz/IMBEIbookclub
+https://github.com/imbeimainz/MachineLearningClub
 
 ![](images/bookclub_repo.png)
 
@@ -137,7 +138,7 @@ https://github.com/imbeimainz/IMBEIbookclub
 
 # Guidelines and Logistics
 
-https://github.com/imbeimainz/IMBEIbookclub
+https://github.com/imbeimainz/MachineLearningClub
 
 Time: Mondays, 13.15 - 14.45
 Where: IMBEI Sitzungssaal (Building 902)
@@ -148,14 +149,14 @@ Proposal: the channel `#bookclub` in the Slack workspace https://imbeibiostats-b
 
 Sharing code, outputs:
 
-https://github.com/imbeimainz/IMBEIbookclub - please respect the folder structure
+https://github.com/imbeimainz/MachineLearningClub - please respect the folder structure
 
 
 ---
 
 # Schedule
 
-https://github.com/imbeimainz/IMBEIbookclub/wiki
+https://github.com/imbeimainz/MachineLearningClub/wiki
 
 ![](images/bookclub_wiki.png)
 
@@ -558,6 +559,8 @@ class: middle, center
 Next meeting: March, 9 2020
 
 ![](images/bookclub_chap2_preview.png)
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -605,6 +608,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -622,17 +651,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {

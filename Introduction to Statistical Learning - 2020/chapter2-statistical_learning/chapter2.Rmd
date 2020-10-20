@@ -34,7 +34,7 @@ library(lattice)
 library(knitr)
 
 # import Advertisting data (downloaded from http://faculty.marshall.usc.edu/gareth-james/ISL/data.html)
-Advertising <- read_csv("~/GitHub/IMBEIbookclub/Introduction to Statistical Learning - 2020/chapter2-statistical_learning/chapter2_files/Advertising.csv")
+Advertising <- read_csv("~/GitHub/MachineLearningClub/Introduction to Statistical Learning - 2020/chapter2-statistical_learning/chapter2_files/Advertising.csv")
 ```
 
 class: inverse, center, middle

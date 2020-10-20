@@ -26,9 +26,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-# The `IMBEIbookclub` repo
+# The `MachineLearningClub` repo
 
-https://github.com/imbeimainz/IMBEIbookclub/
+https://github.com/imbeimainz/MachineLearningClub/
 
 --
 
