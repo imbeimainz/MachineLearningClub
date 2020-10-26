@@ -20,7 +20,7 @@ This repository serves the purpose of being a one-stop shop for all the material
 
 ## Current activities
 
-* Oct 2020 -  2021, we will read ...
+* Nov 2020 - MMM 2021, we will read [Deep Learning with R](https://www.manning.com/books/deep-learning-with-r)
 
 * Mar 2020 - Jul 2020, we have read [Introduction to Statistical Learning](https://github.com/imbeimainz/MachineLearningClub/tree/master/Introduction%20to%20Statistical%20Learning%20-%202020).
 
