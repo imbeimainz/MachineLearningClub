@@ -1,7 +1,7 @@
 
 # Home
 
-Welcome to the MachineLearningClub wiki\!
+Welcome to the MachineLearningClub wiki!
 
 ## Details
 
@@ -9,17 +9,23 @@ Each meeting will be focused on a particular chapter, or a part thereof.
 
 ### Deep Learning with R
 
-| Sections  | Date       | Presenter      | Exercises |
-| :-------- | :--------- | :------------- | :-------- |
-|           | 2020-11-XX | Max Mustermann |           |
-| Chapter 2 | 2020-MM-DD |                | Chapter 2 |
-| Chapter 3 | 2020-MM-DD |                | Chapter 3 |
-| Chapter 4 | 2020-MM-DD |                | Chapter 4 |
-| Chapter 5 | 2021-MM-DD |                | Chapter 5 |
-| Chapter 6 | 2021-MM-DD |                | Chapter 6 |
-| Chapter 7 | 2021-MM-DD |                | Chapter 7 |
-| Chapter 8 | 2021-MM-DD |                | Chapter 8 |
-| Chapter 9 | 2021-MM-DD |                | Chapter 9 |
+| Sections               | Date       | Presenter                     |
+|:-----------------------|:-----------|:------------------------------|
+| Chapter 1 + Appendix A | 2020-11-16 | Markus Schepers               |
+| Chapter 2              | 2020-11-23 | Markus Brugger                |
+| Chapter 3              | 2020-11-30 | Federico Marini + ??          |
+| Chapter 3              | 2020-12-DD | Federico Marini + ??          |
+| Chapter 4              | 2020-12-DD | Philipp Mildenberger + Rex Ha |
+| Chapter 4              | 2020-12-DD | Philipp Mildenberger + Rex Ha |
+| Chapter 5              | 2021-MM-DD |                               |
+| Chapter 5              | 2021-MM-DD |                               |
+| Chapter 6              | 2021-MM-DD |                               |
+| Chapter 6              | 2021-MM-DD |                               |
+| Chapter 7              | 2021-MM-DD |                               |
+| Chapter 7              | 2021-MM-DD |                               |
+| Chapter 8              | 2021-MM-DD | Manuel Herbst + Lars Hadidi   |
+| Chapter 8              | 2021-MM-DD | Manuel Herbst + Lars Hadidi   |
+| Chapter 9              | 2021-MM-DD | Konstantin Strauch            |
 
 Please use `wiki_schedule.Rmd` in the repo to generate the content for
 this page
@@ -28,7 +34,7 @@ Then, take the content of the generated `wiki_schedule.md` file and
 replace the content of the Wiki at
 <https://github.com/imbeimainz/MachineLearningClub/wiki>
 
------
+------------------------------------------------------------------------
 
 ### Introduction to Statistical Learning
 
@@ -36,10 +42,10 @@ The first part of each meeting will be dedicated to a short recap on the
 “Labs” from the previous chapter
 
 | Sections      | Date       | Presenter                            | Exercises     |
-| :------------ | :--------- | :----------------------------------- | :------------ |
+|:--------------|:-----------|:-------------------------------------|:--------------|
 | Intro         | 2020-03-02 | Federico                             |               |
 | Chapter 2     | 2020-03-09 | Irene + Federico (labs)              | Chapter 2     |
-| rescheduled\! | 2020-03-16 |                                      | rescheduled\! |
+| rescheduled!  | 2020-03-16 |                                      | rescheduled!  |
 | Chapter 3     | 2020-03-23 | Philipp + Jan                        | Chapter 3     |
 | Chapter 4     | 2020-03-30 | Jochem + Robert                      | Chapter 4     |
 | Chapter 5     | 2020-04-20 | Dan + Jennifer                       | Chapter 5     |

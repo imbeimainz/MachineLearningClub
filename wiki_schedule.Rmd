@@ -16,10 +16,9 @@ Each meeting will be focused on a particular chapter, or a part thereof.
 
 ```{r, echo = FALSE}
 schedule_df <- data.frame(
-  Sections = "",
-  Date = "2020-11-XX",
-  Presenter = "Max Mustermann",
-  Exercises = "",
+  Sections = "Chapter 1 + Appendix A",
+  Date = "2020-11-16",
+  Presenter = "Markus Schepers",
   stringsAsFactors = FALSE
 )
 ```
@@ -27,14 +26,20 @@ schedule_df <- data.frame(
 ```{r, echo = FALSE}
 schedule_df <- rbind(
   schedule_df,
-  c("Chapter 2", "2020-MM-DD", ""),
-  c("Chapter 3", "2020-MM-DD", ""),
-  c("Chapter 4", "2020-MM-DD", ""),
+  c("Chapter 2", "2020-11-23", "Markus Brugger"),
+  c("Chapter 3", "2020-11-30", "Federico Marini + ??"),
+  c("Chapter 3", "2020-12-DD", "Federico Marini + ??"),
+  c("Chapter 4", "2020-12-DD", "Philipp Mildenberger + Rex Ha"),
+  c("Chapter 4", "2020-12-DD", "Philipp Mildenberger + Rex Ha"),
+  c("Chapter 5", "2021-MM-DD", ""),
   c("Chapter 5", "2021-MM-DD", ""),
   c("Chapter 6", "2021-MM-DD", ""),
+  c("Chapter 6", "2021-MM-DD", ""),
   c("Chapter 7", "2021-MM-DD", ""),
-  c("Chapter 8", "2021-MM-DD", ""),
-  c("Chapter 9", "2021-MM-DD", "")
+  c("Chapter 7", "2021-MM-DD", ""),
+  c("Chapter 8", "2021-MM-DD", "Manuel Herbst + Lars Hadidi"),
+  c("Chapter 8", "2021-MM-DD", "Manuel Herbst + Lars Hadidi"),
+  c("Chapter 9", "2021-MM-DD", "Konstantin Strauch")
 )  
   # c("Topic2", "2020-03-09", "Person2", ""),
   
