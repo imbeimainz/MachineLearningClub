@@ -10,9 +10,58 @@ Welcome to the MachineLearningClub wiki!
 
 Each meeting will be focused on a particular chapter, or a part thereof. 
 
-The first part of each meeting will be dedicated to a short recap on the "Labs" from the previous chapter
+
+
+### Deep Learning with R
+
+```{r, echo = FALSE}
+schedule_df <- data.frame(
+  Sections = "Chapter 1 + Appendix A",
+  Date = "2020-11-16",
+  Presenter = "Markus Schepers",
+  stringsAsFactors = FALSE
+)
+```
+
+```{r, echo = FALSE}
+schedule_df <- rbind(
+  schedule_df,
+  c("Chapter 2", "2020-11-23", "Markus Brugger"),
+  c("Chapter 3", "2020-11-30", "Federico Marini + ??"),
+  c("Chapter 3", "2020-12-DD", "Federico Marini + ??"),
+  c("Chapter 4", "2020-12-DD", "Philipp Mildenberger + Rex Ha"),
+  c("Chapter 4", "2020-12-DD", "Philipp Mildenberger + Rex Ha"),
+  c("Chapter 5", "2021-MM-DD", ""),
+  c("Chapter 5", "2021-MM-DD", ""),
+  c("Chapter 6", "2021-MM-DD", ""),
+  c("Chapter 6", "2021-MM-DD", ""),
+  c("Chapter 7", "2021-MM-DD", ""),
+  c("Chapter 7", "2021-MM-DD", ""),
+  c("Chapter 8", "2021-MM-DD", "Manuel Herbst + Lars Hadidi"),
+  c("Chapter 8", "2021-MM-DD", "Manuel Herbst + Lars Hadidi"),
+  c("Chapter 9", "2021-MM-DD", "Konstantin Strauch")
+)  
+  # c("Topic2", "2020-03-09", "Person2", ""),
+  
+```
+
+
+```{r, echo = FALSE}
+knitr::kable(schedule_df)
+```
+
 
 Please use `wiki_schedule.Rmd` in the repo to generate the content for this page
+
+
+Then, take the content of the generated `wiki_schedule.md` file and replace the content of the Wiki at https://github.com/imbeimainz/MachineLearningClub/wiki
+
+
+---
+
+### Introduction to Statistical Learning
+
+The first part of each meeting will be dedicated to a short recap on the "Labs" from the previous chapter
 
 ```{r, echo = FALSE}
 schedule_df <- data.frame(
@@ -24,7 +73,7 @@ schedule_df <- data.frame(
 )
 ```
 
-```{r}
+```{r, echo = FALSE}
 schedule_df <- rbind(
   schedule_df,
   c("Chapter 2", "2020-03-09", "Irene + Federico (labs)"),
@@ -50,10 +99,8 @@ schedule_df <- rbind(
 ```
 
 
-```{r}
+```{r, echo = FALSE}
 knitr::kable(schedule_df)
 ```
-
-Then, take the content of the generated `wiki_schedule.md` file and replace the content of the Wiki at https://github.com/imbeimainz/MachineLearningClub/wiki
 
 
