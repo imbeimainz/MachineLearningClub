@@ -1,0 +1,279 @@
+---
+title: "Deep Learning with R"
+subtitle: "Chapter 1"
+author: "Markus Schepers (markus.schepers@uni-mainz.de)</br>"
+date: "2020/11/16</br>
+  IMBEI - University Medical Center Mainz"
+output:
+  xaringan::moon_reader:
+    css: ["default", "default-fonts","css/FMstyles.css","css/animate.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: [center, middle]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  eval = TRUE,
+  message = FALSE,
+  echo = TRUE,
+  warnings = FALSE,
+  fig.align = "center"
+)
+```
+
+# Contents
+
+- motivations: applications and visions of AI
+- What is AI, machine learning and deep learning?
+- history: how did it develop?
+- why deep learning?
+
+---
+
+François Chollet, Software engineer and AI researcher. Currently a Staff Software Engineer at Google.
+
+![layers](figs/francois.jpg)
+
+
+
+---
+
+![layers](figs/artwork.jpg)
+---
+# Motivations: applications
+
+
+- near-human-level image classification, speech recognition, hand-writing transcription
+- improved machine translation
+- improved text-to-speech and speech-to-text conversion
+- digital assistants like Google Now, Amazon Alexa
+- autonomous driving
+- improved ad-targeting
+- improved search results
+- ability to answer natural language questions
+
+
+---
+
+# AI visions
+
+- medical diagnosis
+- assistant,  or even friend
+- answer questions
+- help in education
+- grocery deliveries
+- driving
+
+---
+
+
+# What is AI, machine learning and deep learning?
+
+Artificial intelligence: 
+
+- field that attempts to make machines "think" like human beings
+- simulate "learning" and "problem-solving"
+- efforts to automate tasks normally done by humans
+
+
+---
+
+# What is AI, machine learning and deep learning?
+
+Machine learning: 
+
+- subfield of AI
+- algorithms that improve through experience/training data
+- searching for a useful representation of input data (with a predefined space of possibilities: hypothesis space), using guidance from a feedback signal
+
+---
+
+# What is AI, machine learning and deep learning?
+
+Deep learning: 
+
+- subfield of machine learning
+- based on neural network, with successive layers of increasingly meaningful data representations
+
+---
+
+# What is AI, machine learning and deep learning?
+
+
+## What is the overall challenge?
+
+- computers good at problems that can be described by formal rules
+- challenge: tasks that require intuition (e.g. we humans do not know how we understand/recognize words or faces), requires an immense knowledge about the world
+- Turing test: can a person figure out whether she/he is interacting with another human being or with a machine?
+
+---
+
+# What is AI, machine learning and deep learning?
+
+## Philosophical questions
+
+- Can a computer automatically learn rules from underlying data?
+
+- What is intelligence?
+
+---
+
+# What is AI, machine learning and deep learning?
+
+- classical program: input: rules and data, output: answers
+- machine learning: input: data, answers, output: rules
+
+- think of machine learning as a transformation of data
+
+- deep learning: (long) sequence of simple transformations
+
+---
+
+# How does deep learning work?
+
+![layers](figs/layers.png)  
+
+---
+
+# How does deep learning work?
+
+- overall process: transformation of the data
+- each data representation is considered a layer
+- a simple transformation between two consecutive layers is given a collection of weights/parameters
+- learning consists of finding the "best" values for the weights of all layers
+- this optimization is based on the loss function/objective function
+- use of backpropagation algorithm
+
+--
+
+deep learning and neural networks are inspired by but NOT models of the brain
+
+
+
+---
+
+# History
+
+- dreams of AI can be traced back to ancient Greece
+- Ada Lovelace, collaborator of Charles Babbage, develops Analytical Engine in 1843: meant to assist with computations that humans know how to do
+- in 1950s: Alan Turing publishes article Computing Machinery and Intelligence and proposed the Turing test
+- in the beginning (1950-80s): there was a belief in hard-coded rules/symbolic AI
+- knowledge-base approach: hard-code knowledge in formal languages
+
+---
+
+# History
+
+- there were several rounds of cuts of funding/ AI winters: high expectations led to failures to deliver and then to funding cuts
+- IBM Deep Blue chess-playing system beats world champion Garry Kasparov in 1997 (using symbolic AI/brute-force search)
+
+
+---
+
+
+# History
+
+- already in 1950s toy models of neural nets
+- roots in statistics: Naive Bayes algorithm, logistic regression
+- in 1980s: backpropagation algorithm, gradient descent algorithm
+- in 1989 Yann LeCun at BellLabs develops LeNet network, later used by US postal service to automate reading hand-written ZIP codes
+
+
+
+---
+
+# History
+
+
+- in early 1990s, successes and popularity of kernel methods and support vector machines (SVM)
+- modern formulation of SVMs by Vladimir Vapnik and Corinna Cortes
+- key idea: find a hyperplane separating the data in a high-dimensional representation space
+
+---
+
+# History
+
+- use of kernel trick: use a kernel function as a similarity measure/metric in the high-dimensional space, rather than computing transformation into high-dim representation space
+- pros: extensive theory
+- cons: not scalable, bad at perceptual tasks like image classification
+
+---
+
+
+# History
+
+
+- in 2000s: decision trees for classification, according to tree/question-structure
+
+- random forest algorithm
+
+- in 2014, gradient boosting machines best for non-perceptual tasks
+
+
+---
+
+# History
+
+- in 2010s: neural nets have replaced SVMs again
+- competitions push and accelerate progress, e.g. Kaggle.com
+- in 2013 google acquires DeepMind for 500 million dollars
+
+---
+
+# History
+
+
+- super-human Go-playing:
+- in 2015-16 AlphaGo beats Fan Hui and Lee Sedol
+- in 2017, AlphaGo Zero, self-taught by playing games against itself, without using data from human games
+- Deep Mind wants to apply AlphaGo algorithms to protein folding
+
+- AI today may be compared to Internet in 1995
+
+
+
+---
+
+# Why deep learning?
+
+- better performance (since 2010s, with more than 10 layers)
+
+- simplicity: no need for feature engineering
+
+- scalability: parallelization possible
+
+- versatility and reusability, e.g. can be trained on additional data without having to start from scratch; repurposable: e.g. image classification network can be used in video processing pipeline
+
+---
+
+# Why deep learning?
+
+progress depended on: 
+
+-hardware; computing power increase due to gaming industry, e.g. NVIDIA, AMD
+
+-data sets and benchmarks; sources for data: flickr, YouTube, wikipedia (for natural-language processing, ImageNet data set: 1.4 million images in 1000 categories)
+
+-algorithmic advances
+
+---
+
+
+
+class: middle, center
+
+# Thank you! Questions?
+
+<style type="text/css">
+.remark-slide-content {
+    font-size: 30px;
+    padding: 1em 4em 1em 4em;
+}
+</style>
+
+
