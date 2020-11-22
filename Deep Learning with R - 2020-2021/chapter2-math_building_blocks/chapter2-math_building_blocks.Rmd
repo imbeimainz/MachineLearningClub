@@ -32,6 +32,11 @@ knitr::opts_chunk$set(
 
 ---
 
+```{r, include=FALSE, eval=TRUE}
+library(keras)
+```
+
+
 [from here: YOU]
 
 # Chapter 2 Agenda
@@ -67,16 +72,13 @@ How neural networks learn via backpropagation and gradient descent
 
 
 
-
 ---
-
-[from here: FEDE]
 
 # Tensor operations: tensor dot
 
 Tensor dot (tensor product) - combines entries in the input tensors, NOT element wise!
 
-Notation: `x %*% y` - $x \cdot y$
+Notation: `x %*% y` - on paper you'll see $x \cdot y$
 
 With x and y as vectors...
 
@@ -110,6 +112,10 @@ naive_matrix_vector_dot <- function(x, y) {
 }
 ```
 
+---
+
+# Tensor operations: tensor dot
+
 `x %*% y` is not simmetric!
 
 Generalizing...  
@@ -117,7 +123,13 @@ E.g.: two matrices
 
 Works if `ncol(x) == nrow(y)`
 
-![](images/ss_dotproduct.png)
+<p align="center">
+<img src="images/ss_dotproduct.png" alt="" height = 350/>
+</p>
+
+---
+
+# Tensor operations: tensor dot
 
 ```{r}
 naive_matrix_dot <- function(x, y) {
@@ -131,8 +143,6 @@ naive_matrix_dot <- function(x, y) {
   z
 }
 ```
-
-
 
 ---
 
@@ -164,6 +174,8 @@ dim(x3) <- c(2, 3)
 
 ---
 
+# Tensor operations: tensor reshaping
+
 A special case of reshaping: *transposition* -> exchanging its rows and its columns
 
 ```{r}
@@ -183,7 +195,14 @@ Addition.
 `A = [0.5, 1.0], B = [1, 0.25]`
 
 ![](images/ss_geom_interpretation.png)
-![](images/ss_geom_int_2.png)
+
+---
+        
+# Tensor operations: A geometric interpretation 
+
+<p align="center">
+<img src="images/ss_geom_int_2.png" alt="" height = 200/>
+</p>
 
 Addition: chaining together the vector arrows, with the resulting location being the vector representing the sum of the two vectors
 
@@ -228,6 +247,10 @@ Initially, filled with small random values
 
 Next: gradual adjustments of these weights, based on a feedback signal (**training**). 
 
+---
+
+# Gradient-based optimization
+
 Training loop:
 
 1. Draw a batch of training samples x and corresponding targets y. (just I/O code)
@@ -255,7 +278,10 @@ Smooth: valid approximation `f(x + epsilon_x) = y + a * epsilon_x`, close to poi
 Slope `a`: the **derivative** of f in p  
 a > 0: f(x) increases + magnitude of a tells how quickly it does
 
-![](images/ss_derivative.png)
+<p align="center">
+<img src="images/ss_derivative.png" alt="" height = 160/>
+</p>
+
 What's in it for DL?  
 We update x by a factor epsilon_x in order to minimize f(x), and we know the derivative of f -> job done! Just move x a little in the opposite direction from the derivative!
 
@@ -295,22 +321,35 @@ Instead (mini-batch stochastic gradient descent)
 1. Compute the gradient of the loss with regard to the network’s parameters (a backward pass).
 1. Move the parameters a little in the opposite direction from the gradient
 
+---
+
+# Stochastic Gradient Descent
 
 In 1D...
 
-![](images/ss_sgd.png)
+<p align="center">
+<img src="images/ss_sgd.png" alt="" height = 300/>
+</p>
 
 Important: appropriate step! Not too small, not too large!
 
 Mini-batch: a compromise between single samples (true SGD) vs all samples (batch SGD).
 
+---
+
+# Stochastic Gradient Descent
+
 2D:
 
-![](images/ss_sgd_2d.png)
+<p align="center">
+<img src="images/ss_sgd_2d.png" alt="" height = 300/>
+</p>
 
 Now: _just_ scale up to a 1000000-dimensional space ;)
 
 ---
+
+# Stochastic Gradient Descent
 
 Variants of SGD: taking into account previous weight updates when computing the next weight update, rather than just looking at the current value of the gradients (`momentum`).
 
@@ -318,7 +357,18 @@ Examples: Adagrad, RMSProp, and several others (called _optimizers_).
 
 Advantages: convergence speed and local minima
 
-![](images/ss_sgd_minima.png)
+<p align="center">
+<img src="images/ss_sgd_minima.png" alt="" height = 300/>
+</p>
+
+
+---
+
+# Stochastic Gradient Descent
+
+<p align="center">
+<img src="images/ss_sgd_minima.png" alt="" height = 300/>
+</p>
 
 Optimization ~ a small ball rolling down the loss curve:  
 With enough momentum, not stuck in the local minimum!
@@ -352,7 +402,7 @@ And this has not even to be done by hand!
 
 ---
 
-# Looking back at first example
+# Our very first example
 
 What's going on?
 
@@ -368,6 +418,10 @@ test_images <- mnist$test$x
 test_images <- array_reshape(test_images, c(10000, 28 * 28))
 test_images <- test_images / 255
 ```
+
+---
+
+# Our very first example
 
 The network:
 
@@ -393,6 +447,10 @@ network %>%
 network <- yadda_yadda(network)
 ```
 
+---
+
+# Our very first example
+
 The compilation step:
 
 ```{r}
@@ -403,7 +461,13 @@ network %>% compile(
 )
 ```
 
-Now you understand that categorical_crossentropy is the loss function that’s used as a feedback signal for learning the weight tensors, and which the training phase will attempt to minimize. You also know that this reduction of the loss happens via mini- batch stochastic gradient descent. The exact rules governing a specific use of gradient descent are defined by the rmsprop optimizer passed as the first argument.
+`categorical_crossentropy` is the loss function in use, the one we attempt to minimize via mini- batch stochastic gradient descent. 
+
+-> this works well in tasks of classification
+
+---
+
+# Our very first example
 
 The training loop:
 
