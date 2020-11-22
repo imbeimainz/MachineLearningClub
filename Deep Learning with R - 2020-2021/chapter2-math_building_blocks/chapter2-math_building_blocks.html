@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Deep Learning with R - Chapter 2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="You Zhou (email) and Federico Marini (marinif@uni-mainz.de)" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/FMstyles.css" type="text/css" />
+    <link rel="stylesheet" href="css/animate.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, title-slide
+
+# Deep Learning with R - Chapter 2
+## Francois Chollet and J.J. Allaire
+### You Zhou (email) and Federico Marini (<a href="mailto:marinif@uni-mainz.de" class="email">marinif@uni-mainz.de</a>)</br>
+### 2020/11/23</br> IMBEI - University Medical Center Mainz
+
+---
+
+
+layout: true
+
+
+
+
+---
+
+
+
+
+[from here: YOU]
+
+# Chapter 2 Agenda
+
+**Before we begin: the mathematical building blocks of neural networks**
+
+- content1
+- content2
+- content3
+
+A first example of a neural network
+
+Tensors and tensor operations
+
+How neural networks learn via backpropagation and gradient descent
+
+---
+
+
+# A first look at a neural network
+
+
+---
+
+
+# Data representations for neural networks
+
+
+---
+
+# The gears of neural networks: tensor operations
+
+
+
+
+---
+
+# Tensor operations: tensor dot
+
+Tensor dot (tensor product) - combines entries in the input tensors, NOT element wise!
+
+Notation: `x %*% y` - on paper you'll see `\(x \cdot y\)`
+
+--
+
+With x and y as vectors...
+
+
+```r
+naive_vector_dot &lt;- function(x, y) {
+  z &lt;- 0
+  for (i in 1:length(x))
+    z &lt;- z + x[[i]] * y[[i]]
+  z
+}
+```
+
+--
+
+With a matrix and a vector:
+
+
+```r
+naive_matrix_vector_dot &lt;- function(x, y) {
+  z &lt;- rep(0, nrow(x))
+  for (i in 1:nrow(x))
+    for (j in 1:ncol(x))
+      z[[i]] &lt;- z[[i]] + x[[i, j]] * y[[j]]
+  z 
+}
+```
+
+
+```r
+naive_matrix_vector_dot &lt;- function(x, y) {
+  z &lt;- rep(0, nrow(x))
+  for (i in 1:nrow(x))
+    z[[i]] &lt;- naive_vector_dot(x[i,], y)
+  z
+}
+```
+
+---
+
+# Tensor operations: tensor dot
+
+`x %*% y` is not simmetric!
+
+Generalizing...  
+E.g.: two matrices
+
+Works if `ncol(x) == nrow(y)`
+
+--
+
+&lt;p align="center"&gt;
+&lt;img src="images/ss_dotproduct.png" alt="" height = 350/&gt;
+&lt;/p&gt;
+
+---
+
+# Tensor operations: tensor dot
+
+
+```r
+naive_matrix_dot &lt;- function(x, y) {
+  z &lt;- matrix(0, nrow = nrow(x), ncol = ncol(y))
+  for (i in 1:nrow(x))
+    for (j in 1:ncol(y)) {
+      row_x &lt;- x[i,]
+      column_y &lt;- y[,j]
+      z[i, j] &lt;- naive_vector_dot(row_x, column_y)
+    } 
+  z
+}
+```
+
+---
+
+# Tensor operations: tensor reshaping
+
+Used especially during preprocessing  
+Definition: rearranging its rows and columns to match a target shape  
+Nr of coefficients: unchanged
+
+
+```r
+train_images &lt;- array_reshape(train_images, c(60000, 28 * 28))
+```
+
+--
+
+`array_reshape()` vs `dim&lt;-()`  
+Reinterpreted using row-major semantics vs column-major
+
+--
+
+
+```r
+x &lt;- matrix(c(0, 1,
+              2, 3,
+              4, 5),
+            nrow = 3, ncol = 2, byrow = TRUE)
+x
+x1 &lt;- array_reshape(x, dim = c(6, 1))
+x2 &lt;- array_reshape(x1, dim = c(2, 3))
+## vs
+x3 &lt;- x1
+dim(x3) &lt;- c(2, 3)
+```
+
+---
+
+# Tensor operations: tensor reshaping
+
+A special case of reshaping: *transposition* -&gt; exchanging its rows and its columns
+
+
+```r
+x &lt;- matrix(0, nrow = 300, ncol = 20)
+dim(x)
+x &lt;- t(x)
+dim(x)
+```
+
+---
+        
+# Tensor operations: A geometric interpretation 
+
+All tensor operations have a geometric interpretation.  
+Addition. 
+
+`A = [0.5, 1.0], B = [1, 0.25]`
+
+--
+
+![](images/ss_geom_interpretation.png)
+
+---
+        
+# Tensor operations: A geometric interpretation 
+
+&lt;p align="center"&gt;
+&lt;img src="images/ss_geom_int_2.png" alt="" height = 200/&gt;
+&lt;/p&gt;
+
+--
+
+**Addition**: chaining together the vector arrows, with the resulting location being the vector representing the sum of the two vectors
+
+--
+
+Elementary geometric operations (affine transformations, rotations, scaling) can also be expressed as tensor operations. 
+
+
+```r
+R &lt;- matrix(c("cos(theta)", "-sin(theta)",
+            "cos(theta)", "-sin(theta)"),
+            nrow = 2, byrow = TRUE)
+R
+```
+
+---
+
+# Deep learning: a geometric interpration
+
+Neural networks: (very large) chains of tensor operations, each a geometric transformation of the input data. 
+
+--
+
+Neural network ~ "a very complex geometric transformation in a high-dimensional space, implemented via a long series of simple steps"
+
+![](images/ss_geom_dl.png)
+
+--
+
+A neural network tries to figure out a transformation of the paper ball that would uncrumple it, so as to make the two classes cleanly separable again. 
+
+--
+
+Deep learning: tries to achieve this with a series of simple transformations of the 3D space
+
+Machine learning is all about finding neat representations for complex, highly folded data manifolds.
+
+
+---
+
+# The engine of neural networks: gradient-based optimization
+
+`relu`: REctifier Linear Unit - `relu(x) = max(0, x)`
+
+
+```r
+output = relu(dot(W, input) + b)
+```
+
+--
+
+W and b are tensors (attributes of the layer), the **weights** or **trainable parameters**, containing the information learned by the network from exposure to training data.
+
+--
+
+Initially, filled with small random values
+
+Next: gradual adjustments of these weights, based on a feedback signal (**training**)
+
+---
+
+# Gradient-based optimization
+
+Training loop:
+
+--
+
+1. Draw a batch of training samples x and corresponding targets y. (just I/O code)
+1. Run the network on x (a step called the forward pass) to obtain predictions y_pred.
+1. Compute the loss of the network on the batch, a measure of the mismatch between y_pred and y. (a handful of tensor operations)
+1. Update all weights of the network in a way that slightly reduces the loss on this batch. (the hard part!)
+
+--
+
+How can we compute whether the coefficient should be increased or decreased, and by how much?
+
+--
+
+**Tired:** freeze all, except one, try out values, REPEAT FOR ALL COEFFICIENTS (1k-1M!)
+
+**Wired:** all operations used in the network are differentiable, we can compute the gradient of the loss with regard to the network's coefficients.
+
+--
+
+Then, _just_ move the coefficients in the opposite direction from the gradient, decreasing the loss.
+
+---
+
+# What's a derivative?
+
+`f(x) = y`, continuous, smooth function 
+
+_Continuous:_ `f(x + epsilon_x) = y + epsilon_y`
+
+_Smooth:_ valid approximation `f(x + epsilon_x) = y + a * epsilon_x`, close to point `p`
+
+--
+
+Slope `a`: the **derivative** of f in p  
+a &gt; 0: f(x) increases + magnitude of a tells how quickly it does
+
+&lt;p align="center"&gt;
+&lt;img src="images/ss_derivative.png" alt="" height = 160/&gt;
+&lt;/p&gt;
+
+--
+
+What's in it for DL?  
+We update x by a factor epsilon_x in order to minimize f(x), and we know the derivative of f -&gt; job done! Just move x a little in the opposite direction from the derivative!
+
+---
+
+# Derivative of a tensor operation
+
+**Gradient**: the derivative of a tensor operation
+
+```
+y_pred = dot(W, x)
+loss_value = loss(y_pred, y)
+```
+
+--
+
+x and y are frozen, so we have `loss_value = f(W)`
+
+Remember the derivative: slope of the curve of f  
+Gradient `f(W0)` is the tensor describing the **curvature** of f(W) around W0
+
+--
+
+So, for f(W), we can reduce f(W) by moving W in the opposite direction from the gradient!
+
+`W1 = W0 - step * gradient(f)(W0)`, where step is a small scaling factor
+
+---
+
+# Stochastic Gradient Descent
+
+Minimum: the point where the derivative is 0
+
+For our neural networks: we find analytically the combination of weight values that yields the smallest possible loss function - intractable for real neural networks (k-M parameters!)
+
+--
+
+Instead (mini-batch stochastic gradient descent)
+
+1. Draw a batch of training samples `x` and corresponding targets `y`.
+1. Run the network on `x` to obtain predictions `y_pred`.
+1. Compute the loss of the network on the batch, a measure of the mismatch between `y_pred` and `y`.
+1. Compute the gradient of the loss with regard to the network's parameters (a backward pass).
+1. Move the parameters a little in the opposite direction from the gradient
+
+---
+
+# Stochastic Gradient Descent
+
+In 1D...
+
+&lt;p align="center"&gt;
+&lt;img src="images/ss_sgd.png" alt="" height = 300/&gt;
+&lt;/p&gt;
+
+Important: appropriate step! Not too small, not too large!
+
+Mini-batch: a compromise between single samples (true SGD) vs all samples (batch SGD).
+
+---
+
+# Stochastic Gradient Descent
+
+2D:
+
+&lt;p align="center"&gt;
+&lt;img src="images/ss_sgd_2d.png" alt="" height = 300/&gt;
+&lt;/p&gt;
+
+Now: _just_ scale up to a 1000000-dimensional space ;)
+
+---
+
+# Stochastic Gradient Descent
+
+Variants of SGD: taking into account previous weight updates when computing the next weight update, rather than just looking at the current value of the gradients (`momentum`).
+
+Examples: Adagrad, RMSProp, and several others (called _optimizers_).
+
+--
+
+Advantages: convergence speed and local minima
+
+&lt;p align="center"&gt;
+&lt;img src="images/ss_sgd_minima.png" alt="" height = 300/&gt;
+&lt;/p&gt;
+
+
+---
+
+# Stochastic Gradient Descent
+
+&lt;p align="center"&gt;
+&lt;img src="images/ss_sgd_minima.png" alt="" height = 300/&gt;
+&lt;/p&gt;
+
+Optimization ~ a small ball rolling down the loss curve:  
+With enough momentum, not stuck in the local minimum!
+
+--
+
+Implementation: updating the parameter `w` based not only on the current gradient value but also on the previous parameter update
+
+```
+velocity &lt;- past_velocity * momentum + learning_rate * gradient
+w &lt;- w + momentum * velocity - learning_rate * gradient
+```
+
+---
+
+# Chaining derivatives: backpropagation
+
+A function is differentiable -&gt; we can compute the derivative
+
+Many tensor operations, chained together, with simple &amp; known derivatives -&gt; 
+
+```
+f(W1, W2, W3) = a(W1, b(W2, c(W3)))
+```
+
+--
+
+Chain rule: `\(f(g(x))=f'(g(x))*g'(x)\)`  
+--&gt; + neural network -&gt; Backpropagation (also called reverse-mode differentiation)
+
+Start: final loss value, then backwards to the bottom layers to compute the contribution that each parameter had in the loss value.
+
+--
+
+Modern frameworks (TensorFlow) are capable of *symbolic differentiation* - i.e. the gradient can be computed, and a simple call to this function *is* already the backwards pass.  
+And this has not even to be done by hand!
+
+---
+
+# Our very first example
+
+What's going on?
+
+--
+
+The **input data**:
+
+
+```r
+library(keras)
+mnist &lt;- dataset_mnist()
+train_images &lt;- mnist$train$x
+train_images &lt;- array_reshape(train_images, c(60000, 28 * 28))
+train_images &lt;- train_images / 255
+test_images &lt;- mnist$test$x
+test_images &lt;- array_reshape(test_images, c(10000, 28 * 28))
+test_images &lt;- test_images / 255
+```
+
+---
+
+# Our very first example
+
+The **network**:
+
+
+```r
+network &lt;- keras_model_sequential() %&gt;%
+  layer_dense(units = 512, activation = "relu", input_shape = c(28*28)) %&gt;%
+  layer_dense(units = 10, activation = "softmax")
+```
+
+--
+
+Chain of two dense layers, with simple tensor operations  
+
+Pipe: makes code more readable ("stacking", "then")  
+
+--
+
+Normally: "just for compactness"  
+Here: the models are modified in-place
+
+```
+network %&gt;% 
+  yadda_yadda()
+
+# WE ARE MODIFYING NETWORK!
+## no need to say 
+network &lt;- yadda_yadda(network)
+```
+
+---
+
+# Our very first example
+ 
+The **compilation step**:
+
+
+```r
+network %&gt;% compile(
+  optimizer = "rmsprop",
+  loss = "categorical_crossentropy",
+  metrics = c("accuracy")
+)
+```
+
+--
+
+`categorical_crossentropy` is the loss function in use, the one we attempt to minimize via mini- batch stochastic gradient descent. 
+
+-&gt; this works well in tasks of classification
+
+---
+
+# Our very first example
+
+The **training loop**:
+
+
+```r
+network %&gt;% fit(train_images, train_labels, epochs = 5, batch_size = 128)
+```
+
+--
+
+The network will start to iterate on the training data in mini-batches of 128 samples, 5 times over.
+
+Total: (60000/128)*5 gradient updates (2345), with loss sufficiently low and hi-enough accuracy!
+
+---
+
+# Summary
+
+- **Learning**: finding a combination of model parameters that minimizes a loss function for a given set of training data samples and their corresponding targets.
+
+--
+
+- Learning **happens** by drawing random batches of data samples and their targets, and computing the gradient of the network parameters with respect to the loss on the batch. The network parameters are then moved a bit in the opposite direction from the gradient.(how much? f(learning rate))
+
+--
+
+- The entire learning process is made possible by the fact that neural networks are **chains of differentiable tensor operations** -&gt; chain rule of derivation is applicable!
+
+--
+
+- Two key concepts (more in chapters to come): 
+  - **loss** quantity to minimize during training (measure of success for the task)
+  - **optimizers**, specifying how the gradient of the loss will be used to update parameters
+
+
+---
+
+# Useful links
+
+https://github.com/jjallaire/deep-learning-with-r-notebooks
+
+https://www.manning.com/books/deep-learning-with-r -&gt; Source code
+
+(Git version recommended!)
+
+---
+
+class: middle, center
+
+# Thank you all for your attention!
+
+Next meeting: November 30
+
+--
+
+### Are we all set with Keras?
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
