@@ -80,6 +80,8 @@ Tensor dot (tensor product) - combines entries in the input tensors, NOT element
 
 Notation: `x %*% y` - on paper you'll see $x \cdot y$
 
+--
+
 With x and y as vectors...
 
 ```{r}
@@ -90,6 +92,8 @@ naive_vector_dot <- function(x, y) {
   z
 }
 ```
+
+--
 
 With a matrix and a vector:
 
@@ -122,6 +126,8 @@ Generalizing...
 E.g.: two matrices
 
 Works if `ncol(x) == nrow(y)`
+
+--
 
 <p align="center">
 <img src="images/ss_dotproduct.png" alt="" height = 350/>
@@ -156,8 +162,12 @@ Nr of coefficients: unchanged
 train_images <- array_reshape(train_images, c(60000, 28 * 28))
 ```
 
+--
+
 `array_reshape()` vs `dim<-()`  
 Reinterpreted using row-major semantics vs column-major
+
+--
 
 ```{r}
 x <- matrix(c(0, 1,
@@ -194,6 +204,8 @@ Addition.
 
 `A = [0.5, 1.0], B = [1, 0.25]`
 
+--
+
 ![](images/ss_geom_interpretation.png)
 
 ---
@@ -204,7 +216,11 @@ Addition.
 <img src="images/ss_geom_int_2.png" alt="" height = 200/>
 </p>
 
-Addition: chaining together the vector arrows, with the resulting location being the vector representing the sum of the two vectors
+--
+
+**Addition**: chaining together the vector arrows, with the resulting location being the vector representing the sum of the two vectors
+
+--
 
 Elementary geometric operations (affine transformations, rotations, scaling) can also be expressed as tensor operations. 
 
@@ -221,11 +237,17 @@ R
 
 Neural networks: (very large) chains of tensor operations, each a geometric transformation of the input data. 
 
+--
+
 Neural network ~ "a very complex geometric transformation in a high-dimensional space, implemented via a long series of simple steps"
 
 ![](images/ss_geom_dl.png)
 
+--
+
 A neural network tries to figure out a transformation of the paper ball that would uncrumple it, so as to make the two classes cleanly separable again. 
+
+--
 
 Deep learning: tries to achieve this with a series of simple transformations of the 3D space
 
@@ -236,16 +258,21 @@ Machine learning is all about finding neat representations for complex, highly f
 
 # The engine of neural networks: gradient-based optimization
 
+`relu`: REctifier Linear Unit - `relu(x) = max(0, x)`
+
 ```{r}
 output = relu(dot(W, input) + b)
 ```
 
+--
 
 W and b are tensors (attributes of the layer), the **weights** or **trainable parameters**, containing the information learned by the network from exposure to training data.
 
-Initially, filled with small random values 
+--
 
-Next: gradual adjustments of these weights, based on a feedback signal (**training**). 
+Initially, filled with small random values
+
+Next: gradual adjustments of these weights, based on a feedback signal (**training**)
 
 ---
 
@@ -253,27 +280,38 @@ Next: gradual adjustments of these weights, based on a feedback signal (**traini
 
 Training loop:
 
+--
+
 1. Draw a batch of training samples x and corresponding targets y. (just I/O code)
 1. Run the network on x (a step called the forward pass) to obtain predictions y_pred.
 1. Compute the loss of the network on the batch, a measure of the mismatch between y_pred and y. (a handful of tensor operations)
 1. Update all weights of the network in a way that slightly reduces the loss on this batch. (the hard part!)
 
+--
+
 How can we compute whether the coefficient should be increased or decreased, and by how much?
 
-Tired: freeze all, except one, try out values, REPEAT FOR ALL COEFFICIENTS (1k-1M!)
+--
 
-Wired: all operations used in the network are differentiable, we can compute the gradient of the loss with regard to the network's coefficients.  
+**Tired:** freeze all, except one, try out values, REPEAT FOR ALL COEFFICIENTS (1k-1M!)
+
+**Wired:** all operations used in the network are differentiable, we can compute the gradient of the loss with regard to the network's coefficients.
+
+--
+
 Then, _just_ move the coefficients in the opposite direction from the gradient, decreasing the loss.
 
 ---
 
-# What’s a derivative?
+# What's a derivative?
 
 `f(x) = y`, continuous, smooth function 
 
-Continuous: `f(x + epsilon_x) = y + epsilon_y`
+_Continuous:_ `f(x + epsilon_x) = y + epsilon_y`
 
-Smooth: valid approximation `f(x + epsilon_x) = y + a * epsilon_x`, close to point `p`
+_Smooth:_ valid approximation `f(x + epsilon_x) = y + a * epsilon_x`, close to point `p`
+
+--
 
 Slope `a`: the **derivative** of f in p  
 a > 0: f(x) increases + magnitude of a tells how quickly it does
@@ -281,6 +319,8 @@ a > 0: f(x) increases + magnitude of a tells how quickly it does
 <p align="center">
 <img src="images/ss_derivative.png" alt="" height = 160/>
 </p>
+
+--
 
 What's in it for DL?  
 We update x by a factor epsilon_x in order to minimize f(x), and we know the derivative of f -> job done! Just move x a little in the opposite direction from the derivative!
@@ -296,10 +336,14 @@ y_pred = dot(W, x)
 loss_value = loss(y_pred, y)
 ```
 
+--
+
 x and y are frozen, so we have `loss_value = f(W)`
 
 Remember the derivative: slope of the curve of f  
 Gradient `f(W0)` is the tensor describing the **curvature** of f(W) around W0
+
+--
 
 So, for f(W), we can reduce f(W) by moving W in the opposite direction from the gradient!
 
@@ -313,12 +357,14 @@ Minimum: the point where the derivative is 0
 
 For our neural networks: we find analytically the combination of weight values that yields the smallest possible loss function - intractable for real neural networks (k-M parameters!)
 
+--
+
 Instead (mini-batch stochastic gradient descent)
 
-1. Draw a batch of training samples x and corresponding targets y.
-1. Run the network on x to obtain predictions y_pred.
-1. Compute the loss of the network on the batch, a measure of the mismatch between y_pred and y.
-1. Compute the gradient of the loss with regard to the network’s parameters (a backward pass).
+1. Draw a batch of training samples `x` and corresponding targets `y`.
+1. Run the network on `x` to obtain predictions `y_pred`.
+1. Compute the loss of the network on the batch, a measure of the mismatch between `y_pred` and `y`.
+1. Compute the gradient of the loss with regard to the network's parameters (a backward pass).
 1. Move the parameters a little in the opposite direction from the gradient
 
 ---
@@ -355,6 +401,8 @@ Variants of SGD: taking into account previous weight updates when computing the 
 
 Examples: Adagrad, RMSProp, and several others (called _optimizers_).
 
+--
+
 Advantages: convergence speed and local minima
 
 <p align="center">
@@ -373,7 +421,9 @@ Advantages: convergence speed and local minima
 Optimization ~ a small ball rolling down the loss curve:  
 With enough momentum, not stuck in the local minimum!
 
-Implementation: updating the parameter w based not only on the current gradient value but also on the previous parameter update
+--
+
+Implementation: updating the parameter `w` based not only on the current gradient value but also on the previous parameter update
 
 ```
 velocity <- past_velocity * momentum + learning_rate * gradient
@@ -392,10 +442,14 @@ Many tensor operations, chained together, with simple & known derivatives ->
 f(W1, W2, W3) = a(W1, b(W2, c(W3)))
 ```
 
+--
+
 Chain rule: $f(g(x))=f'(g(x))*g'(x)$  
-+ neural network -> Backpropagation (also called reverse-mode differentiation)
+--> + neural network -> Backpropagation (also called reverse-mode differentiation)
 
 Start: final loss value, then backwards to the bottom layers to compute the contribution that each parameter had in the loss value.
+
+--
 
 Modern frameworks (TensorFlow) are capable of *symbolic differentiation* - i.e. the gradient can be computed, and a simple call to this function *is* already the backwards pass.  
 And this has not even to be done by hand!
@@ -406,7 +460,9 @@ And this has not even to be done by hand!
 
 What's going on?
 
-The input data:
+--
+
+The **input data**:
 
 ```{r}
 library(keras)
@@ -423,7 +479,7 @@ test_images <- test_images / 255
 
 # Our very first example
 
-The network:
+The **network**:
 
 ```{r}
 network <- keras_model_sequential() %>%
@@ -431,9 +487,13 @@ network <- keras_model_sequential() %>%
   layer_dense(units = 10, activation = "softmax")
 ```
 
+--
+
 Chain of two dense layers, with simple tensor operations  
 
 Pipe: makes code more readable ("stacking", "then")  
+
+--
 
 Normally: "just for compactness"  
 Here: the models are modified in-place
@@ -450,8 +510,8 @@ network <- yadda_yadda(network)
 ---
 
 # Our very first example
-
-The compilation step:
+ 
+The **compilation step**:
 
 ```{r}
 network %>% compile(
@@ -461,6 +521,8 @@ network %>% compile(
 )
 ```
 
+--
+
 `categorical_crossentropy` is the loss function in use, the one we attempt to minimize via mini- batch stochastic gradient descent. 
 
 -> this works well in tasks of classification
@@ -469,12 +531,13 @@ network %>% compile(
 
 # Our very first example
 
-The training loop:
+The **training loop**:
 
 ```{r}
 network %>% fit(train_images, train_labels, epochs = 5, batch_size = 128)
 ```
 
+--
 
 The network will start to iterate on the training data in mini-batches of 128 samples, 5 times over.
 
@@ -486,9 +549,15 @@ Total: (60000/128)*5 gradient updates (2345), with loss sufficiently low and hi-
 
 - **Learning**: finding a combination of model parameters that minimizes a loss function for a given set of training data samples and their corresponding targets.
 
+--
+
 - Learning **happens** by drawing random batches of data samples and their targets, and computing the gradient of the network parameters with respect to the loss on the batch. The network parameters are then moved a bit in the opposite direction from the gradient.(how much? f(learning rate))
 
+--
+
 - The entire learning process is made possible by the fact that neural networks are **chains of differentiable tensor operations** -> chain rule of derivation is applicable!
+
+--
 
 - Two key concepts (more in chapters to come): 
   - **loss** quantity to minimize during training (measure of success for the task)
@@ -511,7 +580,9 @@ class: middle, center
 
 # Thank you all for your attention!
 
-Next meeting: 
+Next meeting: November 30
 
+--
 
+### Are we all set with Keras?
 
