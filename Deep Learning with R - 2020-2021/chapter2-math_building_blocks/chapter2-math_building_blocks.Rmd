@@ -226,7 +226,7 @@ Elementary geometric operations (affine transformations, rotations, scaling) can
 
 ```{r}
 R <- matrix(c("cos(theta)", "-sin(theta)",
-            "cos(theta)", "-sin(theta)"),
+            "sin(theta)", "-cos(theta)"),
             nrow = 2, byrow = TRUE)
 R
 ```
