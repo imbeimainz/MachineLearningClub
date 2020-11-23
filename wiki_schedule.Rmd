@@ -26,11 +26,10 @@ schedule_df <- data.frame(
 ```{r, echo = FALSE}
 schedule_df <- rbind(
   schedule_df,
-  c("Chapter 2", "2020-11-23", "Markus Brugger"),
-  c("Chapter 3", "2020-11-30", "Federico Marini + ??"),
-  c("Chapter 3", "2020-12-DD", "Federico Marini + ??"),
-  c("Chapter 4", "2020-12-DD", "Philipp Mildenberger + Rex Ha"),
-  c("Chapter 4", "2020-12-DD", "Philipp Mildenberger + Rex Ha"),
+  c("Chapter 2", "2020-11-23", "You Zhou + Federico Marini"),
+  c("Chapter 3", "2020-11-30", "Robert Kuchen"),
+  c("Chapter 3", "2020-12-07", "Philipp Mildenberger"),
+  c("Chapter 4", "2020-12-14", "Rex Ha"),
   c("Chapter 5", "2021-MM-DD", ""),
   c("Chapter 5", "2021-MM-DD", ""),
   c("Chapter 6", "2021-MM-DD", ""),

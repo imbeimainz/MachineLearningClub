@@ -9,23 +9,22 @@ Each meeting will be focused on a particular chapter, or a part thereof.
 
 ### Deep Learning with R
 
-| Sections               | Date       | Presenter                     |
-|:-----------------------|:-----------|:------------------------------|
-| Chapter 1 + Appendix A | 2020-11-16 | Markus Schepers               |
-| Chapter 2              | 2020-11-23 | Markus Brugger                |
-| Chapter 3              | 2020-11-30 | Federico Marini + ??          |
-| Chapter 3              | 2020-12-DD | Federico Marini + ??          |
-| Chapter 4              | 2020-12-DD | Philipp Mildenberger + Rex Ha |
-| Chapter 4              | 2020-12-DD | Philipp Mildenberger + Rex Ha |
-| Chapter 5              | 2021-MM-DD |                               |
-| Chapter 5              | 2021-MM-DD |                               |
-| Chapter 6              | 2021-MM-DD |                               |
-| Chapter 6              | 2021-MM-DD |                               |
-| Chapter 7              | 2021-MM-DD |                               |
-| Chapter 7              | 2021-MM-DD |                               |
-| Chapter 8              | 2021-MM-DD | Manuel Herbst + Lars Hadidi   |
-| Chapter 8              | 2021-MM-DD | Manuel Herbst + Lars Hadidi   |
-| Chapter 9              | 2021-MM-DD | Konstantin Strauch            |
+| Sections               | Date       | Presenter                   |
+|:-----------------------|:-----------|:----------------------------|
+| Chapter 1 + Appendix A | 2020-11-16 | Markus Schepers             |
+| Chapter 2              | 2020-11-23 | You Zhou + Federico Marini  |
+| Chapter 3              | 2020-11-30 | Robert Kuchen               |
+| Chapter 3              | 2020-12-07 | Philipp Mildenberger        |
+| Chapter 4              | 2020-12-14 | Rex Ha                      |
+| Chapter 5              | 2021-MM-DD |                             |
+| Chapter 5              | 2021-MM-DD |                             |
+| Chapter 6              | 2021-MM-DD |                             |
+| Chapter 6              | 2021-MM-DD |                             |
+| Chapter 7              | 2021-MM-DD |                             |
+| Chapter 7              | 2021-MM-DD |                             |
+| Chapter 8              | 2021-MM-DD | Manuel Herbst + Lars Hadidi |
+| Chapter 8              | 2021-MM-DD | Manuel Herbst + Lars Hadidi |
+| Chapter 9              | 2021-MM-DD | Konstantin Strauch          |
 
 Please use `wiki_schedule.Rmd` in the repo to generate the content for
 this page
