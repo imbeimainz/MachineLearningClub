@@ -16,15 +16,15 @@ Each meeting will be focused on a particular chapter, or a part thereof.
 | Chapter 3              | 2020-11-30 | Robert Kuchen               |
 | Chapter 3              | 2020-12-07 | Philipp Mildenberger        |
 | Chapter 4              | 2020-12-14 | Rex Ha                      |
-| Chapter 5              | 2021-MM-DD |                             |
-| Chapter 5              | 2021-MM-DD |                             |
-| Chapter 6              | 2021-MM-DD |                             |
-| Chapter 6              | 2021-MM-DD |                             |
-| Chapter 7              | 2021-MM-DD |                             |
-| Chapter 7              | 2021-MM-DD |                             |
-| Chapter 8              | 2021-MM-DD | Manuel Herbst + Lars Hadidi |
-| Chapter 8              | 2021-MM-DD | Manuel Herbst + Lars Hadidi |
-| Chapter 9              | 2021-MM-DD | Konstantin Strauch          |
+| Chapter 5              | 2021-01-11 | Dativa Tibyampansha         |
+| Chapter 5              | 2021-01-18 | Jochem König                |
+| Chapter 6              | 2021-01-25 | Melina                      |
+| Chapter 6              | 2021-02-01 | Gerrit Toenges              |
+| Chapter 7              | 2021-02-08 |                             |
+| Chapter 7              | 2021-02-15 |                             |
+| Chapter 8              | 2021-02-22 | Manuel Herbst + Lars Hadidi |
+| Chapter 8              | 2021-03-01 | Manuel Herbst + Lars Hadidi |
+| Chapter 9              | 2021-03-08 | Konstantin Strauch          |
 
 Please use `wiki_schedule.Rmd` in the repo to generate the content for
 this page
