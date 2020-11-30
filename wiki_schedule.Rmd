@@ -10,7 +10,7 @@ Welcome to the MachineLearningClub wiki!
 
 Each meeting will be focused on a particular chapter, or a part thereof. 
 
-
+*Last updated: `r Sys.Date()`*
 
 ### Deep Learning with R
 
