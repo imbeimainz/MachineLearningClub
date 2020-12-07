@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Deep Learning with R - Chapter 3</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Philipp Mildenberger" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/plotly-binding/plotly.js"></script>
+    <script src="libs/typedarray/typedarray.min.js"></script>
+    <script src="libs/jquery/jquery.min.js"></script>
+    <link href="libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+    <script src="libs/crosstalk/js/crosstalk.min.js"></script>
+    <link href="libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+    <script src="libs/plotly-main/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="css/FMstyles.css" type="text/css" />
+    <link rel="stylesheet" href="css/animate.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, title-slide
+
+# Deep Learning with R - Chapter 3
+## Francois Chollet and J.J. Allaire
+### Philipp Mildenberger</br>
+### 2020-12-07</br> IMBEI - University Medical Center Mainz
+
+---
+
+
+
+
+
+# 3.5 Multiclass classification
+
+* We can also use neural networks to classify into multiple classes
+* example: `reuters` dataset
+  * classify Reuters newswires into 46 topics *(multiclass)*
+  * topics are mutually exclusive *(single-label)*
+
+
+```r
+reuters &lt;- dataset_reuters(num_words=10000)
+reut_train_data   &lt;- reuters$train$x
+reut_train_labels &lt;- reuters$train$y
+reut_test_data    &lt;- reuters$test$x
+reut_test_labels  &lt;- reuters$test$y
+rm(reuters)
+```
+
+---
+### `reuters` data - Frequency of labels in train and test set
+<div id="htmlwidget-8ad7b63345f25be0f583" style="width:576px;height:504px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8ad7b63345f25be0f583">{"x":{"data":[{"y":[0.00612335782676464,0.0480961923847695,0.00823869962146515,0.351703406813627,0.216989534624805,0.00189267423736362,0.0053440213760855,0.00178134045869517,0.0154753952349143,0.0112447116455132,0.0138053885548876,0.0434201736806947,0.00545535515475395,0.0191494099309731,0.00289467824537965,0.00222667557336896,0.0494321977287909,0.00434201736806947,0.00734802939211757,0.061122244488978,0.0299487864618125,0.0111333778668448,0.00167000668002672,0.00456468492540637,0.00690269427744378,0.0102427076374972,0.00267201068804275,0.00167000668002672,0.0053440213760855,0.00211534179470051,0.00501002004008016,0.00434201736806947,0.00356268091739034,0.00122467156535293,0.0055666889334224,0.00111333778668448,0.00545535515475395,0.00211534179470051,0.00211534179470051,0.00267201068804275,0.00400801603206413,0.00334001336005344,0.00144733912268982,0.00233800935203741,0.00133600534402138,0.00200400801603206],"name":"train","type":"bar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[0.00534283170080142,0.0467497773820125,0.00890471950133571,0.361976847729297,0.211041852181656,0.00222617987533393,0.006233303650935,0.00133570792520036,0.0169189670525378,0.0111308993766696,0.0133570792520036,0.0369545859305432,0.00578806767586821,0.0164737310774711,0.000890471950133571,0.00400712377560107,0.0440783615316118,0.00534283170080142,0.00890471950133571,0.0592163846838825,0.031166518254675,0.0120213713268032,0.0031166518254675,0.00534283170080142,0.00845948352626892,0.0138023152270703,0.00356188780053428,0.00178094390026714,0.00445235975066785,0.00178094390026714,0.00534283170080142,0.00578806767586821,0.00445235975066785,0.00222617987533393,0.0031166518254675,0.00267141585040071,0.00489759572573464,0.000890471950133571,0.00133570792520036,0.00222617987533393,0.00445235975066785,0.00356188780053428,0.00133570792520036,0.00267141585040071,0.00222617987533393,0.000445235975066785],"name":"test","type":"bar","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y2","frame":null}],"layout":{"xaxis":{"domain":[0,1],"automargin":true,"anchor":"y2"},"yaxis2":{"domain":[0,0.48],"automargin":true,"type":"log","anchor":"x"},"yaxis":{"domain":[0.52,1],"automargin":true,"type":"log","anchor":"x"},"annotations":[],"shapes":[],"images":[],"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":true,"legend":{"orientation":"h"}},"attrs":{"1b683f351833":{"y":{},"name":"train","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"1b6820a5334b":{"y":{},"name":"test","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"source":"A","config":{"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+
+---
+### Data Preparation - Vectorizing the Data
+ * `reuters` training data comes as a list of vectors 
+    * need to be turned into a tensor. 
+    * Here, we will receive a 2-dimensional tensor (i.e. a matrix)
+ * The first element of the training data looks like this:
+ 
+
+```r
+&gt; reut_train_data[[1]]
+```
+
+```
+##  [1]    1    2    2    8   43   10  447    5   25  207  270    5 3095  111   16
+## [16]  369  186   90   67    7   89    5   19  102    6   19  124   15   90   67
+## [31]   84   22  482   26    7   48    4   49    8  864   39  209  154    6  151
+## [46]    6   83   11   15   22  155   11   15    7   48    9 4579 1005  504    6
+## [61]  258    6  272   11   15   22  134   44   11   15   16    8  197 1245   90
+## [76]   67   52   29  209   30   32  132    6  109   15   17   12
+```
+
+In the aspired matrix notation, this element will look like
+
+
+
+
+```r
+x_train[1,1:13 ,drop=FALSE]
+```
+
+```
+##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+## [1,]    1    1    0    1    1    1    1    1    1     1     1     1     0
+```
+
+--- 
+---
+### Data Preparation - Vectorizing the Data (2)
+
+We achieve this with the same code as before
+
+```r
+vectorize_sequences &lt;- function(sequences, dimension = 10000) {
+  results &lt;- matrix(0, nrow = length(sequences), ncol = dimension)
+  for (i in 1:length(sequences))  results[i, sequences[[i]] ] &lt;- 1
+  return(results)
+}
+
+x_train &lt;- vectorize_sequences(reut_train_data)
+x_test  &lt;- vectorize_sequences(reut_test_data)
+```
+
+
+---
+### Prepraration - Vectorizing the labels
+
+* This is a special type of vectorization called *one-hot encoding*, often used 
+  for *categorical data*
+* we can either use the same function as above
+  * CAVE: since there's a label `0`, we have to shift all labels with `+1`
+
+
+```r
+one_hot_train_labels  &lt;- vectorize_sequences(reut_train_labels+1, 
+                                            dimension=46)
+one_hot_test_labels   &lt;- vectorize_sequences(reut_test_labels +1, 
+                                            dimension=46)
+```
+
+* or with the built-in function `stats::model.matrix`
+
+```r
+one_hot_train_labels2 &lt;- model.matrix(~as.factor(reut_train_labels)-1)
+```
+
+* or the function in `keras::to_categorical`
+
+
+```r
+one_hot_train_labels3 &lt;- keras::to_categorical(reut_train_labels)
+```
+
+
+---
+### Prepraration - Vectorizing the labels (2)
+The three approaches yield the same results (apart from column names):
+
+```r
+all.equal(one_hot_train_labels,one_hot_train_labels2,one_hot_train_labels3)
+```
+
+```
+## [1] TRUE
+```
+
+
+The training labels vector becomes a matrix of `0`s and `1`s:
+
+
+```r
+head(reut_train_labels)
+```
+
+```
+## [1] 3 4 3 4 4 4
+```
+
+```r
+one_hot_train_labels[1:6,1:6]
+```
+
+```
+##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]    0    0    0    1    0    0
+## [2,]    0    0    0    0    1    0
+## [3,]    0    0    0    1    0    0
+## [4,]    0    0    0    0    1    0
+## [5,]    0    0    0    0    1    0
+## [6,]    0    0    0    0    1    0
+```
+
+---
+
+
+### Building the Network
+
+```r
+reut_model &lt;- keras_model_sequential() %&gt;%
+  layer_dense(units=64, activation="relu") %&gt;%
+  layer_dense(units=64, activation="relu") %&gt;%
+  layer_dense(units=46, activation="softmax")
+
+reut_model %&gt;% compile(optimizer = "rmsprop",
+                       loss      = "categorical_crossentropy",
+                       metrics   = "accuracy")
+```
+
+&gt; Note the loss function is `categorical_crossentropy`
+
+---
+### Model Validation
+Validation set is a subset of the training data that is used to:
+* estimate test error (i.e. prediction error on unknown data) while training a model
+* find optimal hyperparameters (here: number of epochs)
+
+
+```r
+val_indices  &lt;- 1:1000
+x_val        &lt;- x_train[ val_indices,]
+part_x_train &lt;- x_train[-val_indices,]
+y_val        &lt;- one_hot_train_labels[ val_indices,]
+part_y_train &lt;- one_hot_train_labels[-val_indices,]
+```
+
+&gt; Crossvalidation (see ISLR Chapter 6) is not implemented directly in `keras` but can be achieved with a loop.
+&gt; In case of class imbalance, it's good practice to create subsets stratified on `y`. I can recommend `caret::createFolds()`
+
+---
+### Training the Model
+
+```r
+reut_history &lt;- reut_model %&gt;% fit(x               =part_x_train,
+                                   y               =part_y_train,
+                                   epochs          =25,
+                                   batch_size      =512,
+                                   validation_data =list(x_val=x_val, 
+                                                         y_val=y_val))
+```
+
+&lt;img src="chapter3_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+### Retraining the Model
+
+We have seen that the network starts to overfit after around 9 epochs, so we choose 9 as the final number of epochs.
+
+```r
+reut_model_fin &lt;- keras_model_sequential() %&gt;%
+  layer_dense(units=64, activation="relu") %&gt;%
+  layer_dense(units=64, activation="relu") %&gt;%
+  layer_dense(units=46, activation="softmax")
+
+reut_model_fin %&gt;% compile(optimizer = "rmsprop",
+                           loss      = "categorical_crossentropy",
+                           metrics   = "accuracy")
+
+reut_model_fin %&gt;% fit(x               =part_x_train,
+                       y               =part_y_train,
+                       epochs          =9,
+                       batch_size      =512,
+                       validation_data =list(x_val=x_val, 
+                                             y_val=y_val))
+```
+
+&gt; The authors use partial training data (without validation data) to train
+final model
+
+&gt; We had to start from 'from stratch' by recompiling the model to re-initialize the weights to a random state. 
+
+---
+### Retraining the Model (2)
+
+
+```r
+reut_model_fin %&gt;% evaluate(x_test, one_hot_test_labels)
+```
+
+```
+##      loss  accuracy 
+## 0.9928968 0.7827249
+```
+
+
+We reach an accuracy of around 79% on the test set.
+A random classifier would have around 18% in this case.
+
+
+```r
+mean(sample(reut_test_labels)==reut_test_labels)
+```
+
+```
+## [1] 0.1789849
+```
+
+
+&gt; Another "baseline" comparison: classify all to the most common label. This would have an accuracy of around 36%.
+
+
+```r
+mean(reut_test_labels==3)
+```
+
+```
+## [1] 0.3619768
+```
+
+---
+### Predictions on new Data
+
+The `predict` method yields a  probability distribution over all 46 topics:
+
+```r
+predictions &lt;- predict(reut_model_fin, x_test)
+
+dim(predictions)
+```
+
+```
+## [1] 2246   46
+```
+
+```r
+round(predictions[1,],4)
+```
+
+```
+##  [1] 0.0001 0.0001 0.0000 0.9710 0.0176 0.0000 0.0000 0.0001 0.0035 0.0000
+## [11] 0.0000 0.0003 0.0001 0.0008 0.0000 0.0000 0.0007 0.0001 0.0000 0.0016
+## [21] 0.0015 0.0005 0.0000 0.0001 0.0000 0.0002 0.0000 0.0000 0.0000 0.0006
+## [31] 0.0001 0.0000 0.0000 0.0000 0.0001 0.0000 0.0004 0.0000 0.0000 0.0001
+## [41] 0.0001 0.0000 0.0000 0.0000 0.0000 0.0000
+```
+
+---
+### Size of intermediate layers
+Since output is 46-dimensional, intermediate (or hidden) layers with fewer than 46 should be avoided.
+
+
+```r
+model &lt;- keras_model_sequential() %&gt;%
+  layer_dense(units = 64, activation = "relu") %&gt;%
+  layer_dense(units = 4,  activation = "relu") %&gt;%
+  layer_dense(units = 46, activation = "softmax")
+
+model %&gt;% compile(optimizer = "rmsprop",
+                           loss      = "categorical_crossentropy",
+                           metrics   = "accuracy")
+
+hist &lt;- model %&gt;% fit(x     =part_x_train,
+            y               =part_y_train,
+            epochs          =20,
+            batch_size      =512,
+            validation_data =list(x_val=x_val, 
+                                  y_val=y_val))
+```
+
+---
+### Size of intermediate layers (2)
+
+```r
+plot(hist)
+```
+
+&lt;img src="chapter3_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+
+* only ~76% accuracy on training and on test data
+* with 32 units in second layer: ~95% accuracy on training, 80% on test data
+
+---
+## Regression 
+### Boston Housing data
+
+
+```r
+dataset &lt;- keras::dataset_boston_housing()
+c(c(train_data, train_targets), 
+  c(test_data, test_targets)) %&lt;-% dataset
+
+dim(train_data)
+```
+
+```
+## [1] 404  13
+```
+
+```r
+head(train_data)
+```
+
+```
+##         [,1] [,2]  [,3] [,4]  [,5]  [,6]  [,7]   [,8] [,9] [,10] [,11]  [,12]
+## [1,] 1.23247  0.0  8.14    0 0.538 6.142  91.7 3.9769    4   307  21.0 396.90
+## [2,] 0.02177 82.5  2.03    0 0.415 7.610  15.7 6.2700    2   348  14.7 395.38
+## [3,] 4.89822  0.0 18.10    0 0.631 4.970 100.0 1.3325   24   666  20.2 375.52
+## [4,] 0.03961  0.0  5.19    0 0.515 6.037  34.5 5.9853    5   224  20.2 396.90
+## [5,] 3.69311  0.0 18.10    0 0.713 6.376  88.4 2.5671   24   666  20.2 391.43
+## [6,] 0.28392  0.0  7.38    0 0.493 5.708  74.3 4.7211    5   287  19.6 391.13
+##      [,13]
+## [1,] 18.72
+## [2,]  3.11
+## [3,]  3.26
+## [4,]  8.01
+## [5,] 14.65
+## [6,] 11.74
+```
+
+```r
+head(train_targets)
+```
+
+```
+## [1] 15.2 42.3 50.0 21.1 17.7 18.5
+```
+
+---
+### Standardizing the data
+
+* standardizing (substracting the mean, dividing by the standard deviation) each 
+feature is 'best practice'  
+*Note that we use `mean`s and `sd`s of the features on the training data for test data as well, as one should never use information of the test data for model building
+
+
+```r
+mean &lt;- apply(train_data, 2, mean)
+std  &lt;- apply(train_data, 2, sd)
+
+train_data &lt;- scale(train_data, center=mean, scale=std)
+test_data  &lt;- scale(test_data , center=mean, scale=std)
+```
+
+
+---
+### Building the Model
+
+We put the model building step inside a function, this will facilitate crossvalidation.
+
+```r
+build_model &lt;- function() {
+  model &lt;- keras_model_sequential() %&gt;%
+      layer_dense(units = 64, activation = "relu",
+                  input_shape = dim(train_data)[[2]]) %&gt;%
+      layer_dense(units = 64, activation = "relu") %&gt;%
+      layer_dense(units = 1)
+  
+  model %&gt;% compile(optimizer ="rmsprop",
+                    loss      ="mse",
+                    metrics   ="mae")
+}
+```
+
+* We use a new loss function: mean squared error
+* `"mae"` stands for *mean absolute error*  
+* Since we have a regression task, the output layer has only one unit
+
+---
+### Fitting the Model using Cross-Validation
+
+
+```r
+k &lt;- 4
+indices &lt;- sample(1:nrow(train_data))
+folds   &lt;- cut(indices, breaks=k, labels=FALSE)
+num_epochs &lt;- 100
+all_scores &lt;- c()
+
+for (i in 1:k) {
+  cat("processing fold #", i, "\n")
+  val_indices &lt;- which(folds==i, arr.ind=TRUE)
+  val_data    &lt;- train_data[val_indices,]
+  val_targets &lt;- train_targets[val_indices]
+  partial_train_data    &lt;- train_data[-val_indices,]
+  partial_train_targets &lt;- train_targets[-val_indices]
+  
+  model &lt;- build_model()
+  model %&gt;% fit(partial_train_data, partial_train_targets,
+                epochs = num_epochs, batch_size = 1, verbose=0)
+  results &lt;- model %&gt;% evaluate(val_data, val_targets, verbose=1)
+  all_scores &lt;- c(all_scores, results["mae"])
+}
+```
+
+```
+## processing fold # 1 
+## processing fold # 2 
+## processing fold # 3 
+## processing fold # 4
+```
+
+
+---
+### Fitting the Model using Cross-Validiation (2)
+
+
+```r
+all_scores
+```
+
+```
+##      mae      mae      mae      mae 
+## 2.291640 2.206628 2.566082 2.309348
+```
+
+```r
+mean(all_scores)
+```
+
+```
+## [1] 2.343424
+```
+* The `mae` varies noticeably between folds.  
+* Mean `mae` is still more than 2400$ 
+
+---
+### Fitting the Model using Cross-Validiation (3)
+
+
+```r
+num_epochs &lt;- 250
+all_mae_histories &lt;- NULL
+
+for (i in 1:k) {
+  cat("processing fold #", i, "\n")
+  val_indices &lt;- which(folds==i, arr.ind=TRUE)
+  val_data    &lt;- train_data[val_indices,]
+  val_targets &lt;- train_targets[val_indices]
+  partial_train_data    &lt;- train_data[-val_indices,]
+  partial_train_targets &lt;- train_targets[-val_indices]
+  
+  model &lt;- build_model()
+  history &lt;- model %&gt;% fit(
+                partial_train_data, partial_train_targets,
+                epochs = num_epochs, batch_size = 1, verbose=0,
+                validation_data=list(val_data, val_targets))
+  mae_history &lt;- history$metrics$val_mae
+  all_mae_histories &lt;- rbind(all_mae_histories, mae_history)
+}
+```
+
+```
+## processing fold # 1 
+## processing fold # 2 
+## processing fold # 3 
+## processing fold # 4
+```
+
+---
+### Choosing the optimal number of training epochs
+
+First build the average `mae`:
+
+```r
+average_mae_history &lt;- data.frame(
+  epoch = seq(1:num_epochs),
+  validation_mae = apply(all_mae_histories, 2, mean)
+)
+```
+
+---
+### Choosing the optimal number of training epochs (2)
+
+Then plot it:
+
+```r
+span075 &lt;- ggplot(average_mae_history, aes(epoch, validation_mae)) +
+  geom_smooth(method="loess", span=.75) + theme_bw()
+
+span075 + geom_point()
+```
+
+&lt;img src="chapter3_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+### Choosing the optimal number of training epochs (2)
+
+&gt; A word of caution: The minimum of a loess smoother (the standard in `ggplot` for data sets with fewer than 1000 obs) highly depends on the `span`:
+
+
+```r
+span04 &lt;- ggplot(average_mae_history, aes(epoch, validation_mae)) +
+  geom_smooth(method="loess", span=.4) + theme_bw()
+
+gridExtra::grid.arrange(span04, span075)
+```
+
+&lt;img src="chapter3_files/figure-html/unnamed-chunk-30-1.png" style="display: block; margin: auto;" /&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,451 @@
+---
+title: "Deep Learning with R - Chapter 3"
+subtitle: "Francois Chollet and J.J. Allaire"
+author: "Philipp Mildenberger</br>"
+date: "2020-12-07</br> IMBEI - University Medical Center Mainz"
+output:
+  xaringan::moon_reader:
+    css: ["default", "default-fonts","css/FMstyles.css","css/animate.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      # ratio: "16:9"
+      titleSlideClass: [center, middle]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(eval = TRUE,
+                      message = FALSE,
+                      echo = TRUE,
+                      warnings = FALSE,
+                      fig.align = "center")
+library(keras)
+library(plotly)
+library(data.table)
+```
+
+
+# 3.5 Multiclass classification
+
+* We can also use neural networks to classify into multiple classes
+* example: `reuters` dataset
+  * classify Reuters newswires into 46 topics *(multiclass)*
+  * topics are mutually exclusive *(single-label)*
+
+```{r}
+reuters <- dataset_reuters(num_words=10000)
+reut_train_data   <- reuters$train$x
+reut_train_labels <- reuters$train$y
+reut_test_data    <- reuters$test$x
+reut_test_labels  <- reuters$test$y
+rm(reuters)
+```
+
+---
+### `reuters` data - Frequency of labels in train and test set
+```{r, echo=F, fig.width=8}
+dat <- as.data.table(reut_train_labels)[,.(train=.N), keyby=reut_train_labels] [
+        as.data.table(reut_test_labels)[,.(test=.N), keyby=reut_test_labels] ]
+dat[,':='(train=train/sum(train),
+          test =test /sum(test))]
+
+suppressMessages(
+suppressWarnings(
+subplot(
+  plot_ly(data=dat, type="bar", name="train", y=~train) %>% 
+    layout(yaxis=list(title="Frequency", type="log")) ,
+  plot_ly(data=dat, type="bar", name="test" , y=~test) %>% 
+    layout(yaxis=list(title="Frequency", type="log")),
+  nrows=2, shareX=TRUE) %>% 
+  layout(legend=list(orientation='h'))
+))
+```
+
+
+---
+### Data Preparation - Vectorizing the Data
+ * `reuters` training data comes as a list of vectors 
+    * need to be turned into a tensor. 
+    * Here, we will receive a 2-dimensional tensor (i.e. a matrix)
+ * The first element of the training data looks like this:
+ 
+```{r, out.width=8, prompt=TRUE}
+reut_train_data[[1]]
+```
+
+In the aspired matrix notation, this element will look like
+
+```{r, echo=FALSE}
+vectorize_sequences <- function(sequences, dimension = 10000) {
+  results <- matrix(0, nrow = length(sequences), ncol = dimension)
+  for (i in 1:length(sequences))  results[i, sequences[[i]] ] <- 1
+  return(results)
+}
+
+x_train <- vectorize_sequences(reut_train_data)
+x_test  <- vectorize_sequences(reut_test_data)
+```
+
+```{r}
+x_train[1,1:13 ,drop=FALSE]
+```
+
+--- 
+---
+### Data Preparation - Vectorizing the Data (2)
+
+We achieve this with the same code as before
+```{r, eval=FALSE}
+
+vectorize_sequences <- function(sequences, dimension = 10000) {
+  results <- matrix(0, nrow = length(sequences), ncol = dimension)
+  for (i in 1:length(sequences))  results[i, sequences[[i]] ] <- 1
+  return(results)
+}
+
+x_train <- vectorize_sequences(reut_train_data)
+x_test  <- vectorize_sequences(reut_test_data)
+```
+
+
+---
+### Prepraration - Vectorizing the labels
+
+* This is a special type of vectorization called *one-hot encoding*, often used 
+  for *categorical data*
+* we can either use the same function as above
+  * CAVE: since there's a label `0`, we have to shift all labels with `+1`
+
+```{r}
+one_hot_train_labels  <- vectorize_sequences(reut_train_labels+1, 
+                                            dimension=46)
+one_hot_test_labels   <- vectorize_sequences(reut_test_labels +1, 
+                                            dimension=46)
+```
+
+* or with the built-in function `stats::model.matrix`
+```{r}
+one_hot_train_labels2 <- model.matrix(~as.factor(reut_train_labels)-1)
+```
+
+* or the function in `keras::to_categorical`
+
+```{r}
+one_hot_train_labels3 <- keras::to_categorical(reut_train_labels)
+```
+
+
+---
+### Prepraration - Vectorizing the labels (2)
+The three approaches yield the same results (apart from column names):
+```{r,echo=2}
+attributes(one_hot_train_labels2) <- list(dim=c(8982,46))
+all.equal(one_hot_train_labels,one_hot_train_labels2,one_hot_train_labels3)
+```
+
+
+The training labels vector becomes a matrix of `0`s and `1`s:
+
+```{r}
+head(reut_train_labels)
+one_hot_train_labels[1:6,1:6]
+```
+
+---
+
+
+### Building the Network
+```{r}
+reut_model <- keras_model_sequential() %>%
+  layer_dense(units=64, activation="relu") %>%
+  layer_dense(units=64, activation="relu") %>%
+  layer_dense(units=46, activation="softmax")
+
+reut_model %>% compile(optimizer = "rmsprop",
+                       loss      = "categorical_crossentropy",
+                       metrics   = "accuracy")
+```
+
+> Note the loss function is `categorical_crossentropy`
+
+---
+### Model Validation
+Validation set is a subset of the training data that is used to:
+* estimate test error (i.e. prediction error on unknown data) while training a model
+* find optimal hyperparameters (here: number of epochs)
+
+```{r}
+val_indices  <- 1:1000
+x_val        <- x_train[ val_indices,]
+part_x_train <- x_train[-val_indices,]
+y_val        <- one_hot_train_labels[ val_indices,]
+part_y_train <- one_hot_train_labels[-val_indices,]
+```
+
+> Crossvalidation (see ISLR Chapter 6) is not implemented directly in `keras` but can be achieved with a loop.
+> In case of class imbalance, it's good practice to create subsets stratified on `y`. I can recommend `caret::createFolds()`
+
+---
+### Training the Model
+```{r, echo=1, fig.width=9, fig.height=5, cache=TRUE}
+reut_history <- reut_model %>% fit(x               =part_x_train,
+                                   y               =part_y_train,
+                                   epochs          =25,
+                                   batch_size      =512,
+                                   validation_data =list(x_val=x_val, 
+                                                         y_val=y_val))
+plot(reut_history)
+```
+
+
+---
+### Retraining the Model
+
+We have seen that the network starts to overfit after around 9 epochs, so we choose 9 as the final number of epochs.
+```{r, cache=TRUE}
+reut_model_fin <- keras_model_sequential() %>%
+  layer_dense(units=64, activation="relu") %>%
+  layer_dense(units=64, activation="relu") %>%
+  layer_dense(units=46, activation="softmax")
+
+reut_model_fin %>% compile(optimizer = "rmsprop",
+                           loss      = "categorical_crossentropy",
+                           metrics   = "accuracy")
+
+reut_model_fin %>% fit(x               =part_x_train,
+                       y               =part_y_train,
+                       epochs          =9,
+                       batch_size      =512,
+                       validation_data =list(x_val=x_val, 
+                                             y_val=y_val))
+```
+
+> The authors use partial training data (without validation data) to train
+final model
+
+> We had to start from 'from stratch' by recompiling the model to re-initialize the weights to a random state. 
+
+---
+### Retraining the Model (2)
+
+```{r}
+reut_model_fin %>% evaluate(x_test, one_hot_test_labels)
+```
+
+
+We reach an accuracy of around 79% on the test set.
+A random classifier would have around 18% in this case.
+
+```{r}
+mean(sample(reut_test_labels)==reut_test_labels)
+```
+
+
+> Another "baseline" comparison: classify all to the most common label. This would have an accuracy of around 36%.
+
+```{r}
+mean(reut_test_labels==3)
+```
+
+---
+### Predictions on new Data
+
+The `predict` method yields a  probability distribution over all 46 topics:
+```{r}
+predictions <- predict(reut_model_fin, x_test)
+
+dim(predictions)
+
+round(predictions[1,],4)
+```
+
+---
+### Size of intermediate layers
+Since output is 46-dimensional, intermediate (or hidden) layers with fewer than 46 should be avoided.
+
+```{r}
+model <- keras_model_sequential() %>%
+  layer_dense(units = 64, activation = "relu") %>%
+  layer_dense(units = 4,  activation = "relu") %>%
+  layer_dense(units = 46, activation = "softmax")
+
+model %>% compile(optimizer = "rmsprop",
+                           loss      = "categorical_crossentropy",
+                           metrics   = "accuracy")
+
+hist <- model %>% fit(x     =part_x_train,
+            y               =part_y_train,
+            epochs          =20,
+            batch_size      =512,
+            validation_data =list(x_val=x_val, 
+                                  y_val=y_val))
+
+```
+
+---
+### Size of intermediate layers (2)
+```{r}
+plot(hist)
+```
+
+* only ~70% accuracy on both training and test data
+* with 32 units in second layer: ~95% accuracy on training, 80% on test data
+
+---
+## Regression 
+### Boston Housing data
+
+```{r}
+dataset <- keras::dataset_boston_housing()
+c(c(train_data, train_targets), 
+  c(test_data , test_targets) ) %<-% dataset
+
+dim(train_data)
+head(train_data)
+
+head(train_targets)
+```
+
+---
+### Standardizing the data
+
+* standardizing (substracting the mean, dividing by the standard deviation) each 
+feature is 'best practice'  
+
+* Note that we use `mean`s and `sd`s of the features on the training data for test data as well, as one should never use information of the test data for model building
+
+```{r}
+mean <- apply(train_data, 2, mean)
+std  <- apply(train_data, 2, sd)
+
+train_data <- scale(train_data, center=mean, scale=std)
+test_data  <- scale(test_data , center=mean, scale=std)
+```
+
+
+---
+### Building the Model
+
+We put the model building step inside a function, this will facilitate cross-validation.
+```{r}
+build_model <- function() {
+  model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu",
+                  input_shape = dim(train_data)[[2]]) %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1)
+  
+  model %>% compile(optimizer ="rmsprop",
+                    loss      ="mse",
+                    metrics   ="mae")
+}
+```
+
+* We use a new loss function: mean squared error
+* `"mae"` stands for *mean absolute error*  
+* Since we have a regression task, the output layer has only one unit
+
+---
+### Fitting the Model using Cross-Validation
+
+```{r, cache=TRUE, results=FALSE}
+k <- 4
+indices <- sample(1:nrow(train_data))
+folds   <- cut(indices, breaks=k, labels=FALSE)
+num_epochs <- 100
+all_scores <- c()
+
+for (i in 1:k) {
+  cat("processing fold #", i, "\n")
+  val_indices <- which(folds==i, arr.ind=TRUE)
+  val_data    <- train_data[val_indices,]
+  val_targets <- train_targets[val_indices]
+  partial_train_data    <- train_data[-val_indices,]
+  partial_train_targets <- train_targets[-val_indices]
+  
+  model <- build_model()
+  model %>% fit(partial_train_data, partial_train_targets,
+                epochs = num_epochs, batch_size = 1, verbose=0)
+  results <- model %>% evaluate(val_data, val_targets, verbose=1)
+  all_scores <- c(all_scores, results["mae"])
+}
+```
+
+
+---
+### Fitting the Model using Cross-Validiation (2)
+
+```{r}
+all_scores
+
+mean(all_scores)
+```
+* The `mae` varies noticeably between folds.  
+* Mean `mae` is still more than 2400$ 
+
+---
+### Fitting the Model using Cross-Validiation (3)
+
+```{r , cache=TRUE}
+num_epochs <- 250
+all_mae_histories <- NULL
+
+for (i in 1:k) {
+  cat("processing fold #", i, "\n")
+  val_indices <- which(folds==i, arr.ind=TRUE)
+  val_data    <- train_data[val_indices,]
+  val_targets <- train_targets[val_indices]
+  partial_train_data    <- train_data[-val_indices,]
+  partial_train_targets <- train_targets[-val_indices]
+  
+  model <- build_model()
+  history <- model %>% fit(
+                partial_train_data, partial_train_targets,
+                epochs = num_epochs, batch_size = 1, verbose=0,
+                validation_data=list(val_data, val_targets))
+  mae_history <- history$metrics$val_mae
+  all_mae_histories <- rbind(all_mae_histories, mae_history)
+}
+```
+
+---
+### Choosing the optimal number of training epochs
+
+First build the average `mae`:
+```{r}
+average_mae_history <- data.frame(
+  epoch = seq(1:num_epochs),
+  validation_mae = apply(all_mae_histories, 2, mean)
+)
+```
+
+---
+### Choosing the optimal number of training epochs (2)
+
+Then plot it:
+```{r}
+span075 <- ggplot(average_mae_history, aes(epoch, validation_mae)) +
+  geom_smooth(method="loess", span=.75) + theme_bw()
+
+span075 + geom_point()
+  
+```
+
+---
+### Choosing the optimal number of training epochs (2)
+
+> A word of caution: The minimum of a loess smoother (the standard in `ggplot` for data sets with fewer than 1000 obs) highly depends on the `span`:
+
+```{r}
+span04 <- ggplot(average_mae_history, aes(epoch, validation_mae)) +
+  geom_smooth(method="loess", span=.4) + theme_bw()
+
+gridExtra::grid.arrange(span04, span075)
+
+```
+
+
+
