@@ -197,4 +197,6 @@ div.my-footer span {
     bottom: 2px;
 }
 
-
+pre {
+  white-space: pre-wrap;
+}
