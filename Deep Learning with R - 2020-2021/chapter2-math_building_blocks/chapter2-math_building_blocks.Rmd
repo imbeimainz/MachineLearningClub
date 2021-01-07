@@ -1,7 +1,7 @@
 ---
 title: "Deep Learning with R - Chapter 2"
 subtitle: "Francois Chollet and J.J. Allaire"
-author: "You Zhou (email) and Federico Marini (marinif@uni-mainz.de)</br>"
+author: "You Zhou (youzhoulearning@gmail.com) and Federico Marini (marinif@uni-mainz.de)</br>"
 date: "2020/11/23</br>
   IMBEI - University Medical Center Mainz"
 output:
@@ -35,9 +35,6 @@ knitr::opts_chunk$set(
 ```{r, include=FALSE, eval=TRUE}
 library(keras)
 ```
-
-
-[from here: YOU]
 
 # Chapter 2 Agenda
 
@@ -76,13 +73,10 @@ library(tensorflow)
 library(keras)
 install_tensorflow()
 install_keras() 
-#we can use the option to install the cpu or gpu based version tensorflow = "1.1.0-gpu"
+# we can use the option to install the cpu or gpu based version tensorflow = "1.1.0-gpu"
 ```
 
---
-
 ---
-
 
 # Keras and TensorFlow
 
@@ -227,7 +221,7 @@ We will commonly have the 0D to 5D data as a tensor for the NN.
 naive_relu <- function(x) {
   for (i in nrow(x))
     for (j in ncol(x))
-x[i, j] <- max(x[i, j], 0) x
+      x[i, j] <- max(x[i, j], 0) x
 }
 ```
 
