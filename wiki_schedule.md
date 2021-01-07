@@ -7,7 +7,7 @@ Welcome to the MachineLearningClub wiki!
 
 Each meeting will be focused on a particular chapter, or a part thereof.
 
-*Last updated: 2020-11-30*
+*Last updated: 2021-01-07*
 
 ### Deep Learning with R
 
@@ -18,8 +18,8 @@ Each meeting will be focused on a particular chapter, or a part thereof.
 | Chapter 3              | 2020-11-30 | Robert Kuchen               |
 | Chapter 3              | 2020-12-07 | Philipp Mildenberger        |
 | Chapter 4              | 2020-12-14 | Rex Ha                      |
-| Chapter 5              | 2021-01-11 | Dativa Tibyampansha         |
-| Chapter 5              | 2021-01-18 | Jochem König                |
+| Chapter 5              | 2021-01-11 | Jochem König                |
+| Chapter 5              | 2021-01-18 | Dativa Tibyampansha         |
 | Chapter 6              | 2021-01-25 | Melina Klostermann          |
 | Chapter 6              | 2021-02-01 | Gerrit Toenges              |
 | Chapter 7              | 2021-02-08 |                             |
