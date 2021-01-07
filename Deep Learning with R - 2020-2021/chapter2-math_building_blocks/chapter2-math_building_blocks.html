@@ -3,7 +3,7 @@
   <head>
     <title>Deep Learning with R - Chapter 2</title>
     <meta charset="utf-8" />
-    <meta name="author" content="You Zhou (email) and Federico Marini (marinif@uni-mainz.de)" />
+    <meta name="author" content="You Zhou (youzhoulearning@gmail.com) and Federico Marini (marinif@uni-mainz.de)" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
@@ -16,7 +16,7 @@ class: center, middle, title-slide
 
 # Deep Learning with R - Chapter 2
 ## Francois Chollet and J.J. Allaire
-### You Zhou (email) and Federico Marini (<a href="mailto:marinif@uni-mainz.de" class="email">marinif@uni-mainz.de</a>)</br>
+### You Zhou (<a href="mailto:youzhoulearning@gmail.com" class="email">youzhoulearning@gmail.com</a>) and Federico Marini (<a href="mailto:marinif@uni-mainz.de" class="email">marinif@uni-mainz.de</a>)</br>
 ### 2020/11/23</br> IMBEI - University Medical Center Mainz
 
 ---
@@ -31,16 +31,11 @@ layout: true
 
 
 
-
-[from here: YOU]
-
 # Chapter 2 Agenda
 
 **Before we begin: the mathematical building blocks of neural networks**
 
-- content1
-- content2
-- content3
+Keras and Tensorflow
 
 A first example of a neural network
 
@@ -51,21 +46,205 @@ How neural networks learn via backpropagation and gradient descent
 ---
 
 
-# A first look at a neural network
+# The installation of Keras and Tensorflow
 
+For installing the Keras and Tensorflow, we need to first install the package "keras" and "tensorflow" from CRAN.
+
+--
+
+
+```r
+install.packages("keras")
+install.packages("tensorflow")
+```
+
+--
+
+Then we need to use the install_tensorflow() and install_keras() to install the core program of these packages.
+
+--
+
+
+```r
+library(tensorflow)
+library(keras)
+install_tensorflow()
+install_keras() 
+# we can use the option to install the cpu or gpu based version tensorflow = "1.1.0-gpu"
+```
 
 ---
 
+# Keras and TensorFlow
 
-# Data representations for neural networks
+**TensorFlow** is a free and open-source software library for machine learning. It can be used across a range of tasks but has a particular focus on training and inference of deep neural networks. It was developed by Google and first released in 2015.
+
+**Keras** is an Application Programming Interface (API) for the machine learning. It was developed by Francois Chollet in 2015. Keras can actually take many different libraries as the backend engine. TensorFlow became the default backend engine for Keras since v1.1.0. 
+
+---
+
+# MNIST (National Institute of Standards and Technology ) Database
+
+The problem we're trying to solve here is to classify grayscale images of handwritten digits (28 pixels by 28 pixels) into their 10 categories (0 to 9). We'll use the MNIST dataset, a classic dataset in the machine-learning community, which has been around almost as long as the field itself and has been intensively studied. It's a set of 60,000 training images, plus 10,000 test images, assembled by the National Institute of Standards and Technology (the NIST in MNIST) in the 1980s.
+
+---
+
+# How the MNIST dataset looks like
+
+
+
+
+```r
+mnist &lt;- dataset_mnist() 
+train_images &lt;- mnist$train$x 
+train_labels &lt;- mnist$train$y 
+test_images &lt;- mnist$test$x 
+test_labels &lt;- mnist$test$y
+```
+
+---
+
+`train_images` and `train_labels` form the _training set_, the data that the model will learn from. The model will then be tested on the  _test set_, `test_images` and `test_labels`. The images are encoded as as 3D arrays, and the labels are a 1D array of digits, ranging from 0 to 9. There is a one-to-one correspondence between the images and the labels.
+
+The R `str()` function is a convenient way to get a quick glimpse at the structure of an array. Let's use it to have a look at the training data:
+
+
+```r
+str(train_images)
+```
+
+
+```r
+str(train_labels)
+```
+
+The workflow will be as follows: first we'll feed the neural network the training data, `train_images` and `train_labels`. The network will then learn to associate images and labels. Finally, we'll ask the network to produce predictions for `test_images`, and we'll verify whether these predictions match the labels from `test_labels`.
+
+---
+
+# Build your first neural network
+
+
+```r
+network &lt;- keras_model_sequential() %&gt;% 
+  layer_dense(units = 512, activation = "relu", input_shape = c(28 * 28)) %&gt;% 
+  layer_dense(units = 10, activation = "softmax")
+```
+
+The core building block of neural networks is the _layer_, a data-processing module that you can think of as a filter for data. Some data comes in, and it comes out in a more useful form. Specifically, layers extract _representations_ out of the data fed into them—hopefully representations that are more meaningful for the problem at hand. Most of deep learning consists of chaining together simple layers that will implement a form of progressive _data distillation_. A deep-learning model is like a sieve for data processing, made of a succession of increasingly refined data filters—the layers.
+
+Here our network consists of a sequence of two layers, which are densely connected (also called _fully connected_) neural layers. The second (and last) layer is a 10-way _softmax_ layer, which means it will return an array of 10 probability scores (summing to 1). Each score will be the probability that the current digit image belongs to one of our 10 digit classes.
+
+---
+
+# Complilation
+
+To make the network ready for training, we need to pick three more things, as part of the _compilation_ step:
+
+* _A loss function_—How the network will be able to measure how good a job it's doing on its training data, and thus how it will be able to steer itself in the right direction.
+* _An optimizer_—The mechanism through which the network will update itself based on the data it sees and its loss function.
+* _Metrics to monitor during training and testing_—Here we'll only care about accuracy (the fraction of the images that were correctly classified).
+
+The exact purpose of the loss function and the optimizer will be made clear throughout the next two chapters.
+
+
+```r
+network %&gt;% compile(
+  optimizer = "rmsprop",
+  loss = "categorical_crossentropy",
+  metrics = c("accuracy")
+)
+```
+
+---
+
+# Data process
+
+Before training, we'll preprocess the data by reshaping it into the shape the network expects and scaling it so that all values are in the `[0, 1]` interval. Previously, our training images, for instance, were stored in an array of shape `(60000, 28, 28)` of type integer with values in the `[0, 255]` interval. We transform it into a double array of shape `(60000, 28 * 28)` with values between 0 and 1.
+
+
+```r
+train_images &lt;- array_reshape(train_images, c(60000, 28 * 28))
+train_images &lt;- train_images / 255
+
+test_images &lt;- array_reshape(test_images, c(10000, 28 * 28))
+test_images &lt;- test_images / 255
+```
+
+We also need to categorically encode the labels, a step which we explain in chapter 3:
+
+
+```r
+train_labels &lt;- to_categorical(train_labels)
+test_labels &lt;- to_categorical(test_labels)
+```
+
+---
+
+# Train the NN
+
+We are now ready to train our network, which in Keras is done via a call to the `fit` method of the network: we "fit" the model to its training data.
+
+
+```r
+network %&gt;% fit(train_images, train_labels, epochs = 5, batch_size = 128)
+```
+
+--
+
+Two quantities are being displayed during training: the "loss" of the network over the training data, and the accuracy of the network over the training data.
+
+We quickly reach an accuracy of 0.989 (i.e. 98.9%) on the training data. Now let's check that our model performs well on the test set too:
+
+--
+
+
+```r
+metrics &lt;- network %&gt;% evaluate(test_images, test_labels, verbose = 0)
+metrics
+```
+
+---
+
+# Data representation in neural network
+We will commonly have the 0D to 5D data as a tensor for the NN.
+
+**Vector data ** —2D tensors of shape (samples, features)  
+**Timeseries data or sequence data ** —3D tensors of shape (samples, timesteps, features)  
+**Images** —4D tensors of shape (samples, height, width, channels) or (samples, channels, height, width)  
+**Video—5D** tensors of shape (samples, frames, height, width, channels) or (samples, frames, channels, height, width)  
 
 
 ---
 
 # The gears of neural networks: tensor operations
+**Element-wise operations**: operations that are applied independently to each entry in the tensors being considered. This means these operations are highly amenable to massively parallel implementations
 
 
+```r
+naive_relu &lt;- function(x) {
+  for (i in nrow(x))
+    for (j in ncol(x))
+      x[i, j] &lt;- max(x[i, j], 0) x
+}
+```
 
+
+```r
+z &lt;- pmax(z, 0)  # Some common functions are already have a BLAS implementation in R
+```
+
+---
+
+# Operations involving tensors of different dimensions
+
+
+```r
+x &lt;- array(round(runif(1000,0,9)), dim = c(64,3,32,10))
+y &lt;- array(5, dim = c(32,10))
+
+z &lt;- sweep(x, c(3,4), y, pmax)
+```
 
 ---
 
@@ -229,7 +408,7 @@ Elementary geometric operations (affine transformations, rotations, scaling) can
 
 ```r
 R &lt;- matrix(c("cos(theta)", "-sin(theta)",
-            "cos(theta)", "-sin(theta)"),
+            "sin(theta)", "-cos(theta)"),
             nrow = 2, byrow = TRUE)
 R
 ```
