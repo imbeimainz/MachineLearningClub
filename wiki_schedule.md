@@ -7,7 +7,7 @@ Welcome to the MachineLearningClub wiki!
 
 Each meeting will be focused on a particular chapter, or a part thereof.
 
-*Last updated: 2021-01-07*
+*Last updated: 2021-01-26*
 
 ### Deep Learning with R
 
@@ -20,13 +20,14 @@ Each meeting will be focused on a particular chapter, or a part thereof.
 | Chapter 4              | 2020-12-14 | Rex Ha                      |
 | Chapter 5              | 2021-01-11 | Jochem König                |
 | Chapter 5              | 2021-01-18 | Dativa Tibyampansha         |
-| Chapter 6              | 2021-01-25 | Melina Klostermann          |
-| Chapter 6              | 2021-02-01 | Gerrit Toenges              |
-| Chapter 7              | 2021-02-08 |                             |
-| Chapter 7              | 2021-02-15 |                             |
-| Chapter 8              | 2021-02-22 | Manuel Herbst + Lars Hadidi |
+| Chapter 6              | 2021-01-25 | rescheduled                 |
+| Chapter 6              | 2021-02-01 | Melina Klostermann          |
+| Chapter 6              | 2021-02-08 | Gerrit Toenges              |
+| Chapter 7              | 2021-02-15 | Philipp Mildenberger        |
+| Chapter 7              | 2021-02-22 |                             |
 | Chapter 8              | 2021-03-01 | Manuel Herbst + Lars Hadidi |
-| Chapter 9              | 2021-03-08 | Konstantin Strauch          |
+| Chapter 8              | 2021-03-08 | Manuel Herbst + Lars Hadidi |
+| Chapter 9              | 2021-03-15 | Konstantin Strauch          |
 
 Please use `wiki_schedule.Rmd` in the repo to generate the content for
 this page
