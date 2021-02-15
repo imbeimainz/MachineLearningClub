@@ -1,5 +1,6 @@
 
 
+
 library(keras)
 
 ######### MULTI - INPUT ################
@@ -44,6 +45,7 @@ model %>% compile(
 model
 
 ### small example for multiple inputs
+## DOES NOT WORK: InvalidArgumentError: indices[28,0] = 400 is not in [0, 32)
 
 num_samples <- 100 
 max_length  <- 10
@@ -125,8 +127,11 @@ max_len <- 100
 imdb <- dataset_imdb(num_words = max_features) 
 c(c(x_train, y_train), c(x_test, y_test)) %<-% imdb 
 
-x_train <- x_train[1:10000,] ## take only a subset of the data 
-x_test  <- x_test[1:10000,]
+subset <- 1:10000
+x_train <- x_train[subset] ## take only a subset of the data 
+y_train <- y_train[subset]
+x_test  <- x_test[subset]
+y_test  <- y_test[subset]
 
 vectorize_sequences <- function(sequences, dimension = 10000) {
   results <- matrix(0, nrow = length(sequences), ncol = dimension)
@@ -152,7 +157,7 @@ model %>% compile(
   metrics = c("acc"))
 
 history <- model %>% fit( x_train, y_train,
-                          epochs = 10, batch_size = 128, validation_split = 0.3)
+                          epochs = 10, batch_size = 128, validation_split = 0.2)
 
 
 ## the same, with `keras_model()` ####
@@ -169,11 +174,13 @@ model %>% compile(
   metrics = c("acc"))
 
 model %>% fit(x_train, y_train,
-              epochs = 10, batch_size = 128, validation_split = 0.3)
+              epochs = 10, batch_size = 128, validation_split = 0.2)
 
 
 
 ## A dense model for the same task ####
+ 
+rm(x_train, x_test)
 model_dense <- keras_model_sequential() %>%
   layer_dense(units=16, activation="relu") %>% 
   layer_dense(units=16, activation="relu") %>%
@@ -191,20 +198,42 @@ model_dense %>% fit(x               =x_train_toh,
 
   
 ##  fit with tensorboard running ####
+## DOES NOT WORK ON MY WIN
 
-path_to_dir <- "Deep Learning with R - 2020-2021/chapter7-advanced_deep_learning_best_practices/my_log_dir"
+path_to_dir <- "Deep Learning with R - 2020-2021/chapter7-advanced_deep_learning_best_practices/my_tb_logs"
+# path_to_dir <- "tensorBoard_dir"
+
+
 dir.create(path_to_dir)
 
 tensorboard_callback <- list( 
   callback_tensorboard( 
-    log_dir = "my_log_dir", 
+    log_dir = path_to_dir, 
     histogram_freq  = 1, 
     embeddings_freq = 1))
-tensorboard(path_to_dir,
-            launch_browser = utils::browseURL("127.0.0.1"))
+tensorboard(path_to_dir)#,launch_browser = utils::browseURL("127.0.0.1"))
 
 model_dense %>% fit(x_train_toh, 
                     y_train,
                     epochs = 10, batch_size = 128, 
                     validation_split = 0.2,
                     callbacks = tensorboard_callback)
+
+model_dense %>% fit(x_train_toh, 
+                    y_train,
+                    epochs = 10, batch_size = 128, 
+                    validation_split = 0.2,
+                    callbacks = callback_tensorboard(path_to_dir))
+
+tensorboard(path_to_dir, action="stop")
+
+############### TensorBoard example from documentation ########################
+## https://tensorflow.rstudio.com/tools/tfruns/overview/
+
+library(tfruns)
+library(tfestimators)
+training_run("Deep Learning with R - 2020-2021/chapter7-advanced_deep_learning_best_practices/mnist_mlp.R")
+view_run(latest_run())
+tensorflow::tensorboard()
+
+  

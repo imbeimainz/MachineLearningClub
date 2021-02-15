@@ -37,7 +37,7 @@ library(data.table)
 
 ---
 
-# 7.1 Beyond sequential models: Multimodal Models and the Keras functional API
+# 7.1 Beyond sequential models and Keras functional API
 
 All networks so far were sequential models with:
 
@@ -53,21 +53,11 @@ layers or wants to get different kind of output one can instead use a **multimod
 ![multi-output](images/multimodal2.png){width=40%}
 
 
----
+### Neural Networks as Graphs
 
-## Neural Networks as Graphs
 
 Neural network architecture can be any kind of DAG (directed graphs without loops).
-Recent applications worth mentioning:
 
-* inception modules 
-  * parallel convolutional branches
-  * better performance than sequential models
-* residual connections 
-  * connect an 'early' layer directly to a layer (much) further downstream
-  * helps against information loss (vanishing gradient problem)
-
-![Inception module](images/inceptionmodule.png)
 
 ---
 
@@ -107,20 +97,21 @@ summary(model)
 ## Compiling, Training, Evaluating `keras_model()`-Objects
 
 This works essenially in the same way as for `keras_model_sequential()`.
+If we have multiple inputs (or outputs), we need to specify them in a list.
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, eval=FALSE}
 model %>% compile( 
   optimizer = "rmsprop", 
   loss = "categorical_crossentropy"
 )
-x_train <- array(runif(1000 * 64), dim = c(1000, 64)) 
-y_train <- array(runif(1000 * 10), dim = c(1000, 10))
 
 model %>% fit(
-  x_train, y_train, 
+  list(input1, input2), 
+  list(output1, output2), 
   epochs = 10, batch_size = 128) 
 
-model %>% evaluate(x_train, y_train)
+model %>% evaluate(list(input1, input2), 
+                   list(output1, output2))
 ```
 
 
@@ -246,14 +237,31 @@ losses need to be combined into a single value.
 
 ---
 
+## Neural Networks as Graphs
 
-## DAG of Layers
+Neural network architecture can be any kind of DAG (directed graphs without loops).
+Applications worth mentioning are 
+### Inception Modules 
+* first presented ~ 2013
+* parallel convolutional branches
+* branches vary in level of detail, i.e. there are branches for the "large scale features" 
+and other branches for "fine-grained features" 
+* better performance than sequential models
 
-### Inception Modules
+![Inception module](images/inceptionmodule.png)
+
+### Residual Connections 
+* first presented ~2015
+* connect an 'early' layer directly to a layer (much) further downstream
+* helps against information loss (vanishing gradient problem)
 
 
+### Prespecified DAGs
 
-### Residual Connections
+Many prespecified complex models are contained in `keras`, e.g.:
+`application_inception_v3(), application_xception(), application_resnet50(), ... `
+
+
 
 
 ---
@@ -262,7 +270,7 @@ losses need to be combined into a single value.
 
 * We can reuse a layer, keeping the weights (instead of having multiple instances of the layer)
 * This allows for models with shared branches.
-  *     share the same representations 
+  * share the same representations 
   * learn these representations simultaneously for different sets of inputs
 
 #### Example: Assess semantic similarity between two sentences
@@ -290,9 +298,8 @@ predictions <- merged %>%
 model <- keras_model(list(left_input, right_input), predictions)
 ```
 
-> Note that `lstm` has brackets, `merged` does not.
-
-> (I'm unsure wheter these brackets are really needed...)
+> Note that `lstm` has parentheses, `merged` does not.
+(I'm unsure wheter these parentheses are really needed...)
 
 > Note that the terms **merge** and **concatenate** are used interchangeably here, I'd say **concatenate** is more apt. 
 
@@ -313,11 +320,22 @@ $$\\[2cm]$$
 ```{r}
 submodel <- application_xception() ## shared model, only once instantiated
 
-left_input   <- layer_input(shape = list(NULL, 128)) 
+left_input   <- layer_input(shape = c(299, 299, 3)) 
 left_output  <- left_input %>% submodel()
 
-right_input  <- layer_input(shape = list(NULL, 128)) 
+right_input  <- layer_input(shape = c(299, 299, 3)) 
 right_output <- right_input %>% submodel()
+```
+
+$$\\[3cm]$$
+
+```{r ,echo=TRUE}
+predictions <- layer_concatenate(list(left_output, right_output)) %>% 
+  layer_dense(units = 1, activation = "sigmoid")
+
+model <- keras_model(list(left_input, right_input), predictions)
+
+model
 ```
 
 
@@ -334,7 +352,7 @@ right_output <- right_input %>% submodel()
   * ... 
 
 To use callbacks, we have to pass a list with the specific callbacks to `fit()`
-```{r}
+```{r, eval=FALSE}
 my_callback_list <- list( 
   callback_early_stopping( 
     monitor = "acc",
@@ -371,12 +389,12 @@ TensorBoard is all about processing the generated information. It allows us to:
 ### Using TensorBoard
 
 Create a directory for the log files:
-```{r}
+```{r, eval=FALSE}
 dir.create("my_log_dir")
 ```
 
 Create a callback
-```{r}
+```{r, eval=FALSE}
 tensorboard_callback <- list( 
   callback_tensorboard( 
     log_dir = "my_log_dir", 
@@ -386,14 +404,15 @@ tensorboard_callback <- list(
 ```
 
 Launch TensorBoard
-```{r}
+```{r, eval=FALSE}
 tensorboard("my_log_dir")
 ```
 
 And then use the callback for the model fit
-```{r}
+```{r, eval=FALSE}
 model %>% fit(train, test,
               ...,
               callbacks= tensorboard_callback)
 ```
+
 
