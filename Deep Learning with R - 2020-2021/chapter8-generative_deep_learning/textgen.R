@@ -131,6 +131,9 @@ for (epoch in 1:60) {
 
 keras::save_model_hdf5(model, "model_kant_60epochs.h5")
 
+# Interesting other tiny thingy:
+# reminds me of https://github.com/serrat839/mRkov
+# https://serrat839.shinyapps.io/mRkov_shiny/
 
 # Exploring interactively what this means ---------------------------------
 
