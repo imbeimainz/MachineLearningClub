@@ -6,11 +6,11 @@ to_one_hot <- function(labels, dimension = 46) {
   return(results)
 }
 
-vectorize_sequences <- function(sequences, dimension = 10000) {
-  results <- matrix(0, nrow = length(sequences), ncol = dimension)
-  for (i in 1:length(sequences))  results[i, sequences[[i]] ] <- 1
-  return(results)
-}
+  vectorize_sequences <- function(sequences, dimension = 10000) {
+    results <- matrix(0, nrow = length(sequences), ncol = dimension)
+    for (i in 1:length(sequences))  results[i, sequences[[i]] ] <- 1
+    return(results)
+  }
 
 to_one_pm <-  function(labels){
   dim     <- max(labels) ; len <- length(labels)
@@ -62,6 +62,7 @@ c(c(train_data, train_labels), c(test_data, test_labels)) %<-% imdb
 x_train <- vectorize_sequences(train_data)
 x_test  <- vectorize_sequences(test_data)
 rm(train_data,test_data,imdb)
+
 
 ## two hidden layers 
 model <- keras_model_sequential() %>%
@@ -158,7 +159,9 @@ plot(predL1_lin, predNN_lin)
 
 ## boosting
 
-## ... not yet 
+## ... not yet implemented
+
+
 
 
 ##### REUTERS DATA: Overfitting depends on number of units (and batch size) ####
