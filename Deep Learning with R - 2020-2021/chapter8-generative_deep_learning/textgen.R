@@ -129,8 +129,7 @@ for (epoch in 1:60) {
   }
 }
 
-keras::save_model_hdf5(model, "model_kant_5epochs.h5")
-
+keras::save_model_hdf5(model, "model_kant_60epochs.h5")
 
 
 # Exploring interactively what this means ---------------------------------
