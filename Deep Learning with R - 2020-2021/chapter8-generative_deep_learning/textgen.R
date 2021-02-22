@@ -10,6 +10,9 @@
 
 # download.file("https://s3.amazonaws.com/text-datasets/nietzsche.txt", destfile = "nietzsche.txt")
 
+library(keras)
+library(stringr)
+
 text <- tolower(readChar("nietzsche.txt", file.info("nietzsche.txt")$size))
 cat("Corpus length:", nchar(text), "\n")
 
