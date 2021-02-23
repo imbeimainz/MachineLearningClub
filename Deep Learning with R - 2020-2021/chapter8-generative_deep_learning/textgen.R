@@ -90,7 +90,9 @@ sample_next_char <- function(preds, temperature = 1.0) {
 
 
 # Trains the model for 60 epochs
+# Trains the model for 10 epochs
 for (epoch in 1:60) {
+# for (epoch in 1:10) {
   cat("epoch", epoch, "\n")
   
   # Fits the model
@@ -106,9 +108,9 @@ for (epoch in 1:60) {
   for (temperature in c(0.2, 0.5, 1.0, 1.2)) {
     cat("------ temperature:", temperature, "\n")
     cat(seed_text, "\n")
-    
+
     generated_text <- seed_text
-    
+
     # Generates 400 characters, starting from the seed text
     for (i in 1:400) {
       sampled <- array(0, dim = c(1, maxlen, length(chars)))
@@ -117,7 +119,7 @@ for (epoch in 1:60) {
         char <- generated_chars[[t]]
         sampled[1, t, char_indices[[char]]] <- 1
       }
-      
+
       preds <- model %>% predict(sampled, verbose = 0)
       next_index <- sample_next_char(preds[1,], temperature)
       next_char <- chars[[next_index]]
@@ -129,13 +131,31 @@ for (epoch in 1:60) {
   }
 }
 
-keras::save_model_hdf5(model, "model_kant_60epochs.h5")
+# model_10 <- model
+
+model_60 <- model
+
+keras::save_model_tf(model_10, "model_kant_10epochs.tfmodel")
+keras::save_model_tf(model_60, "model_kant_60epochs.tfmodel")
+
+# keras::save_model_hdf5(model, "model_kant_60epochs.h5")
+# keras::save_model_hdf5(model, "model_kant_10epochs.h5")
 
 # Interesting other tiny thingy:
 # reminds me of https://github.com/serrat839/mRkov
 # https://serrat839.shinyapps.io/mRkov_shiny/
 
 # Exploring interactively what this means ---------------------------------
+
+# these do not seem to reeeeally work
+# model_10 <- keras::load_model_hdf5("model_kant_10epochs.h5")
+# model_60 <- keras::load_model_hdf5("model_kant_60epochs.h5")
+
+model_10 <- keras::load_model_tf("model_kant_10epochs.tfmodel")
+model_60 <- keras::load_model_tf("model_kant_60epochs.tfmodel")
+
+
+
 
 
 library(shiny)
@@ -151,6 +171,11 @@ ui <- fluidPage(
                 placeholder = "new faculty, and the jubilation reached its climax when kant"),
   numericInput("temp_in",
                label = "select temperature", min = 0.2, max = 1.2, value = 0.4, step = 0.1),
+  selectInput("model_choice", label = "Choose the model - 10 or 60 epochs",
+              choices = c("10 epochs" = "model_10",
+                          "60 epochs" = "model_60"),
+              selected = "model_10"
+             ),
   actionButton("btn_go_on",
                "continue sentence"),
   h4("Predicted text"),
@@ -171,6 +196,12 @@ server <- function(input, output, session) {
     showNotification("Generating text...", duration = 10)
     seed_text <- input$txt_input
     # seed_text <- "new faculty, and the jubilation reached its climax when kant"
+    
+    if (input$model_choice == "model_10") {
+      mymodel <- model_10
+    } else if (input$model_choice == "model_60"){
+      mymodel <- model_60
+    }
       
     cat("------ temperature:", input$temp_in, "\n")
     cat(seed_text, "\n")
@@ -189,7 +220,7 @@ server <- function(input, output, session) {
           sampled[1, t, char_indices[[char]]] <- 1
         }
         
-        preds <- model %>% predict(sampled, verbose = 0)
+        preds <- mymodel %>% predict(sampled, verbose = 0)
         next_index <- sample_next_char(preds[1,], input$temp_in)
         next_char <- chars[[next_index]]
         generated_text <- paste0(generated_text, next_char)
